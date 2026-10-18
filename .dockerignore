@@ -1,0 +1,10 @@
+node_modules/
+db/*.sqlite
+tmp/
+.DS_Store
+.git
+.github
+.agents
+fly.toml
+Dockerfile
+.dockerignore
