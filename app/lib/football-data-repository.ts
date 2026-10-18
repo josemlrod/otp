@@ -18,7 +18,7 @@ async function fetchFootballData<T>(path: string, errorMessage: string) {
     }),
   );
 
-  if (err) return { data: null, err: errorMessage };
+  if (err || !response.ok) return { data: null, err: errorMessage };
 
   const data = (await response.json()) as T;
   return { data, err: null };
@@ -27,7 +27,7 @@ async function fetchFootballData<T>(path: string, errorMessage: string) {
 export const footballDataRepository = {
   async fetchStandings(competitionId: number) {
     const key = `standings-${competitionId}`;
-    const [cached] = await tryCatch(readCache(key));
+    const [cached] = await tryCatch(readCache<StandingsResponse>(key));
     if (cached) return { data: cached, err: null };
 
     const [res] = await tryCatch(
@@ -40,5 +40,7 @@ export const footballDataRepository = {
       await writeCache(key, res.data);
       return { data: res.data, err: null };
     }
+
+    return { data: null, err: res?.err ?? 'Failed to fetch standings' };
   },
 };

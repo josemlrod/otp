@@ -6,7 +6,7 @@ export const Sheet = clientEntry(import.meta.url, function () {
   let y = 0;
   // let detent = 'closed'; // 'large' | 'closed'
   let detent = 'closed'; // 'large' | 'closed'
-  let detents = () => ({ large: 0, closed: sheet?.offsetHeight + 30 });
+  let detents = () => ({ large: 0, closed: (sheet?.offsetHeight ?? 0) + 30 });
 
   return () => (
     <section

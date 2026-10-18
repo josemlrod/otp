@@ -29,3 +29,11 @@ bun run start
 bun test
 bun run typecheck
 ```
+
+## Environment
+
+Copy `.env.example` to `.env` and set `FOOTBALL_DATA_API_KEY` to your [football-data.org](https://www.football-data.org/client/register) key. The `dev`, `hmr`, and `start` scripts load `.env` if it exists. In production the key is a Fly secret:
+
+```sh
+fly secrets set FOOTBALL_DATA_API_KEY=<key>
+```
