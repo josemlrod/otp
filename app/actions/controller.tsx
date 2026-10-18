@@ -23,7 +23,7 @@ export default createController(routes, {
       console.log('res', res);
       console.log('err', err);
 
-      return context.render(<HomePage standings={[res?.data]} />);
+      return context.render(<HomePage standings={res?.data ? [res.data] : []} />);
     },
   },
 });

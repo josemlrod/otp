@@ -2,6 +2,7 @@ node_modules/
 db/*.sqlite
 tmp/
 .DS_Store
+.env
 .git
 .github
 .agents
