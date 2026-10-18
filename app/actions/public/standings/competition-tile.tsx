@@ -8,7 +8,7 @@ type CompetitionTileProps = {
   emblem: string;
   name: string;
   selectedTeams: number[];
-  onPress: () => void;
+  onPress: (button: HTMLButtonElement) => void;
 };
 
 export function CompetitionTile(handle: Handle<CompetitionTileProps>) {
@@ -19,6 +19,7 @@ export function CompetitionTile(handle: Handle<CompetitionTileProps>) {
 
     return (
       <button
+        type='button'
         id={String(id)}
         style={{
           '--c': metadata.color,
@@ -37,7 +38,7 @@ export function CompetitionTile(handle: Handle<CompetitionTileProps>) {
             background: 'var(--c)',
             color: 'var(--ink)',
           }),
-          on('click', () => onPress()),
+          on('click', (event) => onPress(event.currentTarget)),
         ]}
       >
         <div

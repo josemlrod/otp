@@ -158,7 +158,8 @@ describe('standings table', () => {
       <Sheet standing={response()} open={true} onClose={() => {}} />,
     ));
 
-    assert.match(html, /<b>Premier League<\/b>/);
+    assert.match(html, /<b id="[^"]+-title">Premier League<\/b>/);
+    assert.match(html, /aria-labelledby="[^"]+-title"/);
     assert.match(html, /Matchday 7 of 38/);
     assert.match(html, /<table\b/);
     assert.doesNotMatch(html, /Top scorers|Assists|Clean sheets|Relegation|ds-mine/);
@@ -172,5 +173,18 @@ describe('standings table', () => {
     );
 
     assert.doesNotMatch(html, /<table\b/);
+  });
+
+  it('keeps selected content in the closed sheet for its exit transition', async () => {
+    const html = clean(await renderToString(
+      <Sheet standing={response()} open={false} onClose={() => {}} />,
+    ));
+
+    assert.match(html, /<table\b/);
+    assert.match(html, /aria-hidden="true"/);
+    assert.match(html, /\binert(?:[\s=>])/);
+    assert.match(html, /translateY\(110%\)/);
+    assert.match(html, /transition-duration: var\(--sheet-duration, 480ms\)/);
+    assert.match(html, /prefers-reduced-motion: reduce/);
   });
 });
