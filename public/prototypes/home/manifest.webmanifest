@@ -1,0 +1,11 @@
+{
+  "name": "On the Pitch (prototype)",
+  "short_name": "OTP",
+  "start_url": "/prototypes/home.html",
+  "scope": "/prototypes/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0b0c",
+  "theme_color": "#0a0b0c",
+  "icons": [{ "src": "/prototypes/home/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
