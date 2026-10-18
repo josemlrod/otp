@@ -29,7 +29,11 @@ export function Document(handle: Handle<DocumentProps>) {
             name='viewport'
             content='width=device-width, initial-scale=1, viewport-fit=cover'
           />
+          <meta name='theme-color' content='#0a0b0c' />
+          <meta name='apple-mobile-web-app-title' content='OTP' />
           <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+          <link rel='apple-touch-icon' href='/apple-touch-icon.png' />
+          <link rel='manifest' href='/manifest.webmanifest' />
           <title>{title}</title>
           {head}
           <ImportMap value={importMap} />
