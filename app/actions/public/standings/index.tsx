@@ -7,7 +7,7 @@ import type { StandingsResponse } from '../../../lib/types/api.ts';
 
 export const Standings = clientEntry(
   import.meta.url,
-  function (handle: Handle<{ standings: StandingsResponse[] }>) {
+  function Standings(handle: Handle<{ standings: StandingsResponse[] }>) {
     const { standings } = handle.props;
 
     let selected: StandingsResponse | null = null;
