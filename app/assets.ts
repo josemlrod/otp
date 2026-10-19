@@ -14,6 +14,7 @@ export const assets = createAssetServer({
     'app/routes.ts',
     'app/**/public/**',
     'app/lib/competition-metadata.ts',
+    'app/ui/logo.tsx',
   ],
   allowPackages: ['remix'],
   denyFiles: ['app/**/*.test.*'],

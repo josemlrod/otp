@@ -45,6 +45,21 @@ describe('asset access', () => {
     assert.match(await response.text(), /#3D0A49/);
   });
 
+  it('serves the logo module used by the home screen browser entry', async () => {
+    const details = await assets.getAssetDetails('app/ui/logo.tsx');
+    assert.equal(details?.access?.allowed, true);
+    assert.equal(details?.status, 'reachable');
+
+    const href = await assets.getHref('app/ui/logo.tsx');
+    const response = await assets.fetch(
+      new Request(new URL(href, 'http://localhost')),
+    );
+
+    assert.ok(response);
+    assert.equal(response.status, 200);
+    assert.ok((await response.text()).length > 0);
+  });
+
   for (const file of [
     'app/lib/football-data-repository.ts',
     'app/lib/competition-metadata.test.ts',

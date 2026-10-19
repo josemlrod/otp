@@ -1,6 +1,7 @@
 import { clientEntry, css, on, type Handle } from 'remix/component';
 
 import type { StandingsResponse } from '../../lib/types/api.ts';
+import { Logo } from '../../ui/logo.tsx';
 import { Standings } from './standings/index.tsx';
 import { Sheet } from './standings/sheet.tsx';
 
@@ -51,7 +52,10 @@ export const HomeScreen = clientEntry(
             })}
           >
             <p mix={subtitleStyles}>Saturday 10 October</p>
-            <h3 mix={titleStyles}>On the Pitch</h3>
+            <div mix={css({ display: 'flex', alignItems: 'center', gap: 10 })}>
+              <Logo size={30} />
+              <h3 mix={titleStyles}>On the Pitch</h3>
+            </div>
           </header>
 
           <section
