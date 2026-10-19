@@ -1,4 +1,4 @@
-import { css, on, type Handle } from 'remix/component';
+import { css, on, ref, type Handle } from 'remix/component';
 
 import { getCompetitionMetadata } from '../../../lib/competition-metadata.ts';
 import { StandingsTable } from './standings-table.tsx';
@@ -9,9 +9,12 @@ type Props = {
   standing: StandingsResponse | null;
   open: boolean;
   onClose: () => void;
+  closeButtonRef?: (button: HTMLButtonElement) => void;
 };
 
 export function Sheet(handle: Handle<Props>) {
+  const titleId = `${handle.id}-title`;
+
   return () => {
     const { open, standing, onClose } = handle.props;
     const metadata = standing
@@ -20,9 +23,45 @@ export function Sheet(handle: Handle<Props>) {
 
     return (
       <section
-        mix={[sheetContainer]}
+        mix={[
+          sheetContainer,
+          on('keydown', (event) => {
+            if (!handle.props.open) return;
+
+            if (event.key === 'Escape') {
+              event.preventDefault();
+              event.stopPropagation();
+              handle.props.onClose();
+            }
+
+            if (event.key === 'Tab') {
+              const controls = Array.from(
+                event.currentTarget.querySelectorAll<HTMLElement>(
+                  'a[href], button, input, select, textarea, [tabindex]',
+                ),
+              ).filter((element) =>
+                element.tabIndex >= 0 &&
+                !element.matches(':disabled') &&
+                !element.closest('[inert]') &&
+                element.getClientRects().length > 0 &&
+                getComputedStyle(element).visibility === 'visible'
+              );
+              const first = controls[0];
+              const last = controls.at(-1);
+
+              if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last?.focus({ preventScroll: true });
+              } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first?.focus({ preventScroll: true });
+              }
+            }
+          }),
+        ]}
         role='dialog'
         aria-modal='true'
+        aria-labelledby={standing ? titleId : undefined}
         aria-hidden={!open || !standing ? 'true' : 'false'}
         inert={!open || !standing}
         style={{
@@ -49,7 +88,7 @@ export function Sheet(handle: Handle<Props>) {
               </span>
             </span>
             <span mix={sheetTitle}>
-              <b>{standing.competition.name}</b>
+              <b id={titleId}>{standing.competition.name}</b>
               <span>
                 {standing.competition.code === 'CL'
                   ? 'League phase'
@@ -60,7 +99,11 @@ export function Sheet(handle: Handle<Props>) {
             </span>
             <button
               type='button'
-              mix={[sheetClose, on('click', onClose)]}
+              mix={[
+                sheetClose,
+                ref((button) => handle.props.closeButtonRef?.(button)),
+                on('click', onClose),
+              ]}
               aria-label='Close'
             >
               <svg
@@ -79,7 +122,7 @@ export function Sheet(handle: Handle<Props>) {
           </div>
         )}
         {standing && (
-          <div mix={sheetScroll}>
+          <div mix={sheetScroll} tabIndex={0}>
             <StandingsTable standing={standing} />
           </div>
         )}
@@ -103,10 +146,15 @@ const sheetContainer = css({
   boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.5)',
   transform: 'translateY(110%)',
   transitionProperty: 'transform',
+  transitionDuration: 'var(--sheet-duration, 480ms)',
   transitionTimingFunction: 'var(--ease-ios)',
   touchAction: 'auto',
   willChange: 'transform',
   '--surface-in': 'var(--surface-2)',
+
+  '@media (prefers-reduced-motion: reduce)': {
+    transition: 'none',
+  },
 });
 
 const sheetGrab = css({
@@ -212,6 +260,13 @@ const sheetClose = css({
 
   '&:active': {
     transform: 'scale(0.9)',
+  },
+
+  '@media (prefers-reduced-motion: reduce)': {
+    transition: 'none',
+    '&:active': {
+      transform: 'none',
+    },
   },
 
   '& svg': {
