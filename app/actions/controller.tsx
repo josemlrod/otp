@@ -4,7 +4,6 @@ import { assets } from '../assets.ts';
 import { routes } from '../routes.ts';
 import { HomePage } from './home-page.tsx';
 import { footballDataRepository } from '../lib/football-data-repository.ts';
-import { tryCatch } from '../lib/utils.ts';
 
 export default createController(routes, {
   actions: {
@@ -15,15 +14,9 @@ export default createController(routes, {
       );
     },
     async home(context) {
-      const COMPETITION_ID = 2021;
-      const [res, err] = await tryCatch(
-        footballDataRepository.fetchStandings(COMPETITION_ID),
-      );
+      const standings = await footballDataRepository.fetchAllStandings();
 
-      console.log('res', res);
-      console.log('err', err);
-
-      return context.render(<HomePage standings={res?.data ? [res.data] : []} />);
+      return context.render(<HomePage standings={standings} />);
     },
   },
 });
