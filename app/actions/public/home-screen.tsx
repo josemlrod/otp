@@ -63,10 +63,11 @@ export const HomeScreen = clientEntry(
               display: 'flex',
               flexDirection: 'column',
               gap: 10,
-              padding: '0 0 0 22px',
             })}
           >
-            <p mix={subtitleStyles}>Competitions</p>
+            <p mix={[subtitleStyles, css({ padding: '0 22px' })]}>
+              Competitions
+            </p>
             <Standings standings={handle.props.standings} onSelect={show} />
           </section>
 
