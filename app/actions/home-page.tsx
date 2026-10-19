@@ -5,6 +5,7 @@ import { Document } from './document.tsx';
 
 import type { StandingsResponse } from '../lib/types/api.ts';
 import { Standings } from './public/standings/index.tsx';
+import { Logo } from '../ui/logo.tsx';
 
 const subtitleStyles = css({
   textTransform: 'uppercase',
@@ -33,7 +34,10 @@ export function HomePage(handle: Handle<{ standings: StandingsResponse[] }>) {
       >
         <header mix={css({ padding: '14px 22px 0 22px' })}>
           <p mix={subtitleStyles}>Saturday 10 October</p>
-          <h3 mix={titleStyles}>On the Pitch</h3>
+          <div mix={css({ display: 'flex', alignItems: 'center', gap: 10 })}>
+            <Logo size={30} />
+            <h3 mix={titleStyles}>On the Pitch</h3>
+          </div>
         </header>
 
         <section
