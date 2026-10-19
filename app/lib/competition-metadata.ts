@@ -23,3 +23,12 @@ export function getCompetitionMetadata(code: string): CompetitionMetadata {
 
   return { color: '#30343B', accent: '#FFFFFF', mark: code };
 }
+
+export const COMPETITION_IDS = {
+  PL: 2021,
+  BL1: 2002,
+  SA: 2019,
+  PD: 2014,
+  FL1: 2015,
+  CL: 2001,
+};

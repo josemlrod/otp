@@ -2,6 +2,7 @@ import { tryCatch } from './utils.ts';
 import { readCache, writeCache } from './api-cache.ts';
 
 import type { StandingsResponse } from './types/api.ts';
+import { COMPETITION_IDS } from './competition-metadata.ts';
 
 const FOOTBALL_DATA_API_DOMAIN = 'https://api.football-data.org';
 const FOOTBALL_DATA_API_KEY = process.env.FOOTBALL_DATA_API_KEY ?? '';
@@ -48,5 +49,22 @@ export const footballDataRepository = {
     if (cached) return { data: cached.data, err: null };
 
     return { data: null, err: res?.err ?? 'Failed to fetch standings' };
+  },
+
+  async fetchAllStandings() {
+    const allCompetitionIds = Object.values(COMPETITION_IDS);
+
+    const [res, err] = await tryCatch(
+      Promise.all(
+        allCompetitionIds.map((competitionId) =>
+          fetchFootballData<StandingsResponse>(
+            `/v4/competitions/${competitionId}/standings`,
+            'Failed to fetch standings',
+          ),
+        ),
+      ),
+    );
+
+    return res;
   },
 };

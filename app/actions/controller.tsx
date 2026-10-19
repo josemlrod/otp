@@ -15,15 +15,12 @@ export default createController(routes, {
       );
     },
     async home(context) {
-      const COMPETITION_ID = 2021;
-      const [res, err] = await tryCatch(
-        footballDataRepository.fetchStandings(COMPETITION_ID),
+      const [allStandingsRes, allStandingsErr] = await tryCatch(
+        footballDataRepository.fetchAllStandings(),
       );
+      const standings = allStandingsRes?.map((res) => res?.data);
 
-      console.log('res', res);
-      console.log('err', err);
-
-      return context.render(<HomePage standings={res?.data ? [res.data] : []} />);
+      return context.render(<HomePage standings={standings} />);
     },
   },
 });
