@@ -28,14 +28,22 @@ export function CompetitionTile(handle: Handle<CompetitionTileProps>) {
         }}
         mix={[
           css({
-            width: 250,
+            flex: 'none',
+            minWidth: 156,
+            scrollSnapAlign: 'start',
             gap: '0.75rem',
             display: 'flex',
             flexDirection: 'column',
             borderRadius: 18,
             border: 'none',
             padding: 12,
-            background: 'var(--c)',
+            background: `linear-gradient(
+              160deg,
+              color-mix(in oklab, var(--c) 80%, white) 0%,
+              var(--c) 55%,
+              color-mix(in oklab, var(--c) 70%, black) 100%
+            )`,
+            boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2)',
             color: 'var(--ink)',
           }),
           on('click', (event) => onPress(event.currentTarget)),
@@ -54,7 +62,15 @@ export function CompetitionTile(handle: Handle<CompetitionTileProps>) {
             src={emblem}
             mix={css({ height: 22, width: 22 })}
           />
-          <p mix={css({ fontWeight: 750, fontSize: '0.875rem' })}>{name}</p>
+          <p
+            mix={css({
+              fontWeight: 750,
+              fontSize: '0.875rem',
+              whiteSpace: 'nowrap',
+            })}
+          >
+            {name}
+          </p>
         </div>
 
         {noSelectedTeams ? (

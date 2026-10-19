@@ -1,4 +1,4 @@
-import type { Handle } from 'remix/component';
+import { css, type Handle } from 'remix/component';
 
 import { CompetitionTile } from './competition-tile.tsx';
 
@@ -11,7 +11,22 @@ type Props = {
 
 export function Standings(handle: Handle<Props>) {
   return () => (
-    <div>
+    <div
+      mix={css({
+        display: 'flex',
+        minWidth: 0,
+        gap: 8,
+        padding: '0 20px',
+        overflowX: 'auto',
+        scrollSnapType: 'x proximity',
+        scrollPadding: '0 20px',
+        scrollbarWidth: 'none',
+
+        '&::-webkit-scrollbar': {
+          display: 'none',
+        },
+      })}
+    >
       {handle.props.standings.map((standing) => (
         <CompetitionTile
           key={standing.competition.id}
