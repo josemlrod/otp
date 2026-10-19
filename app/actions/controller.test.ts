@@ -1,10 +1,13 @@
 import * as assert from 'remix/assert'
-import { describe, it } from 'remix/test'
+import { beforeAll, describe, it } from 'remix/test'
 
+import { migrateDatabase } from '../db.ts'
 import { router } from '../router.ts'
 import { routes } from '../routes.ts'
 
 describe('root controller', () => {
+  beforeAll(() => migrateDatabase())
+
   it('GET / returns the home page', async () => {
     let response = await router.fetch(new URL(routes.home.href(), 'http://localhost'))
 
