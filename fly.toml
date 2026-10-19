@@ -10,6 +10,12 @@ primary_region = 'ewr'
 
 [env]
   PORT = '3000'
+  DATABASE_PATH = '/data/otp.sqlite'
+
+[mounts]
+  source = 'otp_data'
+  destination = '/data'
+  initial_size = '1gb'
 
 [http_service]
   internal_port = 3000

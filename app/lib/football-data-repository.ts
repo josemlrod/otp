@@ -1,10 +1,11 @@
 import { tryCatch } from './utils.ts';
-import { readCache, writeCache } from './file-cache.ts';
+import { readCache, writeCache } from './api-cache.ts';
 
 import type { StandingsResponse } from './types/api.ts';
 
 const FOOTBALL_DATA_API_DOMAIN = 'https://api.football-data.org';
 const FOOTBALL_DATA_API_KEY = process.env.FOOTBALL_DATA_API_KEY ?? '';
+const STANDINGS_MAX_AGE_MS = 60 * 60 * 1000;
 
 function authHeaders() {
   return { 'X-Auth-Token': FOOTBALL_DATA_API_KEY };
@@ -28,7 +29,9 @@ export const footballDataRepository = {
   async fetchStandings(competitionId: number) {
     const key = `standings-${competitionId}`;
     const [cached] = await tryCatch(readCache<StandingsResponse>(key));
-    if (cached) return { data: cached, err: null };
+    if (cached && Date.now() - cached.fetchedAt < STANDINGS_MAX_AGE_MS) {
+      return { data: cached.data, err: null };
+    }
 
     const [res] = await tryCatch(
       fetchFootballData<StandingsResponse>(
@@ -37,9 +40,12 @@ export const footballDataRepository = {
       ),
     );
     if (res?.data) {
-      await writeCache(key, res.data);
+      await tryCatch(writeCache(key, res.data));
       return { data: res.data, err: null };
     }
+
+    // Stale standings beat an empty page when football-data is down or rate limiting us
+    if (cached) return { data: cached.data, err: null };
 
     return { data: null, err: res?.err ?? 'Failed to fetch standings' };
   },
