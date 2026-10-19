@@ -4,7 +4,6 @@ import { assets } from '../assets.ts';
 import { routes } from '../routes.ts';
 import { HomePage } from './home-page.tsx';
 import { footballDataRepository } from '../lib/football-data-repository.ts';
-import { tryCatch } from '../lib/utils.ts';
 
 export default createController(routes, {
   actions: {
@@ -15,10 +14,7 @@ export default createController(routes, {
       );
     },
     async home(context) {
-      const [allStandingsRes, allStandingsErr] = await tryCatch(
-        footballDataRepository.fetchAllStandings(),
-      );
-      const standings = allStandingsRes?.map((res) => res?.data);
+      const standings = await footballDataRepository.fetchAllStandings();
 
       return context.render(<HomePage standings={standings} />);
     },

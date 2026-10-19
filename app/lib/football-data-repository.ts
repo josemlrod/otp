@@ -2,11 +2,18 @@ import { tryCatch } from './utils.ts';
 import { readCache, writeCache } from './api-cache.ts';
 
 import type { StandingsResponse } from './types/api.ts';
-import { COMPETITION_IDS } from './competition-metadata.ts';
 
 const FOOTBALL_DATA_API_DOMAIN = 'https://api.football-data.org';
 const FOOTBALL_DATA_API_KEY = process.env.FOOTBALL_DATA_API_KEY ?? '';
 const STANDINGS_MAX_AGE_MS = 60 * 60 * 1000;
+const COMPETITION_IDS = {
+  PL: 2021,
+  BL1: 2002,
+  SA: 2019,
+  PD: 2014,
+  FL1: 2015,
+  CL: 2001,
+};
 
 function authHeaders() {
   return { 'X-Auth-Token': FOOTBALL_DATA_API_KEY };
@@ -51,20 +58,13 @@ export const footballDataRepository = {
     return { data: null, err: res?.err ?? 'Failed to fetch standings' };
   },
 
-  async fetchAllStandings() {
-    const allCompetitionIds = Object.values(COMPETITION_IDS);
-
-    const [res, err] = await tryCatch(
-      Promise.all(
-        allCompetitionIds.map((competitionId) =>
-          fetchFootballData<StandingsResponse>(
-            `/v4/competitions/${competitionId}/standings`,
-            'Failed to fetch standings',
-          ),
-        ),
+  async fetchAllStandings(): Promise<StandingsResponse[]> {
+    const results = await Promise.all(
+      Object.values(COMPETITION_IDS).map((competitionId) =>
+        footballDataRepository.fetchStandings(competitionId),
       ),
     );
 
-    return res;
+    return results.flatMap(({ data }) => (data ? [data] : []));
   },
 };
