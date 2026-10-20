@@ -5,6 +5,7 @@ import {
 } from 'remix/multiple-import-maps-polyfill'
 import { run } from 'remix/component'
 
+import { HYDRATED_MARK } from './perf/renders.ts'
 import { installPerfToggle } from './perf/toggle.ts'
 
 const app = run({
@@ -24,8 +25,7 @@ const app = run({
   },
 })
 
-// The perf HUD reads this mark as the page's hydration time.
-void app.ready().then(() => performance.mark('otp:hydrated'))
+void app.ready().then(() => performance.mark(HYDRATED_MARK))
 installPerfToggle()
 
 if (import.meta.hot) {

@@ -1,7 +1,3 @@
-// Wallet deck: stacked cards. Tap lifts one and parks the rest; drag the
-// lifted card up to open, down to put it back. `offset` leaves room above
-// the stack.
-// `tucked` cards hide inside their `tuckTo` card until they're lifted out.
 import { tapper, tick } from './utils.js'
 
 export function deck(el, { strip = 92, parked = 76, offset = () => 0, onOpen, tucked, tuckTo } = {}) {
@@ -15,7 +11,6 @@ export function deck(el, { strip = 92, parked = 76, offset = () => 0, onOpen, tu
     let cardH = vb - parked - 12
     let isTucked = (c) => c !== selected && !!tucked?.(c)
     let shown = cards.filter((c) => !isTucked(c))
-    // Tighten the stack on short screens so the last card still shows.
     let step = Math.max(62, Math.min(strip, (vb - top - 120) / Math.max(1, shown.length - 1)))
     let rest = shown.filter((c) => c !== selected)
     let restY = (j) => vb - parked + j * 9
@@ -26,7 +21,6 @@ export function deck(el, { strip = 92, parked = 76, offset = () => 0, onOpen, tu
       let scale = 1
       if (selected === c) y = 0
       else if (isTucked(c)) {
-        // Rides along with the card it lives in.
         let host = tuckTo?.(c)
         y = host === selected ? 0 : selected ? restY(rest.indexOf(host)) : top + shown.indexOf(host) * step
         scale = 0.96
@@ -123,7 +117,6 @@ export function deck(el, { strip = 92, parked = 76, offset = () => 0, onOpen, tu
   let ro = new ResizeObserver(layout)
   ro.observe(el)
 
-  // Deal in from below.
   el.classList.add('is-dealing', 'is-staggered')
   layout()
   requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove('is-dealing')))

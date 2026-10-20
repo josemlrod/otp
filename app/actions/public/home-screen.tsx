@@ -6,14 +6,16 @@ import { Standings } from './standings/index.tsx';
 import { Sheet } from './standings/sheet.tsx';
 import { countRender } from './perf/renders.ts';
 
+const RECEDED_SCREEN_SCALE = 0.93;
+const RECEDED_SCREEN_RADIUS_PX = 18;
+const OVERLAY_OPEN_OPACITY = 0.45;
+
 export const HomeScreen = clientEntry(
   import.meta.url,
   function HomeScreen(handle: Handle<{ standings: StandingsResponse[] }>) {
     let selected: StandingsResponse | null = null;
     let open = false;
-    // How open the sheet is mid-drag (1 = open, 0 = closed); `null` when no
-    // drag is in progress and the layers rest at their open/closed targets.
-    let dragProgress: number | null = null;
+    let dragOpenFraction: number | null = null;
     let opener: HTMLButtonElement | undefined;
     let closeButton: HTMLButtonElement | undefined;
 
@@ -39,24 +41,22 @@ export const HomeScreen = clientEntry(
 
     return () => {
       countRender('HomeScreen');
-      const progress = dragProgress ?? (open ? 1 : 0);
+      const openFraction = dragOpenFraction ?? (open ? 1 : 0);
+      const isDragging = dragOpenFraction !== null;
 
       return (
         <div
           mix={containerStyles}
           style={{
-            // Track the finger while dragging; ease to the target otherwise.
-            '--sheet-duration':
-              dragProgress !== null ? '0ms' : open ? '480ms' : '340ms',
+            '--sheet-duration': isDragging ? '0ms' : open ? '480ms' : '340ms',
           }}
         >
           <main
             mix={screenStyles}
             inert={open}
             style={{
-              // The screen recedes as the sheet rises: 7% smaller, rounded corners.
-              transform: `scale(${(100 - progress * 7) / 100})`,
-              borderRadius: `${progress * 18}px`,
+              transform: `scale(${1 - openFraction * (1 - RECEDED_SCREEN_SCALE)})`,
+              borderRadius: `${openFraction * RECEDED_SCREEN_RADIUS_PX}px`,
             }}
           >
             <header
@@ -65,14 +65,12 @@ export const HomeScreen = clientEntry(
               })}
             >
               <p mix={subtitleStyles}>Saturday 10 October</p>
-              {/* Five quick taps here toggle the perf HUD (see perf/toggle.ts). */}
               <div
                 data-perf-toggle
                 mix={css({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 10,
-                  // Rapid taps shouldn't zoom the page or select the title.
                   touchAction: 'manipulation',
                   userSelect: 'none',
                   WebkitUserSelect: 'none',
@@ -106,7 +104,7 @@ export const HomeScreen = clientEntry(
             inert={!open}
             mix={[overlayStyles, on('click', close)]}
             style={{
-              opacity: progress * 0.45,
+              opacity: openFraction * OVERLAY_OPEN_OPACITY,
               pointerEvents: open ? 'auto' : 'none',
             }}
           />
@@ -115,8 +113,8 @@ export const HomeScreen = clientEntry(
             standing={selected}
             open={open}
             onClose={close}
-            onDrag={(progress) => {
-              dragProgress = progress;
+            onDragOpenFraction={(fraction) => {
+              dragOpenFraction = fraction;
               handle.update();
             }}
             closeButtonRef={(button) => {
@@ -132,7 +130,6 @@ export const HomeScreen = clientEntry(
 const containerStyles = css({
   position: 'relative',
   isolation: 'isolate',
-  // Extend into the safe areas already reserved by Document, then inset content.
   height: 'calc(100% + var(--safe-area-inset-top, 0px) + var(--safe-area-inset-bottom, 0px))',
   marginTop: 'calc(0px - var(--safe-area-inset-top, 0px))',
   marginBottom: 'calc(0px - var(--safe-area-inset-bottom, 0px))',

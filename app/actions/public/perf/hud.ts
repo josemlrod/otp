@@ -1,16 +1,12 @@
-import { renderStats } from './renders.ts';
+import { HYDRATED_MARK, renderStats } from './renders.ts';
 
-// A floating dev overlay for watching how the app performs while you use it.
-// It's plain DOM inside a shadow root, outside the Remix tree, so its own
-// updates never show up in the render or DOM-mutation counts it reports.
-
-// How often the readout refreshes. Rates (renders/s, mutations/s) are per
-// second, measured over this window.
-const SAMPLE_MS = 500;
-// Frames kept for the graph and the frame-time percentiles.
+const SAMPLE_INTERVAL_MS = 500;
 const FRAME_HISTORY = 120;
-// The graph's vertical scale, in ms; slower frames are clipped to the top.
-const GRAPH_MAX_MS = 50;
+const GRAPH_CEILING_MS = 50;
+const PAUSED_TAB_GAP_MS = 1000;
+const LONG_TASK_BUDGET_MS = 50;
+const MISSED_VSYNC_RATIO = 1.5;
+const SEVERE_JANK_RATIO = 3;
 const COMPACT_KEY = 'otp:perf-compact';
 
 type LayoutShift = PerformanceEntry & { value: number; hadRecentInput: boolean };
@@ -21,35 +17,29 @@ type MemoryInfo = { usedJSHeapSize: number; totalJSHeapSize: number };
 export function mountPerfHud({ onClose }: { onClose: () => void }): () => void {
   const cleanups: Array<() => void> = [];
 
-  // Frames: the time between consecutive animation frames. The display's
-  // refresh interval is taken as the median, so a frame that takes over 1.5x
-  // that missed at least one vsync.
   const frameTimes = new Float32Array(FRAME_HISTORY);
   let frameCount = 0;
   let framesInWindow = 0;
   let droppedFrames = 0;
   let worstFrame = 0;
-  let refreshInterval = 1000 / 60;
+  let medianFrameMs = 1000 / 60;
   let lastFrameAt = performance.now();
   let raf = requestAnimationFrame(function tick(now) {
     const delta = now - lastFrameAt;
     lastFrameAt = now;
-    // Hidden tabs pause rAF; don't count the gap as one huge frame.
-    if (delta < 1000) {
+    if (delta < PAUSED_TAB_GAP_MS) {
       frameTimes[frameCount % FRAME_HISTORY] = delta;
       frameCount++;
       framesInWindow++;
       worstFrame = Math.max(worstFrame, delta);
-      if (delta > refreshInterval * 1.5) {
-        droppedFrames += Math.round(delta / refreshInterval) - 1;
+      if (delta > medianFrameMs * MISSED_VSYNC_RATIO) {
+        droppedFrames += Math.round(delta / medianFrameMs) - 1;
       }
     }
     raf = requestAnimationFrame(tick);
   });
   cleanups.push(() => cancelAnimationFrame(raf));
 
-  // Main-thread work: long animation frames (Chromium) or long tasks, i.e.
-  // anything over 50ms that blocks input and rendering.
   let longCount = 0;
   let longWorst = 0;
   let blockingTime = 0;
@@ -65,11 +55,10 @@ export function mountPerfHud({ onClose }: { onClose: () => void }): () => void {
       for (const entry of entries) {
         longCount++;
         longWorst = Math.max(longWorst, entry.duration);
-        blockingTime += Math.max(0, entry.duration - 50);
+        blockingTime += Math.max(0, entry.duration - LONG_TASK_BUDGET_MS);
       }
     });
 
-  // Interaction latency: from a tap/key to the next paint, as INP measures it.
   let lastInput: number | null = null;
   let worstInput = 0;
   const inputSupported = observe(
@@ -84,7 +73,6 @@ export function mountPerfHud({ onClose }: { onClose: () => void }): () => void {
     { durationThreshold: 16 } as PerformanceObserverInit,
   );
 
-  // Load milestones, buffered so they're there even if the HUD opens later.
   let lcp: number | null = null;
   let cls = 0;
   observe(
@@ -104,7 +92,6 @@ export function mountPerfHud({ onClose }: { onClose: () => void }): () => void {
     { buffered: true },
   );
 
-  // DOM writes the app makes, counted as mutation records.
   let mutations = 0;
   let mutationsInWindow = 0;
   const mutationObserver = new MutationObserver((records) => {
@@ -141,11 +128,7 @@ export function mountPerfHud({ onClose }: { onClose: () => void }): () => void {
     sample();
   }
 
-  // --- View ---
-
   const host = document.createElement('otp-perf-hud');
-  // Appended to <html> rather than <body> so it stays clear of the DOM the
-  // Remix runtime owns and reconciles.
   document.documentElement.append(host);
   cleanups.push(() => host.remove());
   const root = host.attachShadow({ mode: 'open' });
@@ -196,16 +179,16 @@ export function mountPerfHud({ onClose }: { onClose: () => void }): () => void {
       frameTimes.subarray(0, Math.min(frameCount, FRAME_HISTORY)),
     ).sort((a, b) => a - b);
     if (recent.length >= 10) {
-      refreshInterval = percentile(recent, 0.5);
+      medianFrameMs = percentile(recent, 0.5);
     }
     const fps = Math.round(framesInWindow / seconds);
-    const hz = Math.round(1000 / refreshInterval);
+    const hz = Math.round(1000 / medianFrameMs);
     framesInWindow = 0;
 
     fpsLabel.textContent = `${fps} fps`;
     fpsLabel.dataset.level =
       fps >= hz * 0.9 ? 'good' : fps >= hz * 0.6 ? 'warn' : 'bad';
-    drawGraph();
+    drawFrameTimeBars();
     if (compact) {
       mutationsInWindow = 0;
       return;
@@ -230,7 +213,7 @@ export function mountPerfHud({ onClose }: { onClose: () => void }): () => void {
       | PerformanceNavigationTiming
       | undefined;
     const fcp = performance.getEntriesByName('first-contentful-paint')[0]?.startTime;
-    const hydrated = performance.getEntriesByName('otp:hydrated')[0]?.startTime;
+    const hydrated = performance.getEntriesByName(HYDRATED_MARK)[0]?.startTime;
 
     details.innerHTML = [
       section('frames'),
@@ -264,30 +247,28 @@ export function mountPerfHud({ onClose }: { onClose: () => void }): () => void {
     mutationsInWindow = 0;
   }
 
-  // One bar per frame, oldest on the left. Bars over the refresh interval
-  // turn amber; ones that took three or more vsyncs turn red.
-  function drawGraph() {
+  function drawFrameTimeBars() {
     const { width, height } = canvas;
     context.clearRect(0, 0, width, height);
     const count = Math.min(frameCount, FRAME_HISTORY);
     for (let i = 0; i < count; i++) {
       const delta = frameTimes[(frameCount - count + i) % FRAME_HISTORY];
-      const barHeight = Math.max(1, (Math.min(delta, GRAPH_MAX_MS) / GRAPH_MAX_MS) * height);
+      const barHeight = Math.max(1, (Math.min(delta, GRAPH_CEILING_MS) / GRAPH_CEILING_MS) * height);
       context.fillStyle =
-        delta <= refreshInterval * 1.5
+        delta <= medianFrameMs * MISSED_VSYNC_RATIO
           ? '#1fb85a'
-          : delta < refreshInterval * 3
+          : delta < medianFrameMs * SEVERE_JANK_RATIO
             ? '#f5a524'
             : '#e5484d';
       context.fillRect(width - count + i, height - barHeight, 1, barHeight);
     }
-    const target = height - (refreshInterval / GRAPH_MAX_MS) * height;
+    const medianFrameLineY = height - (medianFrameMs / GRAPH_CEILING_MS) * height;
     context.fillStyle = 'rgba(255, 255, 255, 0.35)';
-    context.fillRect(0, Math.round(target), width, 1);
+    context.fillRect(0, Math.round(medianFrameLineY), width, 1);
   }
 
   sample();
-  const interval = setInterval(sample, SAMPLE_MS);
+  const interval = setInterval(sample, SAMPLE_INTERVAL_MS);
   cleanups.push(() => clearInterval(interval));
 
   return () => {
@@ -324,7 +305,6 @@ function section(title: string): string {
   return `<h4>${title}</h4>`;
 }
 
-// Values are numbers and names of our own components, so no escaping needed.
 function row(label: string, value: string, note = '', kind = ''): string {
   return `<div class="row ${kind}"><span>${label}</span><b>${value}</b><i>${note}</i></div>`;
 }

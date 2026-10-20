@@ -4,8 +4,7 @@ export const Sheet = clientEntry(import.meta.url, function () {
   let sheet: HTMLElement | undefined;
 
   let y = 0;
-  // let detent = 'closed'; // 'large' | 'closed'
-  let detent = 'closed'; // 'large' | 'closed'
+  let detent: 'large' | 'closed' = 'closed';
   let detents = () => ({ large: 0, closed: (sheet?.offsetHeight ?? 0) + 30 });
 
   return () => (

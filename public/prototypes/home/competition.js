@@ -1,15 +1,9 @@
-// Everything about one competition: where a club stands in it, its table and
-// leaders, and the content of the sheet that opens when you tap a competition.
 import { COMPS } from './data.js'
 import { compMark, crest, icons } from './ui.js'
 import { club, followedIn, ordinal, plural, position } from './utils.js'
 
-// ---------- Zones ----------
-// Each comp has zones like [1, 4, 'ucl']: table positions 1-4 are UCL places.
-
 export const zoneOf = (comp, pos) => comp.zones.find(([a, b]) => pos >= a && pos <= b)?.[2] ?? ''
 
-// Short names for the table legend.
 const ZONE_LABEL = {
   ucl: 'Champions League',
   uel: 'Europa League',
@@ -18,7 +12,6 @@ const ZONE_LABEL = {
   po: 'Knockout play-offs',
 }
 
-// Longer phrasing for a club's situation.
 const ZONE_TEXT = {
   ucl: 'Champions League places',
   uel: 'Europa League places',
@@ -27,7 +20,6 @@ const ZONE_TEXT = {
   po: 'Knockout play-off places',
 }
 
-// What a fan actually wants to know: where we are and what it means.
 export function situation(t, compId) {
   let p = position(t, compId)
   let { pos, pts, comp } = p
@@ -47,9 +39,6 @@ export function situation(t, compId) {
   let zoneText = ZONE_TEXT[zone] ?? (compId === 'ucl' ? 'Outside the top 24' : 'Mid-table')
   return { ...p, gap, zone, zoneText, move: t.moves?.[compId] ?? 0 }
 }
-
-// ---------- Table and leaders ----------
-// `highlight` is the club codes to emphasise.
 
 export function compView(compId, highlight = []) {
   let comp = COMPS[compId]
@@ -90,10 +79,6 @@ function leaderBlock(title, rows, highlight) {
       )
       .join('')}</ol>`
 }
-
-// ---------- Competition sheet ----------
-// Content for the depth sheet (sheet.js) when a competition is opened, from a
-// shelf tile or a club card's lane.
 
 export function compSheet(id) {
   let comp = COMPS[id]

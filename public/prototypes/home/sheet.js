@@ -1,6 +1,3 @@
-// Depth sheet: rises over the app while whatever is behind it recedes (scale +
-// rounded corners). Open it with { head, body } markup, e.g. compSheet(id).
-// Drag it down by its grab area, tap the scrim, or tap [data-ds-close] to close.
 import { clamp, reducedMotion, replayClass, tick } from './utils.js'
 
 export function depthSheet(app, recede) {
@@ -17,20 +14,17 @@ export function depthSheet(app, recede) {
   let headEl = sheet.querySelector('.ds-head')
   let scroll = sheet.querySelector('.ds-scroll')
 
-  // `y` is the sheet's translateY: 0 when fully open, below the screen when closed.
   let y = 0
-  let detent = 'closed' // 'large' | 'closed'
+  let detent = 'closed'
   let detents = () => ({ large: 0, closed: sheet.offsetHeight + 30 })
 
   function setY(next, duration = 0) {
     y = next
     let d = detents()
-    // 0 = closed, 1 = fully open. Drives the scrim and the receding screen.
     let open = clamp((d.closed - y) / (d.closed - d.large), 0, 1)
     let dur = `${duration}ms`
     sheet.style.transitionDuration = dur
     scrim.style.transitionDuration = dur
-    // Dragging above the top only gives a little (rubber band).
     sheet.style.transform = `translateY(${y < 0 ? y * 0.2 : y}px)`
     scrim.style.opacity = String(open * 0.45)
     scrim.style.pointerEvents = open > 0.01 ? 'auto' : 'none'
@@ -49,13 +43,11 @@ export function depthSheet(app, recede) {
     sheet.setAttribute('aria-hidden', String(name === 'closed'))
   }
 
-  // `focus` is an optional selector for a row to scroll to and flash.
   function open({ head, body, focus }) {
     headEl.innerHTML = head
     scroll.innerHTML = body
     scroll.scrollTop = 0
     if (detent === 'closed') setY(detents().closed)
-    // Arrive already showing the row that matters.
     if (focus) {
       let row = scroll.querySelector(focus)
       if (row) {
@@ -77,8 +69,6 @@ export function depthSheet(app, recede) {
   scrim.addEventListener('click', onClick)
   sheet.addEventListener('click', onClick)
 
-  // Drag by the grab area; on release, settle on whichever detent the
-  // flick is heading toward.
   let drag = null
   let suppress = false
   sheet.addEventListener('pointerdown', (e) => {
@@ -104,7 +94,6 @@ export function depthSheet(app, recede) {
     let { active, v } = drag
     drag = null
     if (!active) return
-    // Swallow the click that follows a drag.
     suppress = true
     setTimeout(() => (suppress = false), 0)
     let d = detents()

@@ -1,7 +1,4 @@
-// Helpers with no markup: data lookups, formatting, and small DOM utilities.
 import { CLUBS, COMPS, NOW, TEAMS } from './data.js'
-
-// ---------- Data lookups ----------
 
 export const team = (id) => TEAMS.find((t) => t.id === id)
 
@@ -21,8 +18,6 @@ export function position(t, compId) {
 
 export const result = (m) => (m.gf > m.ga ? 'W' : m.gf < m.ga ? 'L' : 'D')
 
-// ---------- Formatting ----------
-
 export function ordinal(n) {
   let s = ['th', 'st', 'nd', 'rd']
   let v = n % 100
@@ -31,7 +26,6 @@ export function ordinal(n) {
 
 export const plural = (n) => `${n} pt${n === 1 ? '' : 's'}`
 
-// Date-only strings parse as UTC; pin them to local midday instead.
 const toDate = (iso) => new Date(iso.length === 10 ? iso + 'T12:00' : iso)
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -57,16 +51,12 @@ export function countdown(iso) {
   return { days, hours }
 }
 
-// ---------- DOM and motion ----------
-
 export const clamp = (v, a, b) => Math.min(b, Math.max(a, v))
 
 export const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches
 
-// Tiny tap on Android; iOS Safari ignores it.
 export const tick = () => navigator.vibrate?.(8)
 
-// Remove and re-add a class so its CSS animation plays again.
 export function replayClass(el, cls) {
   el.classList.remove(cls)
   void el.offsetWidth
@@ -87,8 +77,6 @@ export function toast(root, message) {
   }, 1800)
 }
 
-// Single tap acts immediately; a second tap within the window upgrades it.
-// No delay on the first tap — double-tap is a shortcut, never a gate.
 export function tapper(onTap, onDoubleTap, windowMs = 300) {
   let last = { key: null, t: 0 }
   return (key) => {

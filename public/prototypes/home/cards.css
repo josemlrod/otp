@@ -1,7 +1,4 @@
-/* Cards, competition split, morph page and depth sheet */
-
 .otp {
-  /* black shows around the stage when it recedes behind a sheet */
   background: #000;
   --ink: #fff;
 }
@@ -45,8 +42,6 @@
   color: var(--text-2);
 }
 
-/* ---------- Competition mark ---------- */
-
 .cmark {
   display: inline-grid;
   place-items: center;
@@ -63,8 +58,6 @@
   line-height: 1;
   box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.22);
 }
-
-/* ---------- Club card ---------- */
 
 .cc {
   position: absolute;
@@ -94,7 +87,6 @@
   );
 }
 
-/* kit pinstripes */
 .cc::before,
 .mp-head::before {
   content: '';
@@ -107,7 +99,6 @@
   background-position: 10px 0;
 }
 
-/* parked cards recede */
 .cc::after {
   content: '';
   position: absolute;
@@ -125,7 +116,6 @@
   transition: none;
 }
 
-/* Lives inside another card until it's lifted out. */
 .cc.is-tucked {
   opacity: 0;
   pointer-events: none;
@@ -136,11 +126,9 @@
     opacity 260ms ease-out;
 }
 
-/* One competition: the split becomes a single full-width panel. */
 .lanes:has(> :only-child) {
   grid-template-columns: 1fr;
 }
-/* hidden under its own page while the page is open */
 .cc.is-ghost {
   visibility: hidden;
 }
@@ -221,7 +209,6 @@
   box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--ink) 55%, transparent);
 }
 
-/* Domestic position big, Champions League right under it */
 .cc-pos {
   display: flex;
   flex-direction: column;
@@ -244,8 +231,6 @@
   font-weight: 750;
   letter-spacing: -0.02em;
 }
-
-/* ---------- Card body (revealed when lifted) ---------- */
 
 .cc-body {
   position: relative;
@@ -320,8 +305,6 @@
 .nextb-opp b {
   font-weight: 750;
 }
-
-/* ---------- Competition split ---------- */
 
 .lanes {
   display: grid;
@@ -439,8 +422,6 @@ button.lane:active {
   box-shadow: 0 0 8px color-mix(in srgb, var(--ink) 70%, transparent);
 }
 
-/* ---------- Results ---------- */
-
 .fchips {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -484,8 +465,6 @@ button.lane:active {
   transform: scale(0.97);
   transition-delay: 0ms;
 }
-
-/* ---------- Morph page ---------- */
 
 .mpage {
   position: absolute;
@@ -545,7 +524,6 @@ button.lane:active {
   transition-delay: 300ms;
 }
 
-/* Close takes the place of the card's positions once the page is open. */
 .mp-strip > .cc-pos {
   transition: opacity 200ms ease-out 120ms;
 }
@@ -571,7 +549,6 @@ button.lane:active {
   transform: scale(0.92);
 }
 
-/* The page's lower parts settle in once the morph is under way. */
 .mp-alerts,
 .mp-close,
 .mp-body {
@@ -639,8 +616,6 @@ button.lane:active {
   transform: none;
   pointer-events: auto;
 }
-
-/* ---------- Depth sheet ---------- */
 
 .ds-scrim {
   position: absolute;
@@ -763,7 +738,6 @@ button.lane:active {
 .ds-scroll::-webkit-scrollbar {
   display: none;
 }
-/* lists inside the sheet sit one step up from the sheet surface */
 .ds-scroll .tp {
   --surface: var(--surface-2);
 }

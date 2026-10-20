@@ -52,7 +52,6 @@ export const footballDataRepository = {
       return { data: res.data, err: null };
     }
 
-    // Stale standings beat an empty page when football-data is down or rate limiting us
     if (cached) return { data: cached.data, err: null };
 
     return { data: null, err: res?.err ?? 'Failed to fetch standings' };

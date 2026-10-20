@@ -5,7 +5,6 @@ import { createSqliteDatabase } from 'remix/data-table/sqlite';
 
 const ROOT_DIR = path.join(import.meta.dirname, '..');
 
-// Production points DATABASE_PATH at the Fly volume (see fly.toml).
 function databaseFilename() {
   if (process.env.DATABASE_PATH) return process.env.DATABASE_PATH;
   if (process.env.NODE_ENV === 'test') return ':memory:';

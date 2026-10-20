@@ -1,17 +1,3 @@
-// On the Pitch — home screen prototype.
-// A shelf of competitions above a wallet of club cards. Favourites stay as
-// full cards; every other club folds into one "more clubs" card, so home
-// never grows. Tables open as depth sheets; club pages morph out of cards.
-//
-// Where things live:
-//   data.js         mock clubs, competitions and teams
-//   utils.js        lookups, formatting, small DOM helpers (no markup)
-//   ui.js           crests, competition marks, icons, form pills
-//   competition.js  a competition's table, leaders and sheet content
-//   club.js         club card, club page and its tabs
-//   sheet.js        the depth sheet (competition tables open in it)
-//   morph.js        card -> club page transition
-//   deck.js         the wallet of stacked cards
 import { COMPS, TEAMS } from './data.js'
 import { bindClubPage, clubCard, clubPage } from './club.js'
 import { compSheet } from './competition.js'
@@ -22,7 +8,6 @@ import { compMark, crest, icons } from './ui.js'
 import { club, fmtDay, followedIn, ordinal, position, team, todayLabel } from './utils.js'
 
 const FAVOURITES = 4
-// Champions League first, then each league in the order your clubs bring it in.
 const COMP_ORDER = ['ucl', ...new Set(TEAMS.flatMap((t) => t.comps).filter((id) => id !== 'ucl'))]
 
 function render() {
@@ -45,8 +30,6 @@ function render() {
   </div>`
 }
 
-// ---------- Competitions shelf ----------
-
 function shelf() {
   return `<section class="sh-shelf" data-shelf>
     <h2 class="section-label">Competitions</h2>
@@ -55,8 +38,6 @@ function shelf() {
   </section>`
 }
 
-// Up to three clubs per tile, then a count — the tile never grows past a glance.
-// Tapping a tile opens compSheet(id) in the depth sheet (see mount below).
 function tile(id, i) {
   let mine = followedIn(id).sort((a, b) => position(a, id).pos - position(b, id).pos)
   let shown = mine.slice(0, 3)
@@ -69,10 +50,7 @@ function tile(id, i) {
   </button>`
 }
 
-// ---------- The fold ----------
-
 function moreCard(rest) {
-  // Soonest kick-off first: the fold surfaces whoever plays next.
   let byNext = [...rest].sort((a, b) => new Date(a.fixtures[0].date) - new Date(b.fixtures[0].date))
   let names = rest.map((t) => club(t.code).name)
   return `<article class="cc mc" data-card data-more style="--c:#272a30;--ink:#fff;--i:${FAVOURITES};z-index:${FAVOURITES + 1}">
@@ -103,8 +81,6 @@ function miniTile(t) {
   </button>`
 }
 
-// ---------- Behaviour ----------
-
 export function mount(root) {
   root.innerHTML = render()
   let app = root.querySelector('[data-app]')
@@ -118,17 +94,14 @@ export function mount(root) {
   let page = morph(stage, app.querySelector('[data-page]'))
   let wallet = deck(deckEl, {
     offset: () => shelfEl.offsetHeight + 2,
-    // The fold card has nothing to open; swiping it up just puts it back.
     onOpen: (card) => (card === more ? wallet.select(null) : page.open(card, clubPage(team(card.dataset.team)))),
     tucked: (c) => folded.has(c.dataset.team),
     tuckTo: () => more,
   })
 
   app.addEventListener('click', (e) => {
-    // Competition tile on the shelf -> that competition's sheet.
     let tileEl = e.target.closest('.sh-tile')
     if (tileEl) return sheet.open(compSheet(tileEl.dataset.comp))
-    // Lane on a club card -> same sheet, scrolled to that club's row.
     let lane = e.target.closest('button.lane')
     if (lane) {
       let t = team(lane.dataset.team)
@@ -136,7 +109,6 @@ export function mount(root) {
     }
     let pick = e.target.closest('[data-pick]')
     if (pick) {
-      // The card starts where its tile is, then rises into place.
       let card = wallet.cards.find((c) => c.dataset.team === pick.dataset.pick)
       card.style.transition = 'none'
       card.style.setProperty('--y', `${pick.getBoundingClientRect().top - deckEl.getBoundingClientRect().top}px`)

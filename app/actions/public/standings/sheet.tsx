@@ -1,4 +1,4 @@
-import { css, on, ref, type Handle } from 'remix/component';
+import { css, on, ref, type Dispatched, type Handle } from 'remix/component';
 
 import { getCompetitionMetadata } from '../../../lib/competition-metadata.ts';
 import { countRender } from '../perf/renders.ts';
@@ -10,54 +10,124 @@ type Props = {
   standing: StandingsResponse | null;
   open: boolean;
   onClose: () => void;
-  // Reports how open the sheet is while it's being dragged (1 = open,
-  // 0 = closed) so the layers behind it can follow; `null` when released.
-  onDrag?: (progress: number | null) => void;
+  onDragOpenFraction?: (openFraction: number | null) => void;
   closeButtonRef?: (button: HTMLButtonElement) => void;
 };
 
-// How far the finger must travel before a press on the grab area becomes a drag.
-const DRAG_THRESHOLD = 6;
-// How far ahead (in ms of the current velocity) to project a flick on release.
-const FLICK_PROJECTION = 220;
-// A finger held still this long before lifting has no flick left in it.
-const VELOCITY_STALE_AFTER = 100;
+type GrabPointerEvent = Dispatched<PointerEvent, HTMLDivElement>;
+
+type GrabPress = {
+  pointerId: number;
+  startY: number;
+  lastY: number;
+  lastTimeStamp: number;
+  velocityPxPerMs: number;
+  isDragging: boolean;
+};
+
+const MIN_DRAG_DISTANCE_PX = 6;
+const FLICK_PROJECTION_MS = 220;
+const STILL_FINGER_LOSES_FLICK_AFTER_MS = 100;
+const CLOSED_OVERSHOOT_PX = 30;
+const RUBBER_BAND_RESISTANCE = 0.2;
+
+function rubberBand(pullDownPx: number) {
+  return pullDownPx < 0 ? pullDownPx * RUBBER_BAND_RESISTANCE : pullDownPx;
+}
+
+function clamp01(value: number) {
+  return Math.min(1, Math.max(0, value));
+}
+
+function focusableControls(container: HTMLElement) {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(
+      'a[href], button, input, select, textarea, [tabindex]',
+    ),
+  ).filter((element) =>
+    element.tabIndex >= 0 &&
+    !element.matches(':disabled') &&
+    !element.closest('[inert]') &&
+    element.getClientRects().length > 0 &&
+    getComputedStyle(element).visibility === 'visible'
+  );
+}
+
+function trapTabFocus(event: Dispatched<KeyboardEvent, HTMLElement>) {
+  const controls = focusableControls(event.currentTarget);
+  const first = controls[0];
+  const last = controls.at(-1);
+  const focused = document.activeElement;
+  const isAtStart = focused === first || focused === event.currentTarget;
+
+  if (event.shiftKey && isAtStart) {
+    event.preventDefault();
+    last?.focus({ preventScroll: true });
+  } else if (!event.shiftKey && focused === last) {
+    event.preventDefault();
+    first?.focus({ preventScroll: true });
+  }
+}
+
+function matchdayLabel(standing: StandingsResponse, leaguePhaseRounds?: number) {
+  const phase = standing.competition.code === 'CL' ? 'League phase' : 'Matchday';
+  const ofRounds = leaguePhaseRounds == null ? '' : ` of ${leaguePhaseRounds}`;
+  return `${phase} ${standing.season.currentMatchday}${ofRounds}`;
+}
 
 export function Sheet(handle: Handle<Props>) {
   const titleId = `${handle.id}-title`;
   let sheet: HTMLElement | undefined;
+  let press: GrabPress | null = null;
+  let pullDownPx = 0;
 
-  // A press on the grab area. It only becomes `active` once it passes the
-  // threshold, so taps and small jitters never move the sheet. `velocity` is
-  // in px/ms, measured between the last two moves.
-  let drag: {
-    pointerId: number;
-    startY: number;
-    lastY: number;
-    lastT: number;
-    velocity: number;
-    active: boolean;
-  } | null = null;
-  // How far the sheet is pulled down from fully open, in px.
-  let offset = 0;
+  const closedPullDownPx = () => (sheet?.offsetHeight ?? 0) + CLOSED_OVERSHOOT_PX;
 
-  // The offset at which the sheet is fully closed: just past the bottom edge.
-  const closedOffset = () => (sheet?.offsetHeight ?? 0) + 30;
+  function startPress(event: GrabPointerEvent) {
+    if (event.button > 0 || !event.isPrimary) return;
+    if ((event.target as Element).closest('button')) return;
+    press = {
+      pointerId: event.pointerId,
+      startY: event.clientY,
+      lastY: event.clientY,
+      lastTimeStamp: event.timeStamp,
+      velocityPxPerMs: 0,
+      isDragging: false,
+    };
+  }
 
-  // Settle on whichever detent the flick is heading toward: back to open, or
-  // closed (just past the bottom of the screen).
-  function endDrag(event: PointerEvent) {
-    if (!drag || event.pointerId !== drag.pointerId) return;
-    const { active, velocity, lastT } = drag;
-    drag = null;
-    if (!active) return;
+  function movePress(event: GrabPointerEvent) {
+    if (!press || event.pointerId !== press.pointerId) return;
+    const travelPx = event.clientY - press.startY;
+    if (!press.isDragging) {
+      if (Math.abs(travelPx) < MIN_DRAG_DISTANCE_PX) return;
+      press.isDragging = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+    press.velocityPxPerMs =
+      (event.clientY - press.lastY) /
+      Math.max(1, event.timeStamp - press.lastTimeStamp);
+    press.lastY = event.clientY;
+    press.lastTimeStamp = event.timeStamp;
+    pullDownPx = travelPx;
+    handle.props.onDragOpenFraction?.(clamp01(1 - pullDownPx / closedPullDownPx()));
+    handle.update();
+  }
 
-    handle.props.onDrag?.(null);
-    const flick = event.timeStamp - lastT > VELOCITY_STALE_AFTER ? 0 : velocity;
-    const projected = offset + flick * FLICK_PROJECTION;
-    offset = 0;
+  function endPress(event: GrabPointerEvent) {
+    if (!press || event.pointerId !== press.pointerId) return;
+    const { isDragging, velocityPxPerMs, lastTimeStamp } = press;
+    press = null;
+    if (!isDragging) return;
 
-    if (projected > closedOffset() / 2) {
+    handle.props.onDragOpenFraction?.(null);
+    const fingerWasStill =
+      event.timeStamp - lastTimeStamp > STILL_FINGER_LOSES_FLICK_AFTER_MS;
+    const flickVelocity = fingerWasStill ? 0 : velocityPxPerMs;
+    const projectedPullDownPx = pullDownPx + flickVelocity * FLICK_PROJECTION_MS;
+    pullDownPx = 0;
+
+    if (projectedPullDownPx > closedPullDownPx() / 2) {
       handle.props.onClose();
     } else {
       handle.update();
@@ -70,7 +140,8 @@ export function Sheet(handle: Handle<Props>) {
     const metadata = standing
       ? getCompetitionMetadata(standing.competition.code)
       : null;
-    const dragging = open && !!drag?.active;
+    const isDragging = open && !!press?.isDragging;
+    const restingTransform = open ? 'translateY(0)' : 'translateY(110%)';
 
     return (
       <section
@@ -88,94 +159,32 @@ export function Sheet(handle: Handle<Props>) {
               handle.props.onClose();
             }
 
-            if (event.key === 'Tab') {
-              const controls = Array.from(
-                event.currentTarget.querySelectorAll<HTMLElement>(
-                  'a[href], button, input, select, textarea, [tabindex]',
-                ),
-              ).filter((element) =>
-                element.tabIndex >= 0 &&
-                !element.matches(':disabled') &&
-                !element.closest('[inert]') &&
-                element.getClientRects().length > 0 &&
-                getComputedStyle(element).visibility === 'visible'
-              );
-              const first = controls[0];
-              const last = controls.at(-1);
-              // The sheet itself takes focus when pressed outside any control.
-              const atStart =
-                document.activeElement === first ||
-                document.activeElement === event.currentTarget;
-
-              if (event.shiftKey && atStart) {
-                event.preventDefault();
-                last?.focus({ preventScroll: true });
-              } else if (!event.shiftKey && document.activeElement === last) {
-                event.preventDefault();
-                first?.focus({ preventScroll: true });
-              }
-            }
+            if (event.key === 'Tab') trapTabFocus(event);
           }),
         ]}
         role='dialog'
         aria-modal='true'
-        // Pressing a non-focusable part of the sheet (the band, the table)
-        // focuses the sheet instead of <body>, so Escape keeps working.
         tabIndex={-1}
         aria-labelledby={standing ? titleId : undefined}
         aria-hidden={!open || !standing ? 'true' : 'false'}
         inert={!open || !standing}
         style={{
-          // Pulling above the top only gives a little (rubber band).
-          transform: dragging
-            ? `translateY(${offset < 0 ? offset * 0.2 : offset}px)`
-            : open
-              ? 'translateY(0)'
-              : 'translateY(110%)',
-          // Follow the finger exactly; the CSS transition resumes on release.
-          transitionDuration: dragging ? '0ms' : undefined,
+          transform: isDragging
+            ? `translateY(${rubberBand(pullDownPx)}px)`
+            : restingTransform,
+          transitionDuration: isDragging ? '0ms' : undefined,
         }}
       >
         {standing && metadata && (
           <div
             mix={[
               sheetGrab,
-              on('pointerdown', (event) => {
-                if (event.button > 0 || !event.isPrimary) return;
-                if ((event.target as Element).closest('button')) return;
-                drag = {
-                  pointerId: event.pointerId,
-                  startY: event.clientY,
-                  lastY: event.clientY,
-                  lastT: event.timeStamp,
-                  velocity: 0,
-                  active: false,
-                };
-              }),
-              on('pointermove', (event) => {
-                if (!drag || event.pointerId !== drag.pointerId) return;
-                const dy = event.clientY - drag.startY;
-                if (!drag.active) {
-                  if (Math.abs(dy) < DRAG_THRESHOLD) return;
-                  drag.active = true;
-                  // Keep receiving moves even when the finger leaves the grab area.
-                  event.currentTarget.setPointerCapture(event.pointerId);
-                }
-                drag.velocity =
-                  (event.clientY - drag.lastY) /
-                  Math.max(1, event.timeStamp - drag.lastT);
-                drag.lastY = event.clientY;
-                drag.lastT = event.timeStamp;
-                offset = dy;
-                handle.props.onDrag?.(
-                  Math.min(1, Math.max(0, 1 - offset / closedOffset())),
-                );
-                handle.update();
-              }),
-              on('pointerup', (event) => endDrag(event)),
-              on('pointercancel', (event) => endDrag(event)),
+              on('pointerdown', startPress),
+              on('pointermove', movePress),
+              on('pointerup', endPress),
+              on('pointercancel', endPress),
             ]}
-            style={{ cursor: dragging ? 'grabbing' : undefined }}
+            style={{ cursor: isDragging ? 'grabbing' : undefined }}
           >
             <span mix={sheetHandle} aria-hidden='true' />
             <div
@@ -198,13 +207,7 @@ export function Sheet(handle: Handle<Props>) {
               </span>
               <span mix={sheetTitle}>
                 <b id={titleId}>{standing.competition.name}</b>
-                <span>
-                  {standing.competition.code === 'CL'
-                    ? 'League phase'
-                    : 'Matchday'}{' '}
-                  {standing.season.currentMatchday}
-                  {metadata.rounds != null && ` of ${metadata.rounds}`}
-                </span>
+                <span>{matchdayLabel(standing, metadata.leaguePhaseRounds)}</span>
               </span>
               <button
                 type='button'
@@ -272,7 +275,6 @@ const sheetGrab = css({
   flex: 'none',
   touchAction: 'none',
   cursor: 'grab',
-  // A mouse drag would otherwise select the title as it moves.
   userSelect: 'none',
 });
 

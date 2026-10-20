@@ -6,9 +6,7 @@ export const apiCache = table({
   primaryKey: 'key',
   columns: {
     key: c.text(),
-    // JSON-encoded API response body
     data: c.text(),
-    // Epoch milliseconds
     fetched_at: c.integer(),
   },
 });
