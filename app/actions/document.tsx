@@ -28,6 +28,12 @@ export function Document(handle: Handle<DocumentProps>) {
           />
           <meta name='color-scheme' content='dark' />
           <meta name='theme-color' content='#0a0b0c' />
+          <meta name='mobile-web-app-capable' content='yes' />
+          <meta name='apple-mobile-web-app-capable' content='yes' />
+          <meta
+            name='apple-mobile-web-app-status-bar-style'
+            content='black-translucent'
+          />
           <meta name='apple-mobile-web-app-title' content='OTP' />
           <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
           <link rel='apple-touch-icon' href='/apple-touch-icon.png' />
@@ -62,12 +68,15 @@ const rootStyles = css({
   WebkitTextSizeAdjust: '100%',
   WebkitTapHighlightColor: 'transparent',
 
-  paddingTop: v('--safe-area-inset-top'),
-  paddingBottom: v('--safe-area-inset-bottom'),
+  height: '100dvh',
+
+  '& body': {
+    height: '100%',
+  },
 
   '&, & body': {
     margin: 0,
-    height: '100%',
+    overscrollBehavior: 'none',
   },
 
   ':where(&), :where(&) *, :where(&) ::before, :where(&) ::after': {
