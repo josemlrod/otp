@@ -1,14 +1,17 @@
 import * as http from 'node:http'
+import * as os from 'node:os'
 
 import { createFetchProxy } from 'remix/fetch-proxy'
 import { createHmrReadyFetch, run } from 'remix/node-hmr'
 import { createRequestListener } from 'remix/node-fetch-server'
 
+const host = process.env.HOST ?? '127.0.0.1'
 const hmrProxyPort = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 44100
 const hmrEventPort = process.env.HMR_PORT
   ? Number.parseInt(process.env.HMR_PORT, 10)
   : hmrProxyPort + 1
 const appPort = process.env.APP_PORT ? Number.parseInt(process.env.APP_PORT, 10) : hmrEventPort + 1
+const hmrEventPathname = '/hmr'
 
 const hmrRunner = run('server.ts', {
   env: {
@@ -17,21 +20,41 @@ const hmrRunner = run('server.ts', {
     HMR_PROXY_PORT: String(hmrProxyPort),
   },
   nodeArgs: ['--inspect=127.0.0.1:9229', '--import', 'remix/node-tsx', '--import', 'remix/component-hmr/node'],
-  browserHmrChannel: { port: hmrEventPort },
+  browserHmrChannel: { port: hmrEventPort, pathname: hmrEventPathname },
 })
 
+const appFetch = createHmrReadyFetch(
+  hmrRunner,
+  createFetchProxy(`http://127.0.0.1:${appPort}`, {
+    xForwardedHeaders: true,
+  }),
+)
+// Browsers subscribe to HMR events through this proxy (see app/assets.ts) so
+// devices other than this machine can receive live updates.
+const hmrEventFetch = createFetchProxy(`http://127.0.0.1:${hmrEventPort}`)
+
 const server = http.createServer(
-  createRequestListener(
-    createHmrReadyFetch(
-      hmrRunner,
-      createFetchProxy(`http://127.0.0.1:${appPort}`, {
-        xForwardedHeaders: true,
-      }),
-    ),
+  createRequestListener((request) =>
+    new URL(request.url).pathname === hmrEventPathname
+      ? hmrEventFetch(request)
+      : appFetch(request),
   ),
 )
 
-server.listen(hmrProxyPort, '127.0.0.1')
+server.listen(hmrProxyPort, host, () => {
+  if (host === '0.0.0.0') {
+    for (let address of getLanAddresses()) {
+      console.log(`On your network: http://${address}:${hmrProxyPort}`)
+    }
+  }
+})
+
+function getLanAddresses() {
+  return Object.values(os.networkInterfaces())
+    .flat()
+    .filter((iface) => iface?.family === 'IPv4' && !iface.internal)
+    .map((iface) => iface!.address)
+}
 
 let shuttingDown = false
 

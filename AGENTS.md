@@ -8,12 +8,13 @@ This app was scaffolded with `remix new`. Use these conventions when continuing 
 bun i
 bun run dev
 bun run hmr
+bun run hmr:lan
 bun run start
 bun test
 bun run typecheck
 ```
 
-Use `bun run hmr` for live server and browser updates; `bun run dev` only watches and restarts the server. `bun run start` runs in production mode without a separate build step.
+Use `bun run hmr` for live server and browser updates (`bun run hmr:lan` exposes it to devices on your Wi-Fi); `bun run dev` only watches and restarts the server. `bun run start` runs in production mode without a separate build step.
 
 ## Building Features
 
