@@ -1,9 +1,13 @@
 import { renderStats } from './renders.ts';
 
-// Shows the perf HUD on Option+Shift+P (Alt+Shift+P), or with `?perf=1` in the
-// URL on devices without a keyboard (`?perf=0` hides it). The choice sticks
-// across reloads. The HUD module only loads once it's first shown.
+// Shows the perf HUD on Option+Shift+P (Alt+Shift+P), on five quick taps on
+// any `[data-perf-toggle]` element (for the installed PWA, which has no URL
+// bar or keyboard), or with `?perf=1` in the URL (`?perf=0` hides it). The
+// choice sticks across reloads. The HUD module only loads once it's first shown.
 const STORAGE_KEY = 'otp:perf';
+const TAPS_TO_TOGGLE = 5;
+// Taps further apart than this start the count over.
+const TAP_GAP_MS = 400;
 
 export function installPerfToggle() {
   let visible = readStored();
@@ -39,13 +43,32 @@ export function installPerfToggle() {
     }
   }
 
+  function toggle() {
+    visible = !visible;
+    store(visible);
+    void sync();
+  }
+
   window.addEventListener('keydown', (event) => {
     // Match the physical key: on macOS, Option+Shift+P types "∏".
     if (!event.altKey || !event.shiftKey || event.code !== 'KeyP') return;
     event.preventDefault();
-    visible = !visible;
-    store(visible);
-    void sync();
+    toggle();
+  });
+
+  // pointerdown rather than click: iOS doesn't fire delegated clicks on
+  // elements that aren't interactive.
+  let taps = 0;
+  let lastTapAt = 0;
+  document.addEventListener('pointerdown', (event) => {
+    if (!event.isPrimary) return;
+    if (!(event.target as Element).closest?.('[data-perf-toggle]')) return;
+    taps = event.timeStamp - lastTapAt > TAP_GAP_MS ? 1 : taps + 1;
+    lastTapAt = event.timeStamp;
+    if (taps === TAPS_TO_TOGGLE) {
+      taps = 0;
+      toggle();
+    }
   });
 
   void sync();

@@ -65,7 +65,19 @@ export const HomeScreen = clientEntry(
               })}
             >
               <p mix={subtitleStyles}>Saturday 10 October</p>
-              <div mix={css({ display: 'flex', alignItems: 'center', gap: 10 })}>
+              {/* Five quick taps here toggle the perf HUD (see perf/toggle.ts). */}
+              <div
+                data-perf-toggle
+                mix={css({
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  // Rapid taps shouldn't zoom the page or select the title.
+                  touchAction: 'manipulation',
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none',
+                })}
+              >
                 <Logo size={30} />
                 <h3 mix={titleStyles}>On the Pitch</h3>
               </div>
