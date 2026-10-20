@@ -23,8 +23,13 @@ export const assets = createAssetServer({
   watch: isDevelopment,
   hmr: isHmr
     ? {
-        channel: async () =>
-          (await import('remix/node-hmr/runtime')).createBrowserHmrChannel(),
+        // The runner reports an absolute 127.0.0.1 URL, which a phone on the
+        // LAN can't reach. hmr.ts proxies this path to the event channel, so a
+        // relative URL works from any device.
+        channel: async () => ({
+          ...(await (await import('remix/node-hmr/runtime')).createBrowserHmrChannel()),
+          url: '/hmr',
+        }),
         moduleImporter: 'remix/multiple-import-maps-polyfill',
       }
     : undefined,

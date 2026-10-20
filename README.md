@@ -30,6 +30,14 @@ bun test
 bun run typecheck
 ```
 
+## Testing On Your Phone
+
+```sh
+bun run hmr:lan
+```
+
+This runs the HMR dev server on all network interfaces and prints an `On your network:` URL. Open that URL on a phone connected to the same Wi-Fi, and saved changes show up live. If macOS asks whether `node` can accept incoming connections, allow it.
+
 ## Environment
 
 Copy `.env.example` to `.env` and set `FOOTBALL_DATA_API_KEY` to your [football-data.org](https://www.football-data.org/client/register) key. The `dev`, `hmr`, and `start` scripts load `.env` if it exists. In production the key is a Fly secret:
