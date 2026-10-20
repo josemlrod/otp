@@ -5,9 +5,9 @@ import { Logo } from '../../ui/logo.tsx';
 import { Standings } from './standings/index.tsx';
 import { Sheet } from './standings/sheet.tsx';
 import { countRender } from './perf/renders.ts';
+import { space, v } from '../../ui/theme.ts';
 
 const RECEDED_SCREEN_SCALE = 0.93;
-const RECEDED_SCREEN_RADIUS_PX = 18;
 const OVERLAY_OPEN_OPACITY = 0.45;
 
 export const HomeScreen = clientEntry(
@@ -48,7 +48,9 @@ export const HomeScreen = clientEntry(
         <div
           mix={containerStyles}
           style={{
-            '--sheet-duration': isDragging ? '0ms' : open ? '480ms' : '340ms',
+            '--sheet-duration': isDragging
+              ? '0ms'
+              : v(open ? '--duration-sheet-open' : '--duration-sheet-close'),
           }}
         >
           <main
@@ -56,41 +58,19 @@ export const HomeScreen = clientEntry(
             inert={open}
             style={{
               transform: `scale(${1 - openFraction * (1 - RECEDED_SCREEN_SCALE)})`,
-              borderRadius: `${openFraction * RECEDED_SCREEN_RADIUS_PX}px`,
+              borderRadius: `calc(${v('--radius-lg')} * ${openFraction})`,
             }}
           >
-            <header
-              mix={css({
-                padding: 'calc(var(--safe-area-inset-top, 0px) + 14px) 22px 0',
-              })}
-            >
+            <header mix={headerStyles}>
               <p mix={subtitleStyles}>Saturday 10 October</p>
-              <div
-                data-perf-toggle
-                mix={css({
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  touchAction: 'manipulation',
-                  userSelect: 'none',
-                  WebkitUserSelect: 'none',
-                })}
-              >
-                <Logo size={30} />
+              <div data-perf-toggle mix={brandStyles}>
+                <Logo size={space(7.5)} />
                 <h3 mix={titleStyles}>On the Pitch</h3>
               </div>
             </header>
 
-            <section
-              mix={css({
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 10,
-              })}
-            >
-              <p mix={[subtitleStyles, css({ padding: '0 22px' })]}>
-                Competitions
-              </p>
+            <section mix={sectionStyles}>
+              <p mix={[subtitleStyles, insetStyles]}>Competitions</p>
               <Standings standings={handle.props.standings} onSelect={show} />
             </section>
 
@@ -130,56 +110,68 @@ export const HomeScreen = clientEntry(
 const containerStyles = css({
   position: 'relative',
   isolation: 'isolate',
-  height: 'calc(100% + var(--safe-area-inset-top, 0px) + var(--safe-area-inset-bottom, 0px))',
-  marginTop: 'calc(0px - var(--safe-area-inset-top, 0px))',
-  marginBottom: 'calc(0px - var(--safe-area-inset-bottom, 0px))',
+  height: `calc(100% + ${v('--safe-area-inset-top')} + ${v('--safe-area-inset-bottom')})`,
+  marginTop: `calc(-1 * ${v('--safe-area-inset-top')})`,
+  marginBottom: `calc(-1 * ${v('--safe-area-inset-bottom')})`,
   overflow: 'hidden',
-  background: '#000',
+  background: v('--color-black'),
 });
 
 const screenStyles = css({
   display: 'flex',
   flexDirection: 'column',
-  gap: 10,
+  gap: space(2.5),
   height: '100%',
   overflow: 'clip',
-  background: 'var(--bg)',
+  background: v('--color-bg'),
   transformOrigin: '50% 50%',
   transitionProperty: 'transform, border-radius',
   transitionDuration: 'var(--sheet-duration)',
-  transitionTimingFunction: 'var(--ease-ios)',
-
-  '@media (prefers-reduced-motion: reduce)': {
-    transition: 'none',
-  },
+  transitionTimingFunction: v('--ease-ios'),
 });
 
 const overlayStyles = css({
   position: 'absolute',
   inset: 0,
   zIndex: 40,
-  background: '#000',
-  border: 0,
-  padding: 0,
-  cursor: 'pointer',
+  background: v('--color-black'),
   transitionProperty: 'opacity',
   transitionDuration: 'var(--sheet-duration)',
-  transitionTimingFunction: 'var(--ease-ios)',
+  transitionTimingFunction: v('--ease-ios'),
+});
 
-  '@media (prefers-reduced-motion: reduce)': {
-    transition: 'none',
-  },
+const headerStyles = css({
+  padding: `calc(${v('--safe-area-inset-top')} + ${space(3.5)}) ${v('--gutter')} 0`,
+});
+
+const insetStyles = css({
+  padding: `0 ${v('--gutter')}`,
+});
+
+const brandStyles = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: space(2.5),
+  touchAction: 'manipulation',
+  userSelect: 'none',
+  WebkitUserSelect: 'none',
+});
+
+const sectionStyles = css({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: space(2.5),
 });
 
 const subtitleStyles = css({
   textTransform: 'uppercase',
-  fontWeight: 500,
-  color: 'var(--text-secondary)',
-  fontSize: 13,
+  fontSize: v('--text-xs'),
+  fontWeight: v('--font-weight-medium'),
+  color: v('--color-text-secondary'),
 });
 
 const titleStyles = css({
-  fontSize: 30,
-  fontWeight: 800,
-  letterSpacing: '-0.035em',
+  fontSize: v('--text-2xl'),
+  fontWeight: v('--font-weight-extrabold'),
+  letterSpacing: v('--tracking-tighter'),
 });

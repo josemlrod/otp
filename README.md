@@ -6,7 +6,7 @@ A minimal Remix application starter with a home page.
 
 - `app/actions/controller.tsx` owns the top-level route actions.
 - `app/actions/home-page.tsx` and `app/actions/document.tsx` render the route-owned starter UI.
-- `app/actions/public/` contains the browser runtime entry and interactive prompt button.
+- `app/actions/public/` contains the browser runtime entry and the client components it hydrates.
 - `app/routes.ts` defines the shared route contract used by server and browser modules for type-safe hrefs.
 - `app/router.ts` wires routes to handlers and installs the standard Remix component renderer used by actions.
 - `app/assets.ts` owns the server-side asset pipeline used by the asset route and render middleware.
