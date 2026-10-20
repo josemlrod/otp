@@ -9,22 +9,74 @@ type Props = {
   standing: StandingsResponse | null;
   open: boolean;
   onClose: () => void;
+  // Reports how open the sheet is while it's being dragged (1 = open,
+  // 0 = closed) so the layers behind it can follow; `null` when released.
+  onDrag?: (progress: number | null) => void;
   closeButtonRef?: (button: HTMLButtonElement) => void;
 };
 
+// How far the finger must travel before a press on the grab area becomes a drag.
+const DRAG_THRESHOLD = 6;
+// How far ahead (in ms of the current velocity) to project a flick on release.
+const FLICK_PROJECTION = 220;
+// A finger held still this long before lifting has no flick left in it.
+const VELOCITY_STALE_AFTER = 100;
+
 export function Sheet(handle: Handle<Props>) {
   const titleId = `${handle.id}-title`;
+  let sheet: HTMLElement | undefined;
+
+  // A press on the grab area. It only becomes `active` once it passes the
+  // threshold, so taps and small jitters never move the sheet. `velocity` is
+  // in px/ms, measured between the last two moves.
+  let drag: {
+    pointerId: number;
+    startY: number;
+    lastY: number;
+    lastT: number;
+    velocity: number;
+    active: boolean;
+  } | null = null;
+  // How far the sheet is pulled down from fully open, in px.
+  let offset = 0;
+
+  // The offset at which the sheet is fully closed: just past the bottom edge.
+  const closedOffset = () => (sheet?.offsetHeight ?? 0) + 30;
+
+  // Settle on whichever detent the flick is heading toward: back to open, or
+  // closed (just past the bottom of the screen).
+  function endDrag(event: PointerEvent) {
+    if (!drag || event.pointerId !== drag.pointerId) return;
+    const { active, velocity, lastT } = drag;
+    drag = null;
+    if (!active) return;
+
+    handle.props.onDrag?.(null);
+    const flick = event.timeStamp - lastT > VELOCITY_STALE_AFTER ? 0 : velocity;
+    const projected = offset + flick * FLICK_PROJECTION;
+    offset = 0;
+
+    if (projected > closedOffset() / 2) {
+      handle.props.onClose();
+    } else {
+      handle.update();
+    }
+  }
 
   return () => {
     const { open, standing, onClose } = handle.props;
     const metadata = standing
       ? getCompetitionMetadata(standing.competition.code)
       : null;
+    const dragging = open && !!drag?.active;
 
     return (
       <section
         mix={[
           sheetContainer,
+          ref((node) => {
+            sheet = node;
+          }),
           on('keydown', (event) => {
             if (!handle.props.open) return;
 
@@ -48,8 +100,12 @@ export function Sheet(handle: Handle<Props>) {
               );
               const first = controls[0];
               const last = controls.at(-1);
+              // The sheet itself takes focus when pressed outside any control.
+              const atStart =
+                document.activeElement === first ||
+                document.activeElement === event.currentTarget;
 
-              if (event.shiftKey && document.activeElement === first) {
+              if (event.shiftKey && atStart) {
                 event.preventDefault();
                 last?.focus({ preventScroll: true });
               } else if (!event.shiftKey && document.activeElement === last) {
@@ -61,64 +117,116 @@ export function Sheet(handle: Handle<Props>) {
         ]}
         role='dialog'
         aria-modal='true'
+        // Pressing a non-focusable part of the sheet (the band, the table)
+        // focuses the sheet instead of <body>, so Escape keeps working.
+        tabIndex={-1}
         aria-labelledby={standing ? titleId : undefined}
         aria-hidden={!open || !standing ? 'true' : 'false'}
         inert={!open || !standing}
         style={{
-          transform: open ? 'translateY(0)' : 'translateY(110%)',
+          // Pulling above the top only gives a little (rubber band).
+          transform: dragging
+            ? `translateY(${offset < 0 ? offset * 0.2 : offset}px)`
+            : open
+              ? 'translateY(0)'
+              : 'translateY(110%)',
+          // Follow the finger exactly; the CSS transition resumes on release.
+          transitionDuration: dragging ? '0ms' : undefined,
         }}
       >
         {standing && metadata && (
           <div
-            mix={sheetBand}
-            style={{
-              '--c': metadata.color,
-              '--ink': '#fff',
-              '--ca': metadata.accent,
-            }}
+            mix={[
+              sheetGrab,
+              on('pointerdown', (event) => {
+                if (event.button > 0 || !event.isPrimary) return;
+                if ((event.target as Element).closest('button')) return;
+                drag = {
+                  pointerId: event.pointerId,
+                  startY: event.clientY,
+                  lastY: event.clientY,
+                  lastT: event.timeStamp,
+                  velocity: 0,
+                  active: false,
+                };
+              }),
+              on('pointermove', (event) => {
+                if (!drag || event.pointerId !== drag.pointerId) return;
+                const dy = event.clientY - drag.startY;
+                if (!drag.active) {
+                  if (Math.abs(dy) < DRAG_THRESHOLD) return;
+                  drag.active = true;
+                  // Keep receiving moves even when the finger leaves the grab area.
+                  event.currentTarget.setPointerCapture(event.pointerId);
+                }
+                drag.velocity =
+                  (event.clientY - drag.lastY) /
+                  Math.max(1, event.timeStamp - drag.lastT);
+                drag.lastY = event.clientY;
+                drag.lastT = event.timeStamp;
+                offset = dy;
+                handle.props.onDrag?.(
+                  Math.min(1, Math.max(0, 1 - offset / closedOffset())),
+                );
+                handle.update();
+              }),
+              on('pointerup', (event) => endDrag(event)),
+              on('pointercancel', (event) => endDrag(event)),
+            ]}
+            style={{ cursor: dragging ? 'grabbing' : undefined }}
           >
-            <span mix={competitionBadge}>
-              <span
-                class='cmark'
-                mix={competitionMark}
-                style={{ '--cm': metadata.color, '--s': '34px' }}
-                aria-hidden='true'
-              >
-                {metadata.mark}
-              </span>
-            </span>
-            <span mix={sheetTitle}>
-              <b id={titleId}>{standing.competition.name}</b>
-              <span>
-                {standing.competition.code === 'CL'
-                  ? 'League phase'
-                  : 'Matchday'}{' '}
-                {standing.season.currentMatchday}
-                {metadata.rounds != null && ` of ${metadata.rounds}`}
-              </span>
-            </span>
-            <button
-              type='button'
-              mix={[
-                sheetClose,
-                ref((button) => handle.props.closeButtonRef?.(button)),
-                on('click', onClose),
-              ]}
-              aria-label='Close'
+            <span mix={sheetHandle} aria-hidden='true' />
+            <div
+              mix={sheetBand}
+              style={{
+                '--c': metadata.color,
+                '--ink': '#fff',
+                '--ca': metadata.accent,
+              }}
             >
-              <svg
-                viewBox='0 0 24 24'
-                width='16'
-                height='16'
-                fill='none'
-                stroke='currentColor'
-                stroke-width='2.6'
-                stroke-linecap='round'
-                aria-hidden='true'
+              <span mix={competitionBadge}>
+                <span
+                  class='cmark'
+                  mix={competitionMark}
+                  style={{ '--cm': metadata.color, '--s': '34px' }}
+                  aria-hidden='true'
+                >
+                  {metadata.mark}
+                </span>
+              </span>
+              <span mix={sheetTitle}>
+                <b id={titleId}>{standing.competition.name}</b>
+                <span>
+                  {standing.competition.code === 'CL'
+                    ? 'League phase'
+                    : 'Matchday'}{' '}
+                  {standing.season.currentMatchday}
+                  {metadata.rounds != null && ` of ${metadata.rounds}`}
+                </span>
+              </span>
+              <button
+                type='button'
+                mix={[
+                  sheetClose,
+                  ref((button) => handle.props.closeButtonRef?.(button)),
+                  on('click', onClose),
+                ]}
+                aria-label='Close'
               >
-                <path d='M18 6 6 18M6 6l12 12' />
-              </svg>
-            </button>
+                <svg
+                  viewBox='0 0 24 24'
+                  width='16'
+                  height='16'
+                  fill='none'
+                  stroke='currentColor'
+                  stroke-width='2.6'
+                  stroke-linecap='round'
+                  aria-hidden='true'
+                >
+                  <path d='M18 6 6 18M6 6l12 12' />
+                </svg>
+              </button>
+            </div>
           </div>
         )}
         {standing && (
@@ -162,6 +270,8 @@ const sheetGrab = css({
   flex: 'none',
   touchAction: 'none',
   cursor: 'grab',
+  // A mouse drag would otherwise select the title as it moves.
+  userSelect: 'none',
 });
 
 const sheetHandle = css({

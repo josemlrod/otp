@@ -243,3 +243,168 @@ describe('home screen standings sheet', () => {
     assert.ok(screen.getBoundingClientRect().top < sheet.getBoundingClientRect().top);
   });
 });
+
+function pointer(
+  target: Element,
+  type: 'pointerdown' | 'pointermove' | 'pointerup',
+  clientY: number,
+) {
+  target.dispatchEvent(new PointerEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    isPrimary: true,
+    pointerId: 1,
+    pointerType: 'mouse',
+    clientY,
+  }));
+}
+
+// Lifting after a pause means no flick, so release settles by position alone.
+function hold() {
+  return new Promise((resolve) => setTimeout(resolve, 150));
+}
+
+function scaleOf(element: HTMLElement) {
+  return Number(element.style.transform.match(/scale\((.+)\)/)?.[1]);
+}
+
+// Inline styles keep about 6 significant digits, so compare loosely.
+function assertNear(actual: number, expected: number) {
+  assert.ok(
+    Math.abs(actual - expected) < 1e-3,
+    `expected ${actual} to be near ${expected}`,
+  );
+}
+
+describe('home screen standings sheet drag', () => {
+  async function openSheet() {
+    const view = mount();
+    await view.act(() => view.tile.click());
+    const title = view.$('[role="dialog"] b[id]');
+    assert.ok(title);
+    // The sheet is fully closed once pulled down by its height plus 30px.
+    const closed = view.sheet.offsetHeight + 30;
+    return { ...view, title, closed };
+  }
+
+  it('moves the sheet and the layers behind it with the drag', async (t) => {
+    const { act, cleanup, title, closed, screen, sheet, overlay } = await openSheet();
+    t.after(cleanup);
+
+    await act(() => pointer(title, 'pointerdown', 100));
+    await act(() => pointer(title, 'pointermove', 200));
+
+    const progress = 1 - 100 / closed;
+    assert.equal(sheet.style.transform, 'translateY(100px)');
+    assertNear(scaleOf(screen), 1 - progress * 0.07);
+    assertNear(parseFloat(screen.style.borderRadius), progress * 18);
+    assertNear(Number(overlay.style.opacity), progress * 0.45);
+    for (const layer of [screen, sheet, overlay]) {
+      assert.equal(getComputedStyle(layer).transitionDuration, '0s');
+    }
+    assert.equal(getComputedStyle(sheet.firstElementChild!).cursor, 'grabbing');
+  });
+
+  it('ignores movement under the threshold and presses on the close button', async (t) => {
+    const { $, act, cleanup, title, screen, sheet } = await openSheet();
+    t.after(cleanup);
+
+    await act(() => pointer(title, 'pointerdown', 100));
+    await act(() => pointer(title, 'pointermove', 104));
+    assert.equal(sheet.style.transform, 'translateY(0px)');
+    await act(() => pointer(title, 'pointerup', 104));
+
+    const closeButton = $('[aria-label="Close"]');
+    assert.ok(closeButton);
+    await act(() => pointer(closeButton, 'pointerdown', 100));
+    await act(() => pointer(closeButton, 'pointermove', 300));
+    assert.equal(sheet.style.transform, 'translateY(0px)');
+    assert.equal(screen.style.transform, 'scale(0.93)');
+  });
+
+  it('only gives a little when pulled above the top', async (t) => {
+    const { act, cleanup, title, screen, sheet } = await openSheet();
+    t.after(cleanup);
+
+    await act(() => pointer(title, 'pointerdown', 200));
+    await act(() => pointer(title, 'pointermove', 100));
+
+    assert.equal(sheet.style.transform, 'translateY(-20px)');
+    assert.equal(screen.style.transform, 'scale(0.93)');
+  });
+
+  it('snaps back open when released before halfway', async (t) => {
+    const { act, cleanup, title, closed, screen, sheet, overlay } = await openSheet();
+    t.after(cleanup);
+
+    await act(() => pointer(title, 'pointerdown', 100));
+    await act(() => pointer(title, 'pointermove', 100 + closed / 2 - 20));
+    await hold();
+    await act(() => pointer(title, 'pointerup', 100 + closed / 2 - 20));
+
+    assert.equal(sheet.inert, false);
+    assert.equal(sheet.style.transform, 'translateY(0px)');
+    assert.equal(screen.style.transform, 'scale(0.93)');
+    assert.equal(screen.style.borderRadius, '18px');
+    assert.equal(overlay.style.opacity, '0.45');
+    const duration = matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? '0s'
+      : '0.48s';
+    for (const layer of [screen, sheet, overlay]) {
+      assert.equal(getComputedStyle(layer).transitionDuration, duration);
+    }
+  });
+
+  it('closes when released past halfway and returns focus to the tile', async (t) => {
+    const { act, cleanup, tile, title, closed, screen, sheet, overlay } = await openSheet();
+    t.after(cleanup);
+
+    await act(() => pointer(title, 'pointerdown', 100));
+    await act(() => pointer(title, 'pointermove', 100 + closed / 2 + 20));
+    await hold();
+    await act(() => pointer(title, 'pointerup', 100 + closed / 2 + 20));
+
+    assert.equal(sheet.inert, true);
+    assert.equal(sheet.style.transform, 'translateY(110%)');
+    assert.equal(screen.style.transform, 'scale(1)');
+    assert.equal(overlay.style.opacity, '0');
+    assert.equal(document.activeElement, tile);
+  });
+
+  it('closes on a quick downward flick even when it is short', async (t) => {
+    const { act, cleanup, tile, title, sheet } = await openSheet();
+    t.after(cleanup);
+
+    await act(() => pointer(title, 'pointerdown', 100));
+    await act(() => pointer(title, 'pointermove', 120));
+    await act(() => pointer(title, 'pointermove', 180));
+    await act(() => pointer(title, 'pointerup', 180));
+
+    assert.equal(sheet.inert, true);
+    assert.equal(document.activeElement, tile);
+  });
+
+  it('can take focus itself so Escape and Shift+Tab still work', async (t) => {
+    const { $, act, cleanup, tile, sheet } = await openSheet();
+    t.after(cleanup);
+    // Elements without a tabindex report -1 too, so check it really took focus.
+    sheet.focus();
+    assert.equal(document.activeElement, sheet);
+
+    const backwards = new KeyboardEvent('keydown', {
+      key: 'Tab', shiftKey: true, bubbles: true, cancelable: true,
+    });
+    sheet.dispatchEvent(backwards);
+    assert.equal(backwards.defaultPrevented, true);
+    assert.equal(document.activeElement, $('[role="dialog"] [tabindex="0"]'));
+
+    sheet.focus();
+    await act(() => {
+      sheet.dispatchEvent(new KeyboardEvent('keydown', {
+        key: 'Escape', bubbles: true, cancelable: true,
+      }));
+    });
+    assert.equal(sheet.inert, true);
+    assert.equal(document.activeElement, tile);
+  });
+});

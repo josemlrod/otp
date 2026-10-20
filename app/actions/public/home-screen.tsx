@@ -10,6 +10,9 @@ export const HomeScreen = clientEntry(
   function HomeScreen(handle: Handle<{ standings: StandingsResponse[] }>) {
     let selected: StandingsResponse | null = null;
     let open = false;
+    // How open the sheet is mid-drag (1 = open, 0 = closed); `null` when no
+    // drag is in progress and the layers rest at their open/closed targets.
+    let dragProgress: number | null = null;
     let opener: HTMLButtonElement | undefined;
     let closeButton: HTMLButtonElement | undefined;
 
@@ -33,69 +36,82 @@ export const HomeScreen = clientEntry(
       }
     }
 
-    return () => (
-      <div
-        mix={containerStyles}
-        style={{ '--sheet-duration': open ? '480ms' : '340ms' }}
-      >
-        <main
-          mix={screenStyles}
-          inert={open}
+    return () => {
+      const progress = dragProgress ?? (open ? 1 : 0);
+
+      return (
+        <div
+          mix={containerStyles}
           style={{
-            transform: open ? 'scale(0.93)' : 'scale(1)',
-            borderRadius: open ? '18px' : '0px',
+            // Track the finger while dragging; ease to the target otherwise.
+            '--sheet-duration':
+              dragProgress !== null ? '0ms' : open ? '480ms' : '340ms',
           }}
         >
-          <header
-            mix={css({
-              padding: 'calc(var(--safe-area-inset-top, 0px) + 14px) 22px 0',
-            })}
+          <main
+            mix={screenStyles}
+            inert={open}
+            style={{
+              // The screen recedes as the sheet rises: 7% smaller, rounded corners.
+              transform: `scale(${(100 - progress * 7) / 100})`,
+              borderRadius: `${progress * 18}px`,
+            }}
           >
-            <p mix={subtitleStyles}>Saturday 10 October</p>
-            <div mix={css({ display: 'flex', alignItems: 'center', gap: 10 })}>
-              <Logo size={30} />
-              <h3 mix={titleStyles}>On the Pitch</h3>
-            </div>
-          </header>
+            <header
+              mix={css({
+                padding: 'calc(var(--safe-area-inset-top, 0px) + 14px) 22px 0',
+              })}
+            >
+              <p mix={subtitleStyles}>Saturday 10 October</p>
+              <div mix={css({ display: 'flex', alignItems: 'center', gap: 10 })}>
+                <Logo size={30} />
+                <h3 mix={titleStyles}>On the Pitch</h3>
+              </div>
+            </header>
 
-          <section
-            mix={css({
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 10,
-            })}
-          >
-            <p mix={[subtitleStyles, css({ padding: '0 22px' })]}>
-              Competitions
-            </p>
-            <Standings standings={handle.props.standings} onSelect={show} />
-          </section>
+            <section
+              mix={css({
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+              })}
+            >
+              <p mix={[subtitleStyles, css({ padding: '0 22px' })]}>
+                Competitions
+              </p>
+              <Standings standings={handle.props.standings} onSelect={show} />
+            </section>
 
-          <section></section>
-        </main>
+            <section></section>
+          </main>
 
-        <button
-          type='button'
-          aria-label='Close standings'
-          tabIndex={-1}
-          inert={!open}
-          mix={[overlayStyles, on('click', close)]}
-          style={{
-            opacity: open ? 0.45 : 0,
-            pointerEvents: open ? 'auto' : 'none',
-          }}
-        />
+          <button
+            type='button'
+            aria-label='Close standings'
+            tabIndex={-1}
+            inert={!open}
+            mix={[overlayStyles, on('click', close)]}
+            style={{
+              opacity: progress * 0.45,
+              pointerEvents: open ? 'auto' : 'none',
+            }}
+          />
 
-        <Sheet
-          standing={selected}
-          open={open}
-          onClose={close}
-          closeButtonRef={(button) => {
-            closeButton = button;
-          }}
-        />
-      </div>
-    );
+          <Sheet
+            standing={selected}
+            open={open}
+            onClose={close}
+            onDrag={(progress) => {
+              dragProgress = progress;
+              handle.update();
+            }}
+            closeButtonRef={(button) => {
+              closeButton = button;
+            }}
+          />
+        </div>
+      );
+    };
   },
 );
 
