@@ -108,11 +108,9 @@ export const HomeScreen = clientEntry(
 );
 
 const containerStyles = css({
-  position: 'relative',
+  position: 'fixed',
+  inset: 0,
   isolation: 'isolate',
-  height: `calc(100% + ${v('--safe-area-inset-top')} + ${v('--safe-area-inset-bottom')})`,
-  marginTop: `calc(-1 * ${v('--safe-area-inset-top')})`,
-  marginBottom: `calc(-1 * ${v('--safe-area-inset-bottom')})`,
   overflow: 'hidden',
   background: v('--color-black'),
 });

@@ -56,7 +56,7 @@ describe('home screen standings sheet', () => {
     assert.equal(overlay.inert, true);
     assert.equal(screen.inert, false);
     assert.equal(screen.contains(sheet), false);
-    assert.equal(screen.parentElement?.clientHeight, 600);
+    assert.equal(screen.parentElement?.clientHeight, window.innerHeight);
 
     await act(() => tile.click());
 
