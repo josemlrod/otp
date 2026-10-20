@@ -2,6 +2,7 @@ import { css, type Handle } from 'remix/component';
 
 import { CompetitionTile } from './competition-tile.tsx';
 import { countRender } from '../perf/renders.ts';
+import { hideScrollbar, space, v } from '../../../ui/theme.ts';
 
 import type { StandingsResponse } from '../../../lib/types/api.ts';
 
@@ -15,22 +16,7 @@ export function Standings(handle: Handle<Props>) {
     countRender('Standings');
 
     return (
-      <div
-        mix={css({
-          display: 'flex',
-          minWidth: 0,
-          gap: 8,
-          padding: '0 20px',
-          overflowX: 'auto',
-          scrollSnapType: 'x proximity',
-          scrollPadding: '0 20px',
-          scrollbarWidth: 'none',
-
-          '&::-webkit-scrollbar': {
-            display: 'none',
-          },
-        })}
-      >
+      <div mix={[shelfStyles, hideScrollbar]}>
         {handle.props.standings.map((standing) => (
           <CompetitionTile
             key={standing.competition.id}
@@ -46,3 +32,13 @@ export function Standings(handle: Handle<Props>) {
     );
   };
 }
+
+const shelfStyles = css({
+  display: 'flex',
+  minWidth: 0,
+  gap: space(2),
+  padding: `0 ${v('--gutter')}`,
+  overflowX: 'auto',
+  scrollSnapType: 'x proximity',
+  scrollPadding: `0 ${v('--gutter')}`,
+});

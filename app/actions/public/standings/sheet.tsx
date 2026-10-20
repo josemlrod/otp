@@ -1,6 +1,7 @@
 import { css, on, ref, type Dispatched, type Handle } from 'remix/component';
 
 import { getCompetitionMetadata } from '../../../lib/competition-metadata.ts';
+import { hideScrollbar, space, v } from '../../../ui/theme.ts';
 import { countRender } from '../perf/renders.ts';
 import { StandingsTable } from './standings-table.tsx';
 
@@ -190,18 +191,12 @@ export function Sheet(handle: Handle<Props>) {
             <div
               mix={sheetBand}
               style={{
-                '--c': metadata.color,
-                '--ink': '#fff',
-                '--ca': metadata.accent,
+                '--competition': metadata.color,
+                '--competition-accent': metadata.accent,
               }}
             >
               <span mix={competitionBadge}>
-                <span
-                  class='cmark'
-                  mix={competitionMark}
-                  style={{ '--cm': metadata.color, '--s': '34px' }}
-                  aria-hidden='true'
-                >
+                <span mix={competitionMark} aria-hidden='true'>
                   {metadata.mark}
                 </span>
               </span>
@@ -220,8 +215,6 @@ export function Sheet(handle: Handle<Props>) {
               >
                 <svg
                   viewBox='0 0 24 24'
-                  width='16'
-                  height='16'
                   fill='none'
                   stroke='currentColor'
                   stroke-width='2.6'
@@ -235,7 +228,7 @@ export function Sheet(handle: Handle<Props>) {
           </div>
         )}
         {standing && (
-          <div mix={sheetScroll} tabIndex={0}>
+          <div mix={[sheetScroll, hideScrollbar]} tabIndex={0}>
             <StandingsTable standing={standing} />
           </div>
         )}
@@ -249,25 +242,20 @@ const sheetContainer = css({
   left: 0,
   right: 0,
   bottom: 0,
-  top: 'calc(var(--safe-top, var(--safe-area-inset-top, 0px)) + 10px)',
+  top: `calc(${v('--safe-area-inset-top')} + ${space(2.5)})`,
   zIndex: 41,
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
-  borderRadius: '18px 18px 0 0',
-  background: 'var(--surface)',
-  boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.5)',
+  borderRadius: `${v('--radius-lg')} ${v('--radius-lg')} 0 0`,
+  background: v('--color-surface'),
+  boxShadow: v('--shadow-sheet'),
   transform: 'translateY(110%)',
   transitionProperty: 'transform',
-  transitionDuration: 'var(--sheet-duration, 480ms)',
-  transitionTimingFunction: 'var(--ease-ios)',
+  transitionDuration: `var(--sheet-duration, ${v('--duration-sheet-open')})`,
+  transitionTimingFunction: v('--ease-ios'),
   touchAction: 'auto',
   willChange: 'transform',
-  '--surface-in': 'var(--surface-2)',
-
-  '@media (prefers-reduced-motion: reduce)': {
-    transition: 'none',
-  },
 });
 
 const sheetGrab = css({
@@ -280,13 +268,13 @@ const sheetGrab = css({
 
 const sheetHandle = css({
   position: 'absolute',
-  top: 6,
+  top: space(1.5),
   left: '50%',
   zIndex: 2,
-  width: 36,
-  height: 5,
-  borderRadius: 3,
-  background: 'rgba(255, 255, 255, 0.45)',
+  width: space(9),
+  height: space(1.25),
+  borderRadius: v('--radius-full'),
+  background: v('--color-grabber'),
   transform: 'translateX(-50%)',
 });
 
@@ -298,13 +286,7 @@ const sheetScroll = css({
   overflowY: 'auto',
   touchAction: 'pan-y',
   overscrollBehavior: 'contain',
-  scrollbarWidth: 'none',
-  paddingBottom:
-    'calc(var(--safe-bottom, var(--safe-area-inset-bottom, 0px)) + 24px)',
-
-  '&::-webkit-scrollbar': {
-    display: 'none',
-  },
+  paddingBottom: `calc(${v('--safe-area-inset-bottom')} + ${space(6)})`,
 });
 
 const sheetBand = css({
@@ -313,14 +295,14 @@ const sheetBand = css({
   overflow: 'hidden',
   display: 'flex',
   alignItems: 'center',
-  gap: 12,
-  padding: '22px 16px 16px',
-  color: 'var(--ink)',
+  gap: space(3),
+  padding: `${space(5.5)} ${space(4)} ${space(4)}`,
+  color: v('--color-white'),
   background: `linear-gradient(
     165deg,
-    color-mix(in oklab, var(--c) 82%, white) 0px,
-    var(--c) 120px,
-    color-mix(in oklab, var(--c) 72%, black) 360px
+    color-mix(in oklab, var(--competition) 82%, var(--color-white)) 0rem,
+    var(--competition) 7.5rem,
+    color-mix(in oklab, var(--competition) 72%, var(--color-black)) 22.5rem
   )`,
 });
 
@@ -328,36 +310,26 @@ const competitionBadge = css({
   display: 'grid',
   placeItems: 'center',
   flex: 'none',
-  width: 50,
-  height: 50,
-  borderRadius: '50%',
-  background: 'none',
-  boxShadow: 'none',
-
-  '& .cmark': {
-    boxShadow: `
-      inset 0 0 0 1px rgba(255, 255, 255, 0.25),
-      0 4px 12px rgba(0, 0, 0, 0.3)
-    `,
-  },
+  width: space(12.5),
+  height: space(12.5),
 });
 
 const sheetTitle = css({
-  flex: 1,
+  flex: '1',
   minWidth: 0,
   display: 'flex',
   flexDirection: 'column',
-  gap: 4,
+  gap: space(1),
 
   '& b': {
-    fontSize: 22,
-    fontWeight: 800,
-    letterSpacing: '-0.03em',
-    lineHeight: 1.1,
+    fontSize: v('--text-xl'),
+    fontWeight: v('--font-weight-extrabold'),
+    letterSpacing: v('--tracking-tighter'),
+    lineHeight: v('--leading-tight'),
   },
 
   '& > span': {
-    fontSize: 13,
+    fontSize: v('--text-xs'),
     opacity: 0.75,
   },
 });
@@ -366,53 +338,41 @@ const sheetClose = css({
   display: 'grid',
   placeItems: 'center',
   flex: 'none',
-  width: 34,
-  height: 34,
-  borderRadius: '50%',
-  background: 'color-mix(in srgb, var(--ink) 18%, transparent)',
-  transition: 'transform 120ms ease-out',
+  width: space(8.5),
+  height: space(8.5),
+  borderRadius: v('--radius-full'),
+  background: 'color-mix(in oklab, currentColor 18%, transparent)',
+  transition: `transform ${v('--duration-press')} ${v('--ease-out')}`,
 
   '&:active': {
     transform: 'scale(0.9)',
   },
 
   '@media (prefers-reduced-motion: reduce)': {
-    transition: 'none',
     '&:active': {
       transform: 'none',
     },
   },
 
   '& svg': {
-    width: 16,
-    height: 16,
+    width: space(4),
+    height: space(4),
   },
-
-  '&[aria-pressed="true"] svg': {
-    fill: 'currentColor',
-  },
-
-  font: 'inherit',
-  color: 'inherit',
-  border: 0,
-  padding: 0,
-  cursor: 'pointer',
-  touchAction: 'manipulation',
 });
 
 const competitionMark = css({
+  '--mark-size': space(8.5),
   display: 'inline-grid',
   placeItems: 'center',
   flex: 'none',
-  width: 'var(--s)',
-  height: 'var(--s)',
-  borderRadius: 'calc(var(--s) * 0.3)',
-  background: 'var(--cm)',
-  color: 'var(--ca)',
-  fontSize: 'calc(var(--s) * 0.44)',
-  fontWeight: 850,
-  fontStyle: 'normal',
-  letterSpacing: '-0.02em',
-  lineHeight: 1,
-  boxShadow: 'inset 0 0 0 0.5px rgba(255, 255, 255, 0.22)',
+  width: 'var(--mark-size)',
+  height: 'var(--mark-size)',
+  borderRadius: 'calc(var(--mark-size) * 0.3)',
+  background: 'var(--competition)',
+  color: 'var(--competition-accent)',
+  fontSize: 'calc(var(--mark-size) * 0.44)',
+  fontWeight: v('--font-weight-black'),
+  letterSpacing: v('--tracking-tight'),
+  lineHeight: v('--leading-none'),
+  boxShadow: v('--shadow-badge'),
 });

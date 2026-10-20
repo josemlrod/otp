@@ -26,8 +26,9 @@ Refer to ./.agents/skills/remix/SKILL.md for the Remix mental model and how to f
 - `app/router.ts` wires routes to controllers and installs the standard Remix component renderer used by actions
 - Put top-level route actions in `app/actions/controller.tsx`; add `app/actions/<route-key>/controller.tsx` for nested route maps. `app/actions/controller.test.ts` is the root controller's router smoke test
 - `app/actions/home-page.tsx` and `app/actions/document.tsx` render the route-owned starter UI
-- `app/actions/public/` contains the browser runtime entry and interactive prompt button
+- `app/actions/public/` contains the browser runtime entry and the client components it hydrates
 - `app/assets.ts` owns the server-side asset pipeline used by the asset route and render middleware
 - Root `public/` contains static files served unchanged from the app root
+- `app/ui/theme.ts` holds the design tokens Document applies to `<html>`. Style with `v('--token')` and `space(n)` rather than literal values: colors are OKLCH, lengths are rem (px only for hairlines and pointer math). Add a token there before reaching for a new one-off value
 
 This starter intentionally begins small; add directories like `app/data/`, `app/middleware/`, `app/ui/`, and `test/` only when you need them.

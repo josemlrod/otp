@@ -147,6 +147,12 @@ export function mountPerfHud({ onClose }: { onClose: () => void }): () => void {
     </section>
   `;
   const panel = root.querySelector('section')!;
+  const theme = getComputedStyle(host);
+  const graphColors = {
+    good: theme.getPropertyValue('--color-win'),
+    warn: theme.getPropertyValue('--color-warning'),
+    bad: theme.getPropertyValue('--color-loss'),
+  };
   const fpsLabel = root.querySelector<HTMLElement>('.fps')!;
   const details = root.querySelector<HTMLElement>('.details')!;
   const canvas = root.querySelector('canvas')!;
@@ -256,14 +262,14 @@ export function mountPerfHud({ onClose }: { onClose: () => void }): () => void {
       const barHeight = Math.max(1, (Math.min(delta, GRAPH_CEILING_MS) / GRAPH_CEILING_MS) * height);
       context.fillStyle =
         delta <= medianFrameMs * MISSED_VSYNC_RATIO
-          ? '#1fb85a'
+          ? graphColors.good
           : delta < medianFrameMs * SEVERE_JANK_RATIO
-            ? '#f5a524'
-            : '#e5484d';
+            ? graphColors.warn
+            : graphColors.bad;
       context.fillRect(width - count + i, height - barHeight, 1, barHeight);
     }
     const medianFrameLineY = height - (medianFrameMs / GRAPH_CEILING_MS) * height;
-    context.fillStyle = 'rgba(255, 255, 255, 0.35)';
+    context.fillStyle = 'oklch(100% 0 0 / 0.35)';
     context.fillRect(0, Math.round(medianFrameLineY), width, 1);
   }
 
@@ -339,11 +345,11 @@ const HUD_STYLES = `
     overflow-y: auto;
     padding: 6px 8px 8px;
     border-radius: 10px;
-    background: rgba(0, 0, 0, 0.82);
+    background: oklch(0% 0 0 / 0.82);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
-    box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.15), 0 8px 24px rgba(0, 0, 0, 0.4);
-    color: #f3f4f5;
+    box-shadow: 0 0 0 0.5px oklch(100% 0 0 / 0.15), 0 8px 24px oklch(0% 0 0 / 0.4);
+    color: var(--color-text);
     font: 10.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
     font-variant-numeric: tabular-nums;
     -webkit-user-select: none;
@@ -366,9 +372,9 @@ const HUD_STYLES = `
     width: 100%;
   }
   .fps { min-width: 46px; text-align: left; font-weight: 700; font-size: 12px; }
-  .fps[data-level='good'] { color: #1fb85a; }
-  .fps[data-level='warn'] { color: #f5a524; }
-  .fps[data-level='bad'] { color: #e5484d; }
+  .fps[data-level='good'] { color: var(--color-win); }
+  .fps[data-level='warn'] { color: var(--color-warning); }
+  .fps[data-level='bad'] { color: var(--color-loss); }
   canvas { width: 120px; height: 28px; flex: none; image-rendering: pixelated; }
   h4 {
     margin: 6px 0 1px;
@@ -376,18 +382,18 @@ const HUD_STYLES = `
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(235, 235, 245, 0.45);
+    color: oklch(94.3% 0.013 286.1 / 0.45);
   }
   .row { display: flex; gap: 6px; white-space: nowrap; }
-  .row span { flex: 1; overflow: hidden; text-overflow: ellipsis; color: rgba(235, 235, 245, 0.7); }
+  .row span { flex: 1; overflow: hidden; text-overflow: ellipsis; color: oklch(94.3% 0.013 286.1 / 0.7); }
   .row.sub span { padding-left: 8px; }
   .row b { font-weight: 600; }
-  .row i { min-width: 40px; text-align: right; font-style: normal; color: rgba(235, 235, 245, 0.45); }
+  .row i { min-width: 40px; text-align: right; font-style: normal; color: oklch(94.3% 0.013 286.1 / 0.45); }
   .actions { display: flex; gap: 6px; margin-top: 8px; }
   .actions button {
     flex: 1;
     padding: 4px 0;
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.1);
+    background: oklch(100% 0 0 / 0.1);
   }
 `;

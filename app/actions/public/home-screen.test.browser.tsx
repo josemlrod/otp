@@ -3,6 +3,7 @@ import { render } from 'remix/component/test';
 import { describe, it } from 'remix/test';
 
 import type { StandingsResponse } from '../../lib/types/api.ts';
+import { tokens } from '../../ui/theme.ts';
 import { HomeScreen } from './home-screen.tsx';
 
 const standing: StandingsResponse = {
@@ -32,13 +33,10 @@ const otherStanding: StandingsResponse = {
 
 function mount() {
   const view = render(<HomeScreen standings={[standing, otherStanding]} />);
-  view.container.style.cssText = `
-    height: 600px;
-    width: 390px;
-    --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
-    --bg: #0a0b0c;
-    --surface: #151719;
-  `;
+  view.container.style.cssText = 'height: 600px; width: 390px;';
+  for (const [token, value] of Object.entries(tokens)) {
+    view.container.style.setProperty(token, value);
+  }
 
   const tile = view.$('main button');
   const screen = view.$('main');
@@ -69,7 +67,7 @@ describe('home screen standings sheet', () => {
     assert.equal(screen.inert, true);
     assert.equal(overlay.inert, false);
     assert.equal(screen.style.transform, 'scale(0.93)');
-    assert.equal(screen.style.borderRadius, '18px');
+    assert.equal(radiusOf(screen), 1);
     assert.equal(sheet.style.transform, 'translateY(0px)');
     assert.equal(overlay.style.opacity, '0.45');
     assert.equal(overlay.style.pointerEvents, 'auto');
@@ -109,7 +107,7 @@ describe('home screen standings sheet', () => {
       assert.equal(sheet.getAttribute('aria-hidden'), 'true');
       assert.equal(screen.inert, false);
       assert.equal(screen.style.transform, 'scale(1)');
-      assert.equal(screen.style.borderRadius, '0px');
+      assert.equal(radiusOf(screen), 0);
       assert.equal(overlay.inert, true);
       assert.equal(overlay.style.pointerEvents, 'none');
       assert.equal(overlay.style.opacity, '0');
@@ -219,6 +217,12 @@ function scaleOf(element: HTMLElement) {
   return Number(element.style.transform.match(/scale\((.+)\)/)?.[1]);
 }
 
+function radiusOf(element: HTMLElement) {
+  return Number(
+    element.style.borderRadius.match(/calc\(var\(--radius-lg\) \* (.+)\)/)?.[1],
+  );
+}
+
 function assertNear(actual: number, expected: number) {
   assert.ok(
     Math.abs(actual - expected) < 1e-3,
@@ -246,7 +250,7 @@ describe('home screen standings sheet drag', () => {
     const openFraction = 1 - 100 / closedPullDown;
     assert.equal(sheet.style.transform, 'translateY(100px)');
     assertNear(scaleOf(screen), 1 - openFraction * 0.07);
-    assertNear(parseFloat(screen.style.borderRadius), openFraction * 18);
+    assertNear(radiusOf(screen), openFraction);
     assertNear(Number(overlay.style.opacity), openFraction * 0.45);
     for (const layer of [screen, sheet, overlay]) {
       assert.equal(getComputedStyle(layer).transitionDuration, '0s');
@@ -291,6 +295,7 @@ describe('home screen standings sheet drag', () => {
     assert.equal(sheet.inert, false);
     assert.equal(sheet.style.transform, 'translateY(0px)');
     assert.equal(screen.style.transform, 'scale(0.93)');
+    assert.equal(radiusOf(screen), 1);
     assert.equal(overlay.style.opacity, '0.45');
     const duration = matchMedia('(prefers-reduced-motion: reduce)').matches
       ? '0s'

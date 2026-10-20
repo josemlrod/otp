@@ -1,6 +1,7 @@
 import { css, on, type Handle } from 'remix/component';
 
 import { getCompetitionMetadata } from '../../../lib/competition-metadata.ts';
+import { space, v } from '../../../ui/theme.ts';
 import { countRender } from '../perf/renders.ts';
 
 type CompetitionTileProps = {
@@ -24,77 +25,67 @@ export function CompetitionTile(handle: Handle<CompetitionTileProps>) {
         type='button'
         id={String(id)}
         style={{
-          '--c': metadata.color,
-          '--ca': metadata.accent,
-          '--ink': '#fff',
+          '--competition': metadata.color,
+          '--competition-accent': metadata.accent,
         }}
-        mix={[
-          css({
-            flex: 'none',
-            minWidth: 156,
-            scrollSnapAlign: 'start',
-            gap: '0.75rem',
-            display: 'flex',
-            flexDirection: 'column',
-            borderRadius: 18,
-            border: 'none',
-            padding: 12,
-            background: `linear-gradient(
-              160deg,
-              color-mix(in oklab, var(--c) 80%, white) 0%,
-              var(--c) 55%,
-              color-mix(in oklab, var(--c) 70%, black) 100%
-            )`,
-            boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-            color: 'var(--ink)',
-          }),
-          on('click', (event) => onPress(event.currentTarget)),
-        ]}
+        mix={[tileStyles, on('click', (event) => onPress(event.currentTarget))]}
       >
-        <div
-          mix={css({
-            display: 'flex',
-            gap: '0.50rem',
-            width: '100%',
-            alignItems: 'center',
-          })}
-        >
-          <img
-            alt={`${name}'s crest`}
-            src={emblem}
-            mix={css({ height: 22, width: 22 })}
-          />
-          <p
-            mix={css({
-              fontWeight: 750,
-              fontSize: '0.875rem',
-              whiteSpace: 'nowrap',
-            })}
-          >
-            {name}
-          </p>
+        <div mix={rowStyles}>
+          <img alt={`${name}'s crest`} src={emblem} mix={crestStyles} />
+          <p mix={nameStyles}>{name}</p>
         </div>
 
         {noSelectedTeams ? (
-          <p mix={css({ textAlign: 'start' })}>No selected teams</p>
+          <p mix={emptyStyles}>No selected teams</p>
         ) : (
-          <div
-            mix={css({
-              display: 'flex',
-              gap: '0.50rem',
-              width: '100%',
-              alignItems: 'center',
-            })}
-          >
-            <img
-              alt={`${name}'s crest`}
-              src={emblem}
-              mix={css({ height: 22, width: 22 })}
-            />
-            <p mix={css({ fontWeight: 750, fontSize: '0.875rem' })}>{name}</p>
+          <div mix={rowStyles}>
+            <img alt={`${name}'s crest`} src={emblem} mix={crestStyles} />
+            <p mix={nameStyles}>{name}</p>
           </div>
         )}
       </button>
     );
   };
 }
+
+const tileStyles = css({
+  flex: 'none',
+  minWidth: space(39),
+  scrollSnapAlign: 'start',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: space(3),
+  borderRadius: v('--radius-lg'),
+  padding: space(3),
+  background: `linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--competition) 80%, var(--color-white)) 0%,
+    var(--competition) 55%,
+    color-mix(in oklab, var(--competition) 70%, var(--color-black)) 100%
+  )`,
+  boxShadow: v('--shadow-highlight'),
+  color: v('--color-white'),
+});
+
+const rowStyles = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: space(2),
+  width: '100%',
+});
+
+const crestStyles = css({
+  width: space(5.5),
+  height: space(5.5),
+});
+
+const nameStyles = css({
+  fontSize: v('--text-sm'),
+  fontWeight: v('--font-weight-extrabold'),
+  whiteSpace: 'nowrap',
+});
+
+const emptyStyles = css({
+  fontSize: v('--text-xs'),
+  textAlign: 'start',
+});

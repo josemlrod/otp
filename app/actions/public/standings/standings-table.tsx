@@ -1,6 +1,7 @@
 import { css, type Handle } from 'remix/component';
 
 import { countRender } from '../perf/renders.ts';
+import { space, v } from '../../../ui/theme.ts';
 
 import type { StandingsResponse } from '../../../lib/types/api.ts';
 
@@ -27,11 +28,11 @@ export function StandingsTable(handle: Handle<Props>) {
                   {group.group && `, ${group.group.replaceAll('_', ' ')}`}
                 </caption>
                 <colgroup>
-                  <col style={{ width: 40 }} />
+                  <col style={{ width: space(10) }} />
                   <col />
-                  <col style={{ width: 30 }} />
-                  <col style={{ width: 40 }} />
-                  <col style={{ width: 44 }} />
+                  <col style={{ width: space(7.5) }} />
+                  <col style={{ width: space(10) }} />
+                  <col style={{ width: space(11) }} />
                 </colgroup>
                 <thead>
                   <tr>
@@ -89,13 +90,13 @@ export function StandingsTable(handle: Handle<Props>) {
 }
 
 const tableContent = css({
-  padding: '0 16px',
+  padding: `0 ${space(4)}`,
 });
 
 const tableCard = css({
-  marginTop: 12,
-  borderRadius: 14,
-  background: 'var(--surface-2)',
+  marginTop: space(3),
+  borderRadius: v('--radius-md'),
+  background: v('--color-surface-raised'),
   overflow: 'hidden',
 });
 
@@ -103,57 +104,58 @@ const tableStyle = css({
   width: '100%',
   tableLayout: 'fixed',
   borderCollapse: 'collapse',
-  fontSize: 13,
+  fontSize: v('--text-xs'),
   textAlign: 'right',
 
   '& th, & td': {
-    padding: '0 4px',
-    height: 38,
+    padding: `0 ${space(1)}`,
+    height: space(9.5),
   },
   '& th:first-child, & td:first-child': {
     textAlign: 'center',
-    paddingLeft: 12,
+    paddingLeft: space(3),
   },
   '& th:last-child, & td:last-child': {
-    paddingRight: 12,
+    paddingRight: space(3),
   },
   '& thead th': {
-    height: 32,
-    fontSize: 11,
-    fontWeight: 600,
-    color: 'var(--text-3)',
+    height: space(8),
+    fontSize: v('--text-2xs'),
+    fontWeight: v('--font-weight-semibold'),
+    color: v('--color-text-tertiary'),
     textTransform: 'uppercase',
   },
   '& thead th:nth-child(2)': {
     textAlign: 'left',
   },
   '& tbody tr': {
-    color: 'var(--text-2)',
-    boxShadow: 'inset 0 0.5px 0 var(--sep)',
+    color: v('--color-text-secondary'),
+    boxShadow: `inset 0 0.5px 0 ${v('--color-separator')}`,
   },
   '& tbody th': {
-    fontWeight: 550,
+    fontWeight: v('--font-weight-semibold'),
     textAlign: 'left',
   },
   '& b': {
-    color: 'var(--text)',
+    color: v('--color-text'),
   },
 });
 
 const positionStyle = css({
-  color: 'var(--text-3)',
-  fontWeight: 600,
+  color: v('--color-text-tertiary'),
+  fontWeight: v('--font-weight-semibold'),
 });
 
 const clubStyle = css({
   display: 'flex',
   alignItems: 'center',
-  gap: 8,
+  gap: space(2),
   minWidth: 0,
-  color: 'var(--text)',
+  color: v('--color-text'),
 
   '& img': {
-    display: 'block',
+    width: space(4.5),
+    height: space(4.5),
     flexShrink: 0,
     objectFit: 'contain',
   },
@@ -165,18 +167,18 @@ const clubStyle = css({
 });
 
 const groupCaption = css({
-  padding: '12px 12px 4px',
+  padding: `${space(3)} ${space(3)} ${space(1)}`,
   textAlign: 'left',
-  fontWeight: 600,
-  color: 'var(--text)',
+  fontWeight: v('--font-weight-semibold'),
+  color: v('--color-text'),
 });
 
 const hiddenCaption = css({
   position: 'absolute',
-  width: 1,
-  height: 1,
+  width: '1px',
+  height: '1px',
   padding: 0,
-  margin: -1,
+  margin: '-1px',
   overflow: 'hidden',
   clipPath: 'inset(50%)',
   whiteSpace: 'nowrap',
@@ -184,8 +186,8 @@ const hiddenCaption = css({
 });
 
 const emptyState = css({
-  padding: '16px 12px',
-  fontSize: 13,
-  color: 'var(--text-2)',
+  padding: `${space(4)} ${space(3)}`,
+  fontSize: v('--text-xs'),
+  color: v('--color-text-secondary'),
   textAlign: 'center',
 });
