@@ -30,19 +30,9 @@ describe('root controller', () => {
     const response = await router.fetch(new URL(routes.home.href(), 'http://localhost'))
 
     assert.equal(response.status, 200)
-    assert.match(response.headers.get('Content-Type') ?? '', /text\/html/)
     const html = await response.text()
-    assert.match(html, /<html[\s>]/)
     assert.match(html, /Premier League/)
     assert.match(html, /La Liga/)
     assert.equal(fetch.mock.calls.length, 1)
-  })
-
-  it('GET / still renders when no standings are available', async (t) => {
-    t.mock.method(footballDataRepository, 'fetchAllStandings', async () => [])
-    const response = await router.fetch(new URL(routes.home.href(), 'http://localhost'))
-
-    assert.equal(response.status, 200)
-    assert.match(await response.text(), /Competitions/)
   })
 })

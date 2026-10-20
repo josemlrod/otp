@@ -29,8 +29,6 @@ const appFetch = createHmrReadyFetch(
     xForwardedHeaders: true,
   }),
 )
-// Browsers subscribe to HMR events through this proxy (see app/assets.ts) so
-// devices other than this machine can receive live updates.
 const hmrEventFetch = createFetchProxy(`http://127.0.0.1:${hmrEventPort}`)
 
 const server = http.createServer(

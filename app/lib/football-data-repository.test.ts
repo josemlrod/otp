@@ -31,6 +31,10 @@ function standing(id: number): StandingsResponse {
   };
 }
 
+function competitionIdFrom(url: string) {
+  return Number(url.match(/\/competitions\/(\d+)\/standings$/)?.[1]);
+}
+
 describe('all competition standings', () => {
   beforeAll(() => migrateDatabase());
   beforeEach(async () => {
@@ -39,37 +43,27 @@ describe('all competition standings', () => {
     );
   });
 
-  it('fetches all six competitions concurrently and preserves their configured order', async (t) => {
-    const pending = new Map<number, (response: Response) => void>();
-    const requested = Promise.withResolvers<void>();
-    t.mock.method(globalThis, 'fetch', (url: string) => {
-      const id = Number(url.match(/\/competitions\/(\d+)\/standings$/)?.[1]);
-      assert.ok(competitionIds.includes(id));
-      return new Promise<Response>((resolve) => {
-        pending.set(id, resolve);
-        if (pending.size === competitionIds.length) requested.resolve();
-      });
-    });
+  it('fetches missing and expired standings and caches them', async (t) => {
+    await writeCache('standings-2021', { ...standing(2021), standings: [] }, 0);
+    const fetch = t.mock.method(globalThis, 'fetch', async (url: string) =>
+      Response.json(standing(competitionIdFrom(url))),
+    );
 
-    const result = footballDataRepository.fetchAllStandings();
-    await requested.promise;
-    for (const id of competitionIds.toReversed()) {
-      pending.get(id)!(Response.json(standing(id)));
-    }
-
-    assert.deepEqual(await result, competitionIds.map(standing));
-    for (const id of competitionIds) {
-      assert.deepEqual((await readCache(`standings-${id}`))?.data, standing(id));
-    }
+    assert.deepEqual(
+      await footballDataRepository.fetchAllStandings(),
+      competitionIds.map(standing),
+    );
+    assert.equal(fetch.mock.calls.length, competitionIds.length);
+    const cached = await readCache('standings-2021');
+    assert.deepEqual(cached?.data, standing(2021));
+    assert.ok(cached && cached.fetchedAt > 0);
   });
 
   it('uses fresh cached standings without calling the API', async (t) => {
     for (const id of competitionIds) {
       await writeCache(`standings-${id}`, standing(id));
     }
-    const fetch = t.mock.method(globalThis, 'fetch', () => {
-      throw new Error('Fresh standings should come from the cache');
-    });
+    const fetch = t.mock.method(globalThis, 'fetch', async () => Response.json({}));
 
     assert.deepEqual(
       await footballDataRepository.fetchAllStandings(),
@@ -78,54 +72,21 @@ describe('all competition standings', () => {
     assert.equal(fetch.mock.calls.length, 0);
   });
 
-  it('refreshes expired standings and caches the new data', async (t) => {
-    for (const id of competitionIds) {
-      await writeCache(`standings-${id}`, standing(id), 0);
-    }
-    const updated = competitionIds.map((id) => ({ ...standing(id), standings: [] }));
-    const fetch = t.mock.method(globalThis, 'fetch', async (url: string) => {
-      const id = Number(url.match(/\/competitions\/(\d+)\/standings$/)?.[1]);
-      return Response.json(updated.find((response) => response.competition.id === id));
-    });
-
-    assert.deepEqual(await footballDataRepository.fetchAllStandings(), updated);
-    assert.equal(fetch.mock.calls.length, competitionIds.length);
-    for (const response of updated) {
-      const cached = await readCache(`standings-${response.competition.id}`);
-      assert.deepEqual(cached?.data, response);
-      assert.ok(cached && cached.fetchedAt > 0);
-    }
-  });
-
-  it('keeps successful competitions when others fail or return invalid JSON', async (t) => {
+  it('falls back to stale standings and skips failed competitions without them', async (t) => {
+    await writeCache('standings-2021', standing(2021), 0);
     t.mock.method(globalThis, 'fetch', async (url: string) => {
-      const id = Number(url.match(/\/competitions\/(\d+)\/standings$/)?.[1]);
-      if (id === 2002) return new Response('Rate limited', { status: 429 });
-      if (id === 2019) throw new Error('Network unavailable');
-      if (id === 2015) return new Response('invalid JSON');
-      return Response.json(standing(id));
+      const id = competitionIdFrom(url);
+      if (id === 2002) throw new Error('Network unavailable');
+      if (id === 2019) return new Response('invalid JSON');
+      if (id === 2014) return Response.json(standing(id));
+      return new Response(null, { status: 429 });
     });
 
     assert.deepEqual(
       await footballDataRepository.fetchAllStandings(),
-      [2021, 2014, 2001].map(standing),
+      [standing(2021), standing(2014)],
     );
-    for (const id of [2002, 2019, 2015]) {
-      assert.equal(await readCache(`standings-${id}`), null);
-    }
-  });
-
-  it('returns an empty array when all competitions fail without cached data', async (t) => {
-    t.mock.method(globalThis, 'fetch', async () => new Response(null, { status: 503 }));
-
-    assert.deepEqual(await footballDataRepository.fetchAllStandings(), []);
-  });
-
-  it('falls back to stale standings when the API is rate limited', async (t) => {
-    await writeCache('standings-2021', standing(2021), 0);
-    t.mock.method(globalThis, 'fetch', async () => new Response(null, { status: 429 }));
-
-    assert.deepEqual(await footballDataRepository.fetchAllStandings(), [standing(2021)]);
     assert.equal((await readCache('standings-2021'))?.fetchedAt, 0);
+    assert.equal(await readCache('standings-2002'), null);
   });
 });

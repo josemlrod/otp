@@ -1,6 +1,3 @@
-// Card -> page morph. The club page's head is laid out exactly like the card,
-// so it starts as a clipped, translated copy sitting on the card and simply
-// unclips into place. Closing runs the same thing in reverse.
 import { icons } from './ui.js'
 import { tick } from './utils.js'
 
@@ -45,7 +42,6 @@ export function morph(stage, page) {
 
   function close() {
     if (!card || !page.classList.contains('is-open')) return
-    // Fold the scroll offset into a transform so the morph can animate it away.
     let inner = page.querySelector('.mp-inner')
     let s = page.scrollTop
     page.scrollTop = 0
@@ -80,7 +76,6 @@ export function morph(stage, page) {
   fab.addEventListener('click', close)
   page.addEventListener('click', (e) => e.target.closest('[data-close]') && close())
 
-  // Pull the page down by its head to put it back.
   let drag = null
   page.addEventListener('pointerdown', (e) => {
     if (e.button > 0 || page.scrollTop > 2 || !e.target.closest('[data-drag]') || e.target.closest('button')) return

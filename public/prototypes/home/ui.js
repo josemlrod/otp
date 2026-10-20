@@ -1,5 +1,3 @@
-// Small markup pieces used all over the screen: icons, crests, competition
-// marks, ordinals and form pills.
 import { COMPS } from './data.js'
 import { club, ordinal, result } from './utils.js'
 
@@ -23,7 +21,6 @@ export function compMark(id, size = 22) {
   return `<span class="cmark" style="--cm:${c.color};--ca:${c.accent};--s:${size}px" aria-hidden="true">${c.mark}</span>`
 }
 
-// 3 -> 3<sup>rd</sup>
 export function sup(n) {
   return `${n}<sup>${ordinal(n).slice(-2)}</sup>`
 }

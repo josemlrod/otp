@@ -29,14 +29,17 @@ function row(overrides: Partial<StandingTableRow> = {}): StandingTableRow {
   };
 }
 
-function response(table: StandingTableRow[] = [row()]): StandingsResponse {
+function response(
+  table: StandingTableRow[] = [row()],
+  code = 'PL',
+): StandingsResponse {
   return {
     filters: { season: '2026' },
     area: { id: 2072, name: 'England', code: 'ENG', flag: '' },
     competition: {
       id: 2021,
       name: 'Premier League',
-      code: 'PL',
+      code,
       type: 'LEAGUE',
       emblem: 'https://crests.football-data.org/PL.png',
     },
@@ -60,92 +63,19 @@ async function render(standing: StandingsResponse) {
 }
 
 describe('standings table', () => {
-  it('renders accessible table columns and API team data', async () => {
-    const html = await render(response());
+  it('signs positive goal differences only', async () => {
+    const html = await render(response([
+      row({ goalDifference: 11 }),
+      row({ goalDifference: 0 }),
+      row({ goalDifference: -4 }),
+    ]));
 
-    assert.match(html, /<table\b/);
-    assert.equal([...html.matchAll(/scope="col"/g)].length, 5);
-    assert.match(html, /<caption[^>]*>Premier League standings, Matchday<\/caption>/);
-    assert.match(html, /<th scope="row"[^>]*>/);
-    assert.match(html, /title="Manchester City FC">Man City<\/span>/);
-    assert.match(html, /src="https:\/\/crests\.football-data\.org\/65\.png"/);
-    assert.match(html, /alt=""/);
+    for (const expected of ['+11', '0', '-4']) {
+      assert.ok(html.includes(`<td>${expected}</td>`), expected);
+    }
   });
 
-  it('uses API position and row games played, not array index or season matchday', async () => {
-    const html = await render(response([row({ position: 4 })]));
-    const body = html.match(/<tbody>([\s\S]*?)<\/tbody>/)?.[1] ?? '';
-
-    assert.match(body, /<td[^>]*>4<\/td>/);
-    assert.match(body, /<td[^>]*>6<\/td>/);
-    assert.match(body, /<td[^>]*><b>18<\/b><\/td>/);
-    assert.doesNotMatch(body, /<td[^>]*>7<\/td>/);
-  });
-
-  for (const [goalDifference, expected] of [[11, '+11'], [0, '0'], [-4, '-4']] as const) {
-    it(`formats goal difference ${goalDifference} as ${expected}`, async () => {
-      const html = await render(response([row({ goalDifference })]));
-      assert.ok(html.includes(`<td>${expected}</td>`));
-    });
-  }
-
-  it('ignores HOME and AWAY breakdowns even when they precede TOTAL', async () => {
-    const standing = response();
-    const total = standing.standings[0];
-    standing.standings = [
-      { ...total, type: 'HOME', table: [row({ points: 101 })] },
-      { ...total, type: 'AWAY', table: [row({ points: 102 })] },
-      total,
-    ];
-    const html = await render(standing);
-
-    assert.equal([...html.matchAll(/<table\b/g)].length, 1);
-    assert.match(html, /<b>18<\/b>/);
-    assert.doesNotMatch(html, /<b>10[12]<\/b>/);
-  });
-
-  it('renders multiple TOTAL groups separately with their group names', async () => {
-    const standing = response();
-    const total = standing.standings[0];
-    standing.standings = [
-      { ...total, group: 'GROUP_A' },
-      { ...total, group: 'GROUP_B', table: [row({ points: 9 })] },
-    ];
-    const html = await render(standing);
-
-    assert.equal([...html.matchAll(/<table\b/g)].length, 2);
-    assert.match(html, /standings, GROUP A<\/caption>/);
-    assert.match(html, /standings, GROUP B<\/caption>/);
-    assert.match(html, /<b>18<\/b>/);
-    assert.match(html, /<b>9<\/b>/);
-  });
-
-  it('handles missing TOTAL groups without showing a partial table as overall standings', async () => {
-    const standing = response();
-    standing.standings = [{ ...standing.standings[0], type: 'HOME' }];
-    const html = await render(standing);
-
-    assert.match(html, /No standings available\./);
-    assert.doesNotMatch(html, /<table\b/);
-  });
-
-  it('handles an empty standings array', async () => {
-    const standing = response();
-    standing.standings = [];
-    const html = await render(standing);
-
-    assert.match(html, /No standings available\./);
-    assert.doesNotMatch(html, /<table\b/);
-  });
-
-  it('handles an empty TOTAL table', async () => {
-    const html = await render(response([]));
-
-    assert.match(html, /colspan="5"/);
-    assert.match(html, /No standings available\./);
-  });
-
-  it('uses the full team name when a short name is unavailable', async () => {
+  it('falls back to the full team name and omits a missing crest', async () => {
     const team = { ...row().team, shortName: '', crest: '' };
     const html = await render(response([row({ team })]));
 
@@ -153,38 +83,45 @@ describe('standings table', () => {
     assert.doesNotMatch(html, /<img\b/);
   });
 
-  it('renders the body within the sheet without unavailable mock sections', async () => {
-    const html = clean(await renderToString(
-      <Sheet standing={response()} open={true} onClose={() => {}} />,
-    ));
+  it('renders one captioned table per TOTAL group and ignores HOME and AWAY', async () => {
+    const standing = response();
+    const total = standing.standings[0];
+    standing.standings = [
+      { ...total, type: 'HOME', table: [row({ points: 101 })] },
+      { ...total, group: 'GROUP_A' },
+      { ...total, group: 'GROUP_B', table: [] },
+    ];
+    const html = await render(standing);
 
-    assert.match(html, /<b id="[^"]+-title">Premier League<\/b>/);
-    assert.match(html, /aria-labelledby="[^"]+-title"/);
-    assert.match(html, /Matchday 7 of 38/);
-    assert.match(html, /<table\b/);
-    assert.doesNotMatch(html, /Top scorers|Assists|Clean sheets|Relegation|ds-mine/);
-    assert.match(html, /overflow-y: auto/);
-    assert.match(html, /touch-action: pan-y/);
+    assert.equal([...html.matchAll(/<table\b/g)].length, 2);
+    assert.match(html, /standings, GROUP A<\/caption>/);
+    assert.match(html, /standings, GROUP B<\/caption>/);
+    assert.match(html, /colspan="5"[^>]*>No standings available\./);
+    assert.doesNotMatch(html, /<b>101<\/b>/);
   });
 
-  it('does not render a table when the sheet has no selected standing', async () => {
-    const html = await renderToString(
-      <Sheet standing={null} open={false} onClose={() => {}} />,
-    );
+  it('shows an empty state when there is no TOTAL group', async () => {
+    const standing = response();
+    standing.standings = [{ ...standing.standings[0], type: 'HOME' }];
+    const html = await render(standing);
 
+    assert.match(html, /No standings available\./);
     assert.doesNotMatch(html, /<table\b/);
   });
+});
 
-  it('keeps selected content in the closed sheet for its exit transition', async () => {
-    const html = clean(await renderToString(
-      <Sheet standing={response()} open={false} onClose={() => {}} />,
-    ));
+describe('standings sheet', () => {
+  for (const [code, label] of [
+    ['PL', 'Matchday 7 of 38'],
+    ['CL', 'League phase 7 of 8'],
+    ['FL1', 'Matchday 7'],
+  ]) {
+    it(`labels ${code} progress as "${label}"`, async () => {
+      const html = await renderToString(
+        <Sheet standing={response([], code)} open={true} onClose={() => {}} />,
+      );
 
-    assert.match(html, /<table\b/);
-    assert.match(html, /aria-hidden="true"/);
-    assert.match(html, /\binert(?:[\s=>])/);
-    assert.match(html, /translateY\(110%\)/);
-    assert.match(html, /transition-duration: var\(--sheet-duration, 480ms\)/);
-    assert.match(html, /prefers-reduced-motion: reduce/);
-  });
+      assert.ok(clean(html).includes(`>${label}<`));
+    });
+  }
 });

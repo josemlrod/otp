@@ -9,7 +9,6 @@ interface PromptButtonProps {
   text: string
 }
 
-// This component hydrates independently; the rest of the page stays static HTML.
 export const PromptButton = clientEntry(
   import.meta.url,
   function PromptButton(handle: Handle<PromptButtonProps>) {

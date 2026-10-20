@@ -1,5 +1,3 @@
-// A followed club: its card in the wallet, the page that morphs out of that
-// card, and the page's Matches / Squad / Table tabs.
 import { COMPS } from './data.js'
 import { compView, situation, zoneOf } from './competition.js'
 import { compMark, crest, formPills, icons, sup } from './ui.js'
@@ -17,14 +15,11 @@ import {
   toast,
 } from './utils.js'
 
-// ---------- Card pieces ----------
-
 function moveTag(move) {
   if (!move) return `<span class="move" data-m="0" aria-label="No change">–</span>`
   return `<span class="move" data-m="${move > 0 ? 'up' : 'down'}" aria-label="${move > 0 ? 'Up' : 'Down'} ${Math.abs(move)}">${move > 0 ? '▲' : '▼'}${Math.abs(move)}</span>`
 }
 
-// The whole table as a strip: zones as tints, this club as the bright tick.
 function track(t, compId) {
   let comp = COMPS[compId]
   let me = comp.table.findIndex((r) => r[0] === t.code)
@@ -33,8 +28,6 @@ function track(t, compId) {
     .join('')}</span>`
 }
 
-// Side-by-side competition columns: the comparison is the point.
-// Each panel opens that competition's table.
 function lanes(t) {
   return `<div class="lanes">${t.comps.map((id) => lane(t, id)).join('')}</div>`
 }
@@ -92,8 +85,6 @@ function clubPositions(t) {
     .join('')}</span>`
 }
 
-// ---------- Club card ----------
-
 export function clubCard(t, i) {
   return `<article class="cc" data-card data-team="${t.id}" style="${teamVars(t)};--i:${i};z-index:${i + 1}">
     ${watermark(t.code)}
@@ -106,9 +97,6 @@ export function clubCard(t, i) {
     </div>
   </article>`
 }
-
-// ---------- Club page ----------
-// Head mirrors the card exactly, so the morph has nothing to reconcile.
 
 export function clubPage(t) {
   return `<div class="mp-inner">
@@ -146,9 +134,6 @@ function teamTabs(t) {
   </div>`
 }
 
-// Matches tab
-
-// Home team on the left, the way every scoreboard reads.
 function sides(t, f) {
   return f.ha === 'H' ? [t.code, f.opp] : [f.opp, t.code]
 }
@@ -185,8 +170,6 @@ function matchesPanel(t) {
     <ul class="fx-list">${t.form.slice().reverse().map((m) => resultRow(t, m)).join('')}</ul>`
 }
 
-// Squad tab
-
 const POSITIONS = { GK: 'Goalkeepers', DF: 'Defenders', MF: 'Midfielders', FW: 'Forwards' }
 
 function squadPanel(t) {
@@ -207,9 +190,6 @@ function squadPanel(t) {
     .join('')
 }
 
-// Table tab: one chip per competition the club plays in, above that
-// competition's table. Clicking a chip swaps the table (see bindClubPage).
-
 function tablePanel(t) {
   let compIds = t.comps
   let highlight = [t.code]
@@ -221,10 +201,6 @@ function tablePanel(t) {
     .join('')}</div>
     <div class="comp-view">${compView(compIds[0], highlight)}</div>`
 }
-
-// ---------- Behaviour ----------
-// Tabs, table chips and the alerts bell, by delegation on `root`, so a club
-// page injected later just works.
 
 export function bindClubPage(root) {
   root.addEventListener('click', (e) => {

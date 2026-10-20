@@ -5,6 +5,12 @@ const rootDir = process.cwd();
 const nodeEnv = process.env.NODE_ENV ?? 'development';
 const isDevelopment = nodeEnv === 'development';
 const isHmr = Boolean(isDevelopment && process.env.REMIX_NODE_HMR);
+const HMR_PROXY_PATH_REACHABLE_FROM_LAN = '/hmr';
+
+async function createLanReachableHmrChannel() {
+  const { createBrowserHmrChannel } = await import('remix/node-hmr/runtime');
+  return { ...(await createBrowserHmrChannel()), url: HMR_PROXY_PATH_REACHABLE_FROM_LAN };
+}
 
 export const assets = createAssetServer({
   basePath: '/assets',
@@ -23,13 +29,7 @@ export const assets = createAssetServer({
   watch: isDevelopment,
   hmr: isHmr
     ? {
-        // The runner reports an absolute 127.0.0.1 URL, which a phone on the
-        // LAN can't reach. hmr.ts proxies this path to the event channel, so a
-        // relative URL works from any device.
-        channel: async () => ({
-          ...(await (await import('remix/node-hmr/runtime')).createBrowserHmrChannel()),
-          url: '/hmr',
-        }),
+        channel: createLanReachableHmrChannel,
         moduleImporter: 'remix/multiple-import-maps-polyfill',
       }
     : undefined,

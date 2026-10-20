@@ -16,7 +16,6 @@ ENV NODE_ENV="production"
 COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
 
 
-# Throw-away build stage to reduce size of final image
 FROM base AS build
 
 COPY bun.lock package.json ./
@@ -25,7 +24,6 @@ RUN bun install --frozen-lockfile
 COPY . .
 
 
-# Final stage for app image
 FROM base
 
 COPY --from=build /app /app

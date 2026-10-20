@@ -1,13 +1,6 @@
-// Mock data for the On the Pitch prototype. Followed clubs are in the user's
-// order; the first few are favourites. Shapes are rough drafts of what a
-// real data source would return; numbers are plausible, not real.
-
-// Frozen "now" so countdowns are stable while prototyping.
 export const NOW = new Date('2026-10-10T12:00:00')
 
-// code -> { name, color, ink?, mono? }
 export const CLUBS = {
-  // Premier League
   MCI: { name: 'Man City', color: '#6CABDD' },
   ARS: { name: 'Arsenal', color: '#DB0007', mono: 'AFC' },
   CHE: { name: 'Chelsea', color: '#034694' },
@@ -28,7 +21,6 @@ export const CLUBS = {
   SUN: { name: 'Sunderland', color: '#EB172B' },
   BUR: { name: 'Burnley', color: '#6C1D45' },
   WOL: { name: 'Wolves', color: '#FDB913', ink: '#231F20' },
-  // LaLiga
   RMA: { name: 'Real Madrid', color: '#F3F1EA', ink: '#1C2B57', mono: 'RM' },
   BAR: { name: 'Barcelona', color: '#A50044' },
   ATM: { name: 'Atlético', color: '#CB3524' },
@@ -49,7 +41,6 @@ export const CLUBS = {
   LEV: { name: 'Levante', color: '#B4053F' },
   ELC: { name: 'Elche', color: '#05642C' },
   OVI: { name: 'Oviedo', color: '#0057A3' },
-  // Serie A
   NAP: { name: 'Napoli', color: '#12A0D7' },
   MIL: { name: 'Milan', color: '#FB090B' },
   INT: { name: 'Inter', color: '#0A4595', mono: 'IM' },
@@ -70,7 +61,6 @@ export const CLUBS = {
   CRE: { name: 'Cremonese', color: '#C8102E' },
   VER: { name: 'Verona', color: '#002D72' },
   PIS: { name: 'Pisa', color: '#1A1A1A' },
-  // Bundesliga
   FCB: { name: 'Bayern', color: '#DC052D' },
   B04: { name: 'Leverkusen', color: '#E32221' },
   BVB: { name: 'Dortmund', color: '#FDE100', ink: '#111' },
@@ -89,7 +79,6 @@ export const CLUBS = {
   HSV: { name: 'Hamburg', color: '#0A3F86' },
   FCH: { name: 'Heidenheim', color: '#E2001A' },
   STP: { name: 'St. Pauli', color: '#5B3A29' },
-  // Other Champions League clubs
   PSG: { name: 'Paris SG', color: '#004170' },
   OM: { name: 'Marseille', color: '#2FAEE0' },
   ASM: { name: 'Monaco', color: '#E51B22' },
@@ -109,7 +98,6 @@ export const CLUBS = {
   PAF: { name: 'Pafos', color: '#1C3F94' },
 }
 
-// Standings rows are [code, points, goalDifference], sorted just below.
 export const COMPS = {
   pl: {
     id: 'pl',
@@ -244,13 +232,13 @@ export const COMPS = {
   },
 }
 
-// Points first, then goal difference.
 for (let comp of Object.values(COMPS)) {
-  comp.table.sort((a, b) => b[1] - a[1] || b[2] - a[2])
+  comp.table.sort(
+    ([, pointsA, goalDifferenceA], [, pointsB, goalDifferenceB]) =>
+      pointsB - pointsA || goalDifferenceB - goalDifferenceA,
+  )
 }
 
-// Squad rows: [number, name, position, goals?, assists?]
-// Form is oldest -> newest. gf/ga are from this club's perspective.
 export const TEAMS = [
   {
     id: 'ars',

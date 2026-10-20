@@ -1,9 +1,6 @@
-/* ---------- Device: a phone on desktop, full-bleed on a phone ---------- */
-
 :root {
   --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  /* iOS sheet / push curve */
   --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
   --win: #1fb85a;
   --draw: #9ca3af;
@@ -143,8 +140,6 @@ li {
   }
 }
 
-/* ---------- Themes ---------- */
-
 .theme-dark {
   --bg: #0a0b0c;
   --surface: #151719;
@@ -164,7 +159,6 @@ li {
 .app {
   position: absolute;
   inset: 0;
-  /* clip, not hidden: focus and scrollIntoView can't shift the app */
   overflow: clip;
   background: var(--bg);
   color: var(--text);
@@ -184,8 +178,6 @@ sup {
   margin-left: 1px;
   letter-spacing: 0;
 }
-
-/* ---------- Form pills ---------- */
 
 .form {
   display: inline-flex;
@@ -209,8 +201,6 @@ sup {
 .pill[data-r='L'] {
   background: var(--loss);
 }
-
-/* ---------- Team page: segmented control ---------- */
 
 .tp {
   padding: 0 16px;
@@ -290,8 +280,6 @@ sup {
   color: var(--text-3);
 }
 
-/* ---------- Fixtures / results ---------- */
-
 .fx-list,
 .squad,
 .leaders {
@@ -354,8 +342,6 @@ sup {
   font-weight: 700;
 }
 
-/* ---------- Squad ---------- */
-
 .squad li {
   display: flex;
   align-items: center;
@@ -388,8 +374,6 @@ sup {
   color: var(--text-3);
   font-size: 12px;
 }
-
-/* ---------- Competition chips, table, leaders ---------- */
 
 .chips {
   display: flex;
@@ -579,8 +563,6 @@ sup {
   font-weight: 750;
 }
 
-/* ---------- Toast ---------- */
-
 .toast {
   position: absolute;
   top: calc(var(--safe-top) + 8px);
@@ -605,8 +587,6 @@ sup {
   opacity: 1;
   transform: translate(-50%, 0) scale(1);
 }
-
-/* ---------- Reduced motion: keep fades, drop travel ---------- */
 
 @media (prefers-reduced-motion: reduce) {
   .app *,
