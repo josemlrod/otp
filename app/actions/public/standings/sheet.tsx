@@ -1,6 +1,7 @@
 import { css, on, ref, type Handle } from 'remix/component';
 
 import { getCompetitionMetadata } from '../../../lib/competition-metadata.ts';
+import { countRender } from '../perf/renders.ts';
 import { StandingsTable } from './standings-table.tsx';
 
 import type { StandingsResponse } from '../../../lib/types/api.ts';
@@ -64,6 +65,7 @@ export function Sheet(handle: Handle<Props>) {
   }
 
   return () => {
+    countRender('Sheet');
     const { open, standing, onClose } = handle.props;
     const metadata = standing
       ? getCompetitionMetadata(standing.competition.code)

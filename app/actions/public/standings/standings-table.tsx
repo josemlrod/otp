@@ -1,5 +1,7 @@
 import { css, type Handle } from 'remix/component';
 
+import { countRender } from '../perf/renders.ts';
+
 import type { StandingsResponse } from '../../../lib/types/api.ts';
 
 type Props = {
@@ -8,6 +10,7 @@ type Props = {
 
 export function StandingsTable(handle: Handle<Props>) {
   return () => {
+    countRender('StandingsTable');
     const { standing } = handle.props;
     const groups = standing.standings.filter((group) => group.type === 'TOTAL');
 

@@ -4,6 +4,7 @@ import type { StandingsResponse } from '../../lib/types/api.ts';
 import { Logo } from '../../ui/logo.tsx';
 import { Standings } from './standings/index.tsx';
 import { Sheet } from './standings/sheet.tsx';
+import { countRender } from './perf/renders.ts';
 
 export const HomeScreen = clientEntry(
   import.meta.url,
@@ -37,6 +38,7 @@ export const HomeScreen = clientEntry(
     }
 
     return () => {
+      countRender('HomeScreen');
       const progress = dragProgress ?? (open ? 1 : 0);
 
       return (

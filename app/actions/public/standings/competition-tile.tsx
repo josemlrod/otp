@@ -1,6 +1,7 @@
 import { css, on, type Handle } from 'remix/component';
 
 import { getCompetitionMetadata } from '../../../lib/competition-metadata.ts';
+import { countRender } from '../perf/renders.ts';
 
 type CompetitionTileProps = {
   id: number;
@@ -13,6 +14,7 @@ type CompetitionTileProps = {
 
 export function CompetitionTile(handle: Handle<CompetitionTileProps>) {
   return () => {
+    countRender('CompetitionTile');
     const { id, code, emblem, name, selectedTeams, onPress } = handle.props;
     const noSelectedTeams = !selectedTeams.length;
     const metadata = getCompetitionMetadata(code);
