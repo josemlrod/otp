@@ -4,6 +4,7 @@ import type { StandingsResponse } from '../../lib/types/api.ts';
 import { Logo } from '../../ui/logo.tsx';
 import { Standings } from './standings/index.tsx';
 import { Sheet } from './standings/sheet.tsx';
+import { countRender } from './perf/renders.ts';
 
 export const HomeScreen = clientEntry(
   import.meta.url,
@@ -37,6 +38,7 @@ export const HomeScreen = clientEntry(
     }
 
     return () => {
+      countRender('HomeScreen');
       const progress = dragProgress ?? (open ? 1 : 0);
 
       return (
@@ -63,7 +65,19 @@ export const HomeScreen = clientEntry(
               })}
             >
               <p mix={subtitleStyles}>Saturday 10 October</p>
-              <div mix={css({ display: 'flex', alignItems: 'center', gap: 10 })}>
+              {/* Five quick taps here toggle the perf HUD (see perf/toggle.ts). */}
+              <div
+                data-perf-toggle
+                mix={css({
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  // Rapid taps shouldn't zoom the page or select the title.
+                  touchAction: 'manipulation',
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none',
+                })}
+              >
                 <Logo size={30} />
                 <h3 mix={titleStyles}>On the Pitch</h3>
               </div>

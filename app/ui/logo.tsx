@@ -1,10 +1,12 @@
 import type { Handle } from 'remix/component';
+import { countRender } from '../actions/public/perf/renders.ts';
 
 // The app mark: centre circle, halfway line, and the ball on the spot.
 // Mirrors public/favicon.svg (heavier strokes than the home-screen icon so it
 // holds up at header and tab sizes). public/icon.svg is the full-bleed master.
 export function Logo(handle: Handle<{ size?: number }>) {
   return () => {
+    countRender('Logo');
     let { size = 30 } = handle.props;
 
     return (
