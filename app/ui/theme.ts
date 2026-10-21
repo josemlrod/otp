@@ -10,6 +10,7 @@ export const tokens = {
   '--color-text-secondary': 'oklch(94.3% 0.013 286.1 / 0.6)',
   '--color-text-tertiary': 'oklch(94.3% 0.013 286.1 / 0.28)',
   '--color-separator': 'oklch(100% 0 0 / 0.08)',
+  '--color-crest-plate': 'oklch(100% 0 0 / 0.94)',
   '--color-grabber': 'oklch(100% 0 0 / 0.45)',
   '--color-accent': 'oklch(91.1% 0.197 124.6)',
   '--color-accent-ink': 'var(--color-bg)',
@@ -40,10 +41,18 @@ export const tokens = {
   '--gutter': 'calc(var(--spacing) * 5)',
   '--radius-md': '0.875rem',
   '--radius-lg': '1.125rem',
+  '--radius-xl': '1.375rem',
   '--radius-full': 'calc(infinity * 1px)',
 
   '--shadow-sheet': '0 -0.625rem 2.5rem oklch(0% 0 0 / 0.5)',
   '--shadow-highlight': 'inset 0 1px 0 oklch(100% 0 0 / 0.2)',
+  '--shadow-card': '0 0.75rem 1.5rem oklch(0% 0 0 / 0.35)',
+  '--shadow-crest':
+    '0 0 0 0.5px oklch(0% 0 0 / 0.12), 0 0.25rem 0.75rem oklch(0% 0 0 / 0.2)',
+  '--shadow-stack':
+    'inset 0 1px 0 oklch(100% 0 0 / 0.12), 0 -0.3125rem 0 -0.125rem var(--color-surface-raised), 0 -0.625rem 0 -0.25rem var(--color-surface)',
+  '--shadow-accent-glow':
+    '0 0.5rem 1.5rem color-mix(in oklab, var(--color-accent) 22%, transparent)',
   '--shadow-badge':
     'inset 0 0 0 1px oklch(100% 0 0 / 0.25), 0 0.25rem 0.75rem oklch(0% 0 0 / 0.3)',
 

@@ -5,10 +5,12 @@ import { HomeScreen } from './public/home-screen.tsx';
 
 import type { StandingsResponse } from '../lib/types/api.ts';
 
-export function HomePage(handle: Handle<{ standings: StandingsResponse[] }>) {
+type Props = { standings: StandingsResponse[]; follows: number[] };
+
+export function HomePage(handle: Handle<Props>) {
   return () => (
     <Document>
-      <HomeScreen standings={handle.props.standings} />
+      <HomeScreen standings={handle.props.standings} follows={handle.props.follows} />
     </Document>
   );
 }

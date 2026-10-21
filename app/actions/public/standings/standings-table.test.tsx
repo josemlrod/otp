@@ -3,7 +3,7 @@ import { renderToString } from 'remix/component/server';
 import { describe, it } from 'remix/test';
 
 import type { StandingsResponse, StandingTableRow } from '../../../lib/types/api.ts';
-import { Sheet } from './sheet.tsx';
+import { StandingsSheet } from './standings-sheet.tsx';
 import { StandingsTable } from './standings-table.tsx';
 
 function row(overrides: Partial<StandingTableRow> = {}): StandingTableRow {
@@ -118,7 +118,7 @@ describe('standings sheet', () => {
   ]) {
     it(`labels ${code} progress as "${label}"`, async () => {
       const html = await renderToString(
-        <Sheet standing={response([], code)} open={true} onClose={() => {}} />,
+        <StandingsSheet standing={response([], code)} titleId='title' onClose={() => {}} />,
       );
 
       assert.ok(clean(html).includes(`>${label}<`));

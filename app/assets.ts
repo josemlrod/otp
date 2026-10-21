@@ -19,7 +19,9 @@ export const assets = createAssetServer({
   allowFiles: [
     'app/routes.ts',
     'app/**/public/**',
+    'app/lib/clubs.ts',
     'app/lib/competition-metadata.ts',
+    'app/lib/follows.ts',
     'app/ui/logo.tsx',
     'app/ui/theme.ts',
   ],
