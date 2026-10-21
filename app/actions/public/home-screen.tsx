@@ -1,4 +1,4 @@
-import { clientEntry, css, on, type Handle } from 'remix/component';
+import { clientEntry, css, type Handle } from 'remix/component';
 
 import type { StandingsResponse } from '../../lib/types/api.ts';
 import { Logo } from '../../ui/logo.tsx';
@@ -8,7 +8,6 @@ import { countRender } from './perf/renders.ts';
 import { space, v } from '../../ui/theme.ts';
 
 const RECEDED_SCREEN_SCALE = 0.93;
-const OVERLAY_OPEN_OPACITY = 0.45;
 
 export const HomeScreen = clientEntry(
   import.meta.url,
@@ -77,18 +76,6 @@ export const HomeScreen = clientEntry(
             <section></section>
           </main>
 
-          <button
-            type='button'
-            aria-label='Close standings'
-            tabIndex={-1}
-            inert={!open}
-            mix={[overlayStyles, on('click', close)]}
-            style={{
-              opacity: openFraction * OVERLAY_OPEN_OPACITY,
-              pointerEvents: open ? 'auto' : 'none',
-            }}
-          />
-
           <Sheet
             standing={selected}
             open={open}
@@ -124,16 +111,6 @@ const screenStyles = css({
   background: v('--color-bg'),
   transformOrigin: '50% 50%',
   transitionProperty: 'transform, border-radius',
-  transitionDuration: 'var(--sheet-duration)',
-  transitionTimingFunction: v('--ease-ios'),
-});
-
-const overlayStyles = css({
-  position: 'absolute',
-  inset: 0,
-  zIndex: 40,
-  background: v('--color-black'),
-  transitionProperty: 'opacity',
   transitionDuration: 'var(--sheet-duration)',
   transitionTimingFunction: v('--ease-ios'),
 });

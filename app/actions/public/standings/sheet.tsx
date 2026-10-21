@@ -24,6 +24,7 @@ type GrabPress = {
   lastTimeStamp: number;
   velocityPxPerMs: number;
   isDragging: boolean;
+  openFraction: number;
 };
 
 const MIN_DRAG_DISTANCE_PX = 6;
@@ -31,6 +32,7 @@ const FLICK_PROJECTION_MS = 220;
 const STILL_FINGER_LOSES_FLICK_AFTER_MS = 100;
 const CLOSED_OVERSHOOT_PX = 30;
 const RUBBER_BAND_RESISTANCE = 0.2;
+const BACKDROP_OPEN_OPACITY = 0.45;
 
 function rubberBand(pullDownPx: number) {
   return pullDownPx < 0 ? pullDownPx * RUBBER_BAND_RESISTANCE : pullDownPx;
@@ -94,6 +96,7 @@ export function Sheet(handle: Handle<Props>) {
       lastTimeStamp: event.timeStamp,
       velocityPxPerMs: 0,
       isDragging: false,
+      openFraction: 1,
     };
   }
 
@@ -111,7 +114,8 @@ export function Sheet(handle: Handle<Props>) {
     press.lastY = event.clientY;
     press.lastTimeStamp = event.timeStamp;
     pullDownPx = travelPx;
-    handle.props.onDragOpenFraction?.(clamp01(1 - pullDownPx / closedPullDownPx()));
+    press.openFraction = clamp01(1 - pullDownPx / closedPullDownPx());
+    handle.props.onDragOpenFraction?.(press.openFraction);
     handle.update();
   }
 
@@ -142,100 +146,124 @@ export function Sheet(handle: Handle<Props>) {
       ? getCompetitionMetadata(standing.competition.code)
       : null;
     const isDragging = open && !!press?.isDragging;
+    const openFraction = isDragging ? press!.openFraction : open ? 1 : 0;
     const restingTransform = open ? 'translateY(0)' : 'translateY(110%)';
 
     return (
-      <section
-        mix={[
-          sheetContainer,
-          ref((node) => {
-            sheet = node;
-          }),
-          on('keydown', (event) => {
-            if (!handle.props.open) return;
+      <>
+        <button
+          type='button'
+          aria-label='Close standings'
+          tabIndex={-1}
+          inert={!open}
+          mix={[backdrop, on('click', onClose)]}
+          style={{
+            opacity: openFraction * BACKDROP_OPEN_OPACITY,
+            pointerEvents: open ? 'auto' : 'none',
+          }}
+        />
+        <section
+          mix={[
+            sheetContainer,
+            ref((node) => {
+              sheet = node;
+            }),
+            on('keydown', (event) => {
+              if (!handle.props.open) return;
 
-            if (event.key === 'Escape') {
-              event.preventDefault();
-              event.stopPropagation();
-              handle.props.onClose();
-            }
+              if (event.key === 'Escape') {
+                event.preventDefault();
+                event.stopPropagation();
+                handle.props.onClose();
+              }
 
-            if (event.key === 'Tab') trapTabFocus(event);
-          }),
-        ]}
-        role='dialog'
-        aria-modal='true'
-        tabIndex={-1}
-        aria-labelledby={standing ? titleId : undefined}
-        aria-hidden={!open || !standing ? 'true' : 'false'}
-        inert={!open || !standing}
-        style={{
-          transform: isDragging
-            ? `translateY(${rubberBand(pullDownPx)}px)`
-            : restingTransform,
-          transitionDuration: isDragging ? '0ms' : undefined,
-        }}
-      >
-        {standing && metadata && (
-          <div
-            mix={[
-              sheetGrab,
-              on('pointerdown', startPress),
-              on('pointermove', movePress),
-              on('pointerup', endPress),
-              on('pointercancel', endPress),
-            ]}
-            style={{ cursor: isDragging ? 'grabbing' : undefined }}
-          >
-            <span mix={sheetHandle} aria-hidden='true' />
+              if (event.key === 'Tab') trapTabFocus(event);
+            }),
+          ]}
+          role='dialog'
+          aria-modal='true'
+          tabIndex={-1}
+          aria-labelledby={standing ? titleId : undefined}
+          aria-hidden={!open || !standing ? 'true' : 'false'}
+          inert={!open || !standing}
+          style={{
+            transform: isDragging
+              ? `translateY(${rubberBand(pullDownPx)}px)`
+              : restingTransform,
+            transitionDuration: isDragging ? '0ms' : undefined,
+          }}
+        >
+          {standing && metadata && (
             <div
-              mix={sheetBand}
-              style={{
-                '--competition': metadata.color,
-                '--competition-accent': metadata.accent,
-              }}
+              mix={[
+                sheetGrab,
+                on('pointerdown', startPress),
+                on('pointermove', movePress),
+                on('pointerup', endPress),
+                on('pointercancel', endPress),
+              ]}
+              style={{ cursor: isDragging ? 'grabbing' : undefined }}
             >
-              <span mix={competitionBadge}>
-                <span mix={competitionMark} aria-hidden='true'>
-                  {metadata.mark}
-                </span>
-              </span>
-              <span mix={sheetTitle}>
-                <b id={titleId}>{standing.competition.name}</b>
-                <span>{matchdayLabel(standing, metadata.leaguePhaseRounds)}</span>
-              </span>
-              <button
-                type='button'
-                mix={[
-                  sheetClose,
-                  ref((button) => handle.props.closeButtonRef?.(button)),
-                  on('click', onClose),
-                ]}
-                aria-label='Close'
+              <span mix={sheetHandle} aria-hidden='true' />
+              <div
+                mix={sheetBand}
+                style={{
+                  '--competition': metadata.color,
+                  '--competition-accent': metadata.accent,
+                }}
               >
-                <svg
-                  viewBox='0 0 24 24'
-                  fill='none'
-                  stroke='currentColor'
-                  stroke-width='2.6'
-                  stroke-linecap='round'
-                  aria-hidden='true'
+                <span mix={competitionBadge}>
+                  <span mix={competitionMark} aria-hidden='true'>
+                    {metadata.mark}
+                  </span>
+                </span>
+                <span mix={sheetTitle}>
+                  <b id={titleId}>{standing.competition.name}</b>
+                  <span>{matchdayLabel(standing, metadata.leaguePhaseRounds)}</span>
+                </span>
+                <button
+                  type='button'
+                  mix={[
+                    sheetClose,
+                    ref((button) => handle.props.closeButtonRef?.(button)),
+                    on('click', onClose),
+                  ]}
+                  aria-label='Close'
                 >
-                  <path d='M18 6 6 18M6 6l12 12' />
-                </svg>
-              </button>
+                  <svg
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    stroke-width='2.6'
+                    stroke-linecap='round'
+                    aria-hidden='true'
+                  >
+                    <path d='M18 6 6 18M6 6l12 12' />
+                  </svg>
+                </button>
+              </div>
             </div>
-          </div>
-        )}
-        {standing && (
-          <div mix={[sheetScroll, hideScrollbar]} tabIndex={0}>
-            <StandingsTable standing={standing} />
-          </div>
-        )}
-      </section>
+          )}
+          {standing && (
+            <div mix={[sheetScroll, hideScrollbar]} tabIndex={0}>
+              <StandingsTable standing={standing} />
+            </div>
+          )}
+        </section>
+      </>
     );
   };
 }
+
+const backdrop = css({
+  position: 'absolute',
+  inset: 0,
+  zIndex: 40,
+  background: v('--color-black'),
+  transitionProperty: 'opacity',
+  transitionDuration: `var(--sheet-duration, ${v('--duration-sheet-open')})`,
+  transitionTimingFunction: v('--ease-ios'),
+});
 
 const sheetContainer = css({
   position: 'absolute',
