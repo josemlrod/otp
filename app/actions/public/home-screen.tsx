@@ -13,7 +13,6 @@ import { countRender } from './perf/renders.ts';
 import { space, v } from '../../ui/theme.ts';
 
 const RECEDED_SCREEN_SCALE = 0.93;
-const OVERLAY_OPEN_OPACITY = 0.45;
 const STACK_PREVIEW_CLUBS = 3;
 
 type Props = { standings: StandingsResponse[]; follows: number[] };
@@ -137,18 +136,6 @@ export const HomeScreen = clientEntry(
             </section>
           </main>
 
-          <button
-            type='button'
-            aria-label='Close sheet'
-            tabIndex={-1}
-            inert={!open}
-            mix={[overlayStyles, on('click', close)]}
-            style={{
-              opacity: openFraction * OVERLAY_OPEN_OPACITY,
-              pointerEvents: open ? 'auto' : 'none',
-            }}
-          />
-
           <Sheet
             open={open}
             labelledBy={content ? titleId : undefined}
@@ -197,16 +184,6 @@ const screenStyles = css({
   background: v('--color-bg'),
   transformOrigin: '50% 50%',
   transitionProperty: 'transform, border-radius',
-  transitionDuration: 'var(--sheet-duration)',
-  transitionTimingFunction: v('--ease-ios'),
-});
-
-const overlayStyles = css({
-  position: 'absolute',
-  inset: 0,
-  zIndex: 40,
-  background: v('--color-black'),
-  transitionProperty: 'opacity',
   transitionDuration: 'var(--sheet-duration)',
   transitionTimingFunction: v('--ease-ios'),
 });
