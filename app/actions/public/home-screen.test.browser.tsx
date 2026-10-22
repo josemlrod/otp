@@ -32,7 +32,7 @@ const otherStanding: StandingsResponse = {
 };
 
 function mount() {
-  const view = render(<HomeScreen standings={[standing, otherStanding]} />);
+  const view = render(<HomeScreen standings={[standing, otherStanding]} follows={[]} />);
   view.container.style.cssText = 'height: 600px; width: 390px;';
   for (const [token, value] of Object.entries(tokens)) {
     view.container.style.setProperty(token, value);
@@ -41,7 +41,7 @@ function mount() {
   const tile = view.$('main button');
   const screen = view.$('main');
   const sheet = view.$('[role="dialog"]');
-  const overlay = view.$('[aria-label="Close standings"]');
+  const overlay = view.$('[aria-label="Close sheet"]');
   assert.ok(tile && screen && sheet && overlay);
 
   return { ...view, tile, screen, sheet, overlay };
@@ -255,7 +255,7 @@ describe('home screen standings sheet drag', () => {
     for (const layer of [screen, sheet, overlay]) {
       assert.equal(getComputedStyle(layer).transitionDuration, '0s');
     }
-    assert.equal(getComputedStyle(sheet.firstElementChild!).cursor, 'grabbing');
+    assert.equal(getComputedStyle(sheet.querySelector('[data-sheet-grab]')!).cursor, 'grabbing');
 
     await act(() => pointer(title, 'pointermove', 0));
     assert.equal(sheet.style.transform, 'translateY(-20px)');
@@ -322,5 +322,86 @@ describe('home screen standings sheet drag', () => {
 
     assert.equal(sheet.inert, true);
     assert.equal(document.activeElement, tile);
+  });
+});
+
+describe('home screen club picker', () => {
+  const clubs: StandingsResponse = {
+    ...standing,
+    standings: [{
+      ...standing.standings[0]!,
+      table: [[57, 'Arsenal', 'Arsenal FC'], [5, 'Bayern', 'FC Bayern München']].map(
+        ([id, shortName, name], index) => ({
+          position: index + 1,
+          team: { id: id as number, name: name as string, shortName: shortName as string, tla: '', crest: '' },
+          playedGames: 7, form: null, won: 0, draw: 0, lost: 0, points: 0,
+          goalsFor: 0, goalsAgainst: 0, goalDifference: 0,
+        }),
+      ),
+    }],
+  };
+
+  function mountPicker() {
+    const view = render(<HomeScreen standings={[clubs]} follows={[]} />);
+    for (const [token, value] of Object.entries(tokens)) {
+      view.container.style.setProperty(token, value);
+    }
+    const choose = view.$('main [data-clubs-opener]');
+    assert.ok(choose);
+    return { ...view, choose };
+  }
+
+  function tile(name: string) {
+    const found = Array.from(
+      document.querySelectorAll<HTMLButtonElement>('[role="dialog"] [data-section] button'),
+    ).find((button) => button.textContent?.trim() === name);
+    assert.ok(found, name);
+    return found;
+  }
+
+  it('saves picked clubs on Done and returns focus to Edit', async (t) => {
+    const { $, act, cleanup, choose } = mountPicker();
+    t.after(() => {
+      document.cookie = 'otp_follows=; Path=/; Max-Age=0';
+      cleanup();
+    });
+
+    await act(() => choose.click());
+    const done = $('[role="dialog"] [data-sheet-autofocus]');
+    assert.equal(document.activeElement, done);
+    assert.equal(choose.textContent?.trim(), 'Choose clubs');
+
+    await act(() => tile('Arsenal').click());
+    assert.equal(tile('Arsenal').getAttribute('aria-pressed'), 'true');
+    assert.ok($('[aria-label="Remove Arsenal"]'));
+    assert.ok($('main article'), 'home keeps the empty state until the sheet closes');
+
+    await act(() => done!.click());
+    assert.match(document.cookie, /otp_follows=57/);
+    assert.equal($('main article'), null);
+    assert.match($('main section:last-child p')!.textContent!, /Your clubs · 1/);
+    assert.equal(document.activeElement?.textContent, 'Edit');
+  });
+
+  it('matches full names ignoring accents and reports misses', async (t) => {
+    const { $, act, cleanup, choose } = mountPicker();
+    t.after(cleanup);
+    await act(() => choose.click());
+    const search = $('[role="dialog"] input[type="search"]') as HTMLInputElement;
+
+    await act(() => {
+      search.value = 'munchen';
+      search.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    assert.deepEqual(
+      Array.from(document.querySelectorAll('[role="dialog"] [data-section] b')).map((b) => b.textContent),
+      ['Bayern'],
+    );
+
+    await act(() => {
+      search.value = 'zzz';
+      search.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    assert.match($('[role="dialog"]')!.textContent!, /No clubs match “zzz”/);
   });
 });
