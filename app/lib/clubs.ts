@@ -14,8 +14,6 @@ export type ClubSection = {
   clubs: Club[];
 };
 
-const REST_OF_EUROPE = 'Rest of Europe';
-
 function teamsOf(standing: StandingsResponse): Club[] {
   return standing.standings
     .filter((group) => group.type === 'TOTAL')
@@ -35,9 +33,9 @@ function isLeague(standing: StandingsResponse) {
 
 export function clubSections(standings: StandingsResponse[]): ClubSection[] {
   const seen = new Set<number>();
-  const ordered = [...standings.filter(isLeague), ...standings.filter((s) => !isLeague(s))];
 
-  return ordered
+  return standings
+    .filter(isLeague)
     .map((standing) => {
       const clubs = teamsOf(standing)
         .filter((club) => !seen.has(club.id))
@@ -45,7 +43,7 @@ export function clubSections(standings: StandingsResponse[]): ClubSection[] {
       for (const club of clubs) seen.add(club.id);
       return {
         code: standing.competition.code,
-        name: isLeague(standing) ? standing.competition.name : REST_OF_EUROPE,
+        name: standing.competition.name,
         clubs,
       };
     })
