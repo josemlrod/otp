@@ -30,10 +30,6 @@ export function Document(handle: Handle<DocumentProps>) {
           <meta name='theme-color' content='#0a0b0c' />
           <meta name='mobile-web-app-capable' content='yes' />
           <meta name='apple-mobile-web-app-capable' content='yes' />
-          <meta
-            name='apple-mobile-web-app-status-bar-style'
-            content='black-translucent'
-          />
           <meta name='apple-mobile-web-app-title' content='OTP' />
           <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
           <link rel='apple-touch-icon' href='/apple-touch-icon.png' />
