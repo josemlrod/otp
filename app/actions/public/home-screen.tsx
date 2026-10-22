@@ -182,7 +182,7 @@ const screenStyles = css({
   height: '100%',
   overflow: 'clip',
   background: v('--color-bg'),
-  transformOrigin: '50% 50%',
+  transformOrigin: '50% 0',
   transitionProperty: 'transform, border-radius',
   transitionDuration: 'var(--sheet-duration)',
   transitionTimingFunction: v('--ease-ios'),
