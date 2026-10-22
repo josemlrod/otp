@@ -30,7 +30,7 @@ const premier = standing('PL', 'LEAGUE', [[1, 'Leader'], [2, 'Arsenal']]);
 const liga = standing('PD', 'LEAGUE', [[4, 'Madrid'], [5, 'Betis']]);
 
 describe('club sections', () => {
-  it('lists leagues first, sorted by name, and leaves only unseen cup clubs in Rest of Europe', () => {
+  it('lists only league clubs, sorted by name, and skips cup competitions', () => {
     const sections = clubSections([cup, premier, liga]);
 
     assert.deepEqual(
@@ -38,7 +38,6 @@ describe('club sections', () => {
       [
         ['PL', 'PL name', ['Arsenal', 'Leader']],
         ['PD', 'PD name', ['Betis', 'Madrid']],
-        ['CL', 'Rest of Europe', ['Ajax', 'Porto']],
       ],
     );
   });
