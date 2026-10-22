@@ -38,12 +38,16 @@ export function BuildYourStack(handle: Handle<Props>) {
         </div>
         <h2 mix={titleStyles}>Build your stack</h2>
         <p mix={bodyStyles}>
-          Each club you follow gets a card here with its form, league position and next match.
+          Each club you follow gets a card here with its form, league position
+          and next match.
         </p>
         <button
           type='button'
           data-clubs-opener
-          mix={[ctaStyles, on('click', (event) => onChoose(event.currentTarget))]}
+          mix={[
+            ctaStyles,
+            on('click', (event) => onChoose(event.currentTarget)),
+          ]}
         >
           <svg
             viewBox='0 0 24 24'
@@ -82,14 +86,6 @@ const cardStyles = css({
   background: `linear-gradient(170deg, ${v('--color-surface-raised')} 0rem, ${v('--color-surface')} 16.25rem, ${v('--color-bg')} 100%)`,
   boxShadow: v('--shadow-stack'),
   animation: `stack-card-in 640ms ${v('--ease-out')} 120ms backwards`,
-
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    inset: 0,
-    background: `repeating-linear-gradient(90deg, color-mix(in oklab, ${v('--color-white')} 2.5%, transparent) 0 1px, transparent 1px ${space(2.75)})`,
-    pointerEvents: 'none',
-  },
 });
 
 const fanStyles = css({
