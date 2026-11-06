@@ -36,8 +36,6 @@ export default createController(routes, {
       const initialMatches =
         await footballDataRepository.fetchAllTeamMatches(follows);
 
-      console.log('initalMatches', initialMatches);
-
       return context.render(
         <HomePage standings={standings} follows={follows} />,
       );
