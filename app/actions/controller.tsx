@@ -29,9 +29,14 @@ export default createController(routes, {
     },
 
     async home(context) {
-      const standings = await footballDataRepository.fetchAllStandings();
       const cookie = Cookie.from(context.request.headers.get('Cookie'));
       const follows = parseFollows(cookie.get(FOLLOWS_COOKIE));
+
+      const standings = await footballDataRepository.fetchAllStandings();
+      const initialMatches =
+        await footballDataRepository.fetchAllTeamMatches(follows);
+
+      console.log('initalMatches', initialMatches);
 
       return context.render(
         <HomePage standings={standings} follows={follows} />,

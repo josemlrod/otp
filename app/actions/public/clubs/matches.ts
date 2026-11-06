@@ -92,7 +92,6 @@ export class MatchesModel extends TypedEventTarget<{ change: MatchesChange }> {
 
   async #request(teamId: number) {
     const res = await this.#fetch(routes.teamMatches.href({ teamId }));
-    console.log('res', res);
     if (!res.ok) throw new Error(`Matches for ${teamId} failed: ${res.status}`);
     return res.json();
   }

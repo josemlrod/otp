@@ -44,6 +44,7 @@ export const HomeScreen = clientEntry(
     let root: HTMLElement | undefined;
 
     const matches = new MatchesModel();
+    handle.queueTask(() => follows.forEach((id) => matches.load(id)));
 
     async function show(next: SheetContent, button: HTMLButtonElement) {
       opener = button;

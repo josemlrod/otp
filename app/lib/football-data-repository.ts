@@ -89,4 +89,12 @@ export const footballDataRepository = {
 
     return { data: null, err: res?.err ?? 'Failed to fetch matches' };
   },
+
+  async fetchAllTeamMatches(teamIds: number[]) {
+    const results = await Promise.all(
+      teamIds.map((id) => footballDataRepository.fetchTeamMatches(id)),
+    );
+
+    return results.flatMap(({ data }) => (data ? [data] : []));
+  },
 };
