@@ -1,11 +1,11 @@
 import { tryCatch } from './utils.ts';
 import { readCache, writeCache } from './api-cache.ts';
 
-import type { StandingsResponse } from './types/api.ts';
+import type { MatchesResponse, StandingsResponse } from './types/api.ts';
 
 const FOOTBALL_DATA_API_DOMAIN = 'https://api.football-data.org';
 const FOOTBALL_DATA_API_KEY = process.env.FOOTBALL_DATA_API_KEY ?? '';
-const STANDINGS_MAX_AGE_MS = 60 * 60 * 1000;
+const MAX_AGE_MS = 60 * 60 * 1000;
 const COMPETITION_IDS = {
   PL: 2021,
   BL1: 2002,
@@ -37,7 +37,7 @@ export const footballDataRepository = {
   async fetchStandings(competitionId: number) {
     const key = `standings-${competitionId}`;
     const [cached] = await tryCatch(readCache<StandingsResponse>(key));
-    if (cached && Date.now() - cached.fetchedAt < STANDINGS_MAX_AGE_MS) {
+    if (cached && Date.now() - cached.fetchedAt < MAX_AGE_MS) {
       return { data: cached.data, err: null };
     }
 
@@ -65,5 +65,28 @@ export const footballDataRepository = {
     );
 
     return results.flatMap(({ data }) => (data ? [data] : []));
+  },
+
+  async fetchTeamMatches(teamId: number) {
+    const key = `matches-${teamId}`;
+    const [cached] = await tryCatch(readCache<MatchesResponse>(key));
+    if (cached && Date.now() - cached.fetchedAt < MAX_AGE_MS) {
+      return { data: cached.data, err: null };
+    }
+
+    const [res] = await tryCatch(
+      fetchFootballData<MatchesResponse>(
+        `/v4/teams/${teamId}/matches`,
+        'Failed to fetch matches',
+      ),
+    );
+    if (res?.data) {
+      await tryCatch(writeCache(key, res.data));
+      return { data: res.data, err: null };
+    }
+
+    if (cached) return { data: cached.data, err: null };
+
+    return { data: null, err: res?.err ?? 'Failed to fetch matches' };
   },
 };

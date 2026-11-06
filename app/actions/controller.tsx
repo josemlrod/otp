@@ -15,12 +15,27 @@ export default createController(routes, {
         new Response('Not Found', { status: 404 })
       );
     },
+
+    async teamMatches(context) {
+      const teamId = Number(context.params.teamId);
+
+      // TODO: if it's not a team we support we should short-circuit
+
+      const { data: matches } =
+        await footballDataRepository.fetchTeamMatches(teamId);
+      if (!matches) return new Response('Bad Gateway', { status: 502 });
+
+      return Response.json(matches);
+    },
+
     async home(context) {
       const standings = await footballDataRepository.fetchAllStandings();
       const cookie = Cookie.from(context.request.headers.get('Cookie'));
       const follows = parseFollows(cookie.get(FOLLOWS_COOKIE));
 
-      return context.render(<HomePage standings={standings} follows={follows} />);
+      return context.render(
+        <HomePage standings={standings} follows={follows} />,
+      );
     },
   },
 });

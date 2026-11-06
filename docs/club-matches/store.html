@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Where club matches live · On the Pitch</title>
+<style>
+  :root {
+    --color-bg: oklch(14.9% 0.003 248.1);
+    --color-surface: oklch(20.3% 0.005 248.1);
+    --color-surface-raised: oklch(24.6% 0.007 248.1);
+    --color-text: oklch(96.7% 0.002 247.8);
+    --color-text-secondary: oklch(94.3% 0.013 286.1 / 0.6);
+    --color-text-tertiary: oklch(94.3% 0.013 286.1 / 0.28);
+    --color-separator: oklch(100% 0 0 / 0.08);
+    --color-accent: oklch(91.1% 0.197 124.6);
+    --color-win: oklch(68.7% 0.18 150.1);
+    --color-draw: oklch(71.4% 0.019 261.3);
+    --color-loss: oklch(62.6% 0.193 23);
+    --color-warning: oklch(78.2% 0.158 72.3);
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    --radius-md: 0.875rem;
+    --radius-lg: 1.125rem;
+    --radius-xl: 1.375rem;
+    --gutter: 1.25rem;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { background: var(--color-bg); color: var(--color-text); font-family: var(--font-mono); font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body { margin: 0; padding: 3rem var(--gutter) 5rem; }
+  h1, h2, h3, p, ol, ul { margin: 0; padding: 0; }
+  li { list-style: none; }
+  code { font-family: inherit; }
+  a { color: var(--color-accent); }
+
+  .wrap { max-width: 68rem; margin: 0 auto; display: flex; flex-direction: column; gap: 4rem; }
+  .eyebrow { text-transform: uppercase; font-size: 0.8125rem; font-weight: 500; color: var(--color-text-secondary); }
+  header h1 { margin-top: 0.5rem; font-size: 1.875rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+  header p.lede { margin-top: 0.875rem; max-width: 46rem; font-size: 0.875rem; line-height: 1.6; color: var(--color-text-secondary); }
+  header p.lede b { color: var(--color-text); }
+
+  section { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
+  section > *, .panel > *, .opt > * { min-width: 0; }
+  section > h2 { font-size: 1.375rem; font-weight: 700; letter-spacing: -0.02em; }
+  .note { max-width: 46rem; font-size: 0.8125rem; line-height: 1.6; color: var(--color-text-secondary); }
+  .small { font-size: 0.75rem; line-height: 1.55; color: var(--color-text-tertiary); }
+
+  .tag { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 99px; font-size: 0.6875rem; font-weight: 600; background: var(--color-surface-raised); color: var(--color-text-secondary); white-space: nowrap; }
+  .tag.yes { background: color-mix(in oklab, var(--color-accent) 18%, transparent); color: var(--color-accent); }
+  .tag.no { background: color-mix(in oklab, var(--color-loss) 18%, transparent); color: var(--color-loss); }
+  .tag.meh { background: color-mix(in oklab, var(--color-warning) 18%, transparent); color: var(--color-warning); }
+  .tag.server { background: color-mix(in oklab, var(--color-warning) 18%, transparent); color: var(--color-warning); }
+
+  pre { margin: 0; padding: 1rem; border-radius: var(--radius-md); background: var(--color-bg); font-size: 0.75rem; line-height: 1.6; overflow-x: auto; color: var(--color-text-secondary); }
+  pre .k { color: var(--color-accent); }
+  pre .c { color: var(--color-text-tertiary); }
+  pre .s { color: var(--color-warning); }
+  pre .add { color: var(--color-win); }
+  pre .del { color: var(--color-loss); }
+  pre .hl { color: var(--color-text); }
+
+  .panel { border-radius: var(--radius-xl); background: var(--color-surface); box-shadow: 0 0 0 1px var(--color-separator); padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+  .panel h3 { font-size: 0.875rem; font-weight: 700; display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+  .panel h3 small { font-size: 0.6875rem; font-weight: 500; color: var(--color-text-tertiary); }
+
+  /* ───────── options ───────── */
+  .opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .opt { border-radius: var(--radius-xl); background: var(--color-surface); box-shadow: 0 0 0 1px var(--color-separator); padding: 1.125rem; display: flex; flex-direction: column; gap: 0.875rem; }
+  .opt.pick { box-shadow: 0 0 0 1.5px color-mix(in oklab, var(--color-accent) 70%, transparent); }
+  .opt-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+  .opt-head b { font-size: 0.875rem; }
+  .opt pre { font-size: 0.6875rem; padding: 0.75rem; }
+  .opt ul { display: flex; flex-direction: column; gap: 0.375rem; font-size: 0.75rem; line-height: 1.5; color: var(--color-text-secondary); }
+  .opt li { padding-left: 1rem; position: relative; }
+  .opt li::before { position: absolute; left: 0; content: '+'; color: var(--color-win); font-weight: 700; }
+  .opt li.con::before { content: '−'; color: var(--color-loss); }
+
+  .rr { border-radius: var(--radius-md); background: var(--color-bg); padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .rr-title { font-size: 0.625rem; font-weight: 600; text-transform: uppercase; color: var(--color-text-tertiary); }
+  .tree { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.6875rem; }
+  .node { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.1875rem 0.5rem; border-radius: 0.375rem; background: var(--color-surface); color: var(--color-text-tertiary); width: fit-content; }
+  .node.lit { background: color-mix(in oklab, var(--color-warning) 22%, transparent); color: var(--color-warning); }
+  .node.lit.good { background: color-mix(in oklab, var(--color-accent) 20%, transparent); color: var(--color-accent); }
+  .d1 { margin-left: 1rem; } .d2 { margin-left: 2rem; }
+  .rr-count { font-size: 0.6875rem; color: var(--color-text-secondary); }
+
+  /* ───────── ownership tree ───────── */
+  .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; align-items: start; }
+  .own { display: flex; flex-direction: column; gap: 0.375rem; font-size: 0.75rem; }
+  .own .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.75rem; align-items: center; padding: 0.5rem 0.625rem; border-radius: 0.625rem; background: var(--color-surface-raised); }
+  .own .row.dim { background: transparent; box-shadow: inset 0 0 0 1px var(--color-separator); color: var(--color-text-tertiary); }
+  .own .row.owner { box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--color-accent) 60%, transparent); }
+  .own .row b { font-weight: 700; }
+  .own .row small { display: block; font-size: 0.625rem; color: var(--color-text-tertiary); margin-top: 0.125rem; }
+  .own .i1 { margin-left: 1.25rem; } .own .i2 { margin-left: 2.5rem; }
+  .uses { font-size: 0.625rem; color: var(--color-accent); text-align: right; }
+  .uses.none { color: var(--color-text-tertiary); }
+
+  .kv { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.5rem 1rem; font-size: 0.75rem; line-height: 1.5; }
+  .kv dt { color: var(--color-text); font-weight: 600; }
+  .kv dd { margin: 0; color: var(--color-text-secondary); }
+
+  /* ───────── lifecycle ───────── */
+  .life { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .stage { border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: 0 0 0 1px var(--color-separator); padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+  .stage-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.8125rem; font-weight: 700; }
+  .steps { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.75rem; line-height: 1.45; color: var(--color-text-secondary); counter-reset: s; }
+  .steps li { position: relative; padding-left: 1.5rem; counter-increment: s; }
+  .steps li::before { content: counter(s); position: absolute; left: 0; top: 0.0625rem; width: 1.0625rem; height: 1.0625rem; border-radius: 99px; background: var(--color-surface-raised); color: var(--color-text-secondary); font-size: 0.5625rem; font-weight: 700; display: grid; place-items: center; }
+  .steps code { color: var(--color-text); }
+  .steps .skip { color: var(--color-text-tertiary); text-decoration: line-through; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+  .chip { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.5rem; border-radius: 0.5rem; background: var(--color-bg); font-size: 0.6875rem; }
+  .chip i { width: 0.5rem; height: 0.5rem; border-radius: 99px; background: var(--color-text-tertiary); }
+  .chip.ready i { background: var(--color-win); }
+  .chip.loading i { background: var(--color-accent); }
+  .chip.error i { background: var(--color-loss); }
+
+  /* ───────── state table ───────── */
+  table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+  th, td { text-align: left; padding: 0.625rem 0.75rem; border-bottom: 1px solid var(--color-separator); vertical-align: top; }
+  th { font-size: 0.625rem; font-weight: 600; text-transform: uppercase; color: var(--color-text-tertiary); }
+  td:first-child { color: var(--color-text); font-weight: 600; white-space: nowrap; }
+  td { color: var(--color-text-secondary); line-height: 1.5; }
+  .scroll { overflow-x: auto; }
+
+  @media (max-width: 52rem) {
+    .opts, .two, .life { grid-template-columns: minmax(0, 1fr); }
+    body { padding-top: 2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">On the Pitch · club matches · 2 of 2</p>
+    <h1>Where the matches live</h1>
+    <p class="lede">The answer is <b>a small model class</b>. <code>HomeScreen</code> creates one in setup and passes it to the cards as a prop. <code>follows</code>, <code>draft</code> and <code>open</code> stay plain setup variables, because they describe the UI. The matches are fetched data with rules for staleness and dedupe, and more than one component reads them. Remix's interactivity guide draws the line in the same place, in "Keep application logic outside components".</p>
+  </header>
+
+  <!-- ───────── options ───────── -->
+  <section>
+    <h2>Three places it could live</h2>
+    <div class="opts">
+
+      <div class="opt">
+        <div class="opt-head"><b>A. More setup variables</b><span class="tag meh">works, gets heavy</span></div>
+<pre><span class="c">// inside HomeScreen setup</span>
+<span class="k">let</span> matches = <span class="k">new</span> Map&lt;number, Entry&gt;();
+
+<span class="k">function</span> load(id) {
+  <span class="c">// dedupe + staleness + fetch here</span>
+  ... .then(card =&gt; {
+    matches.set(id, card);
+    handle.update();
+  });
+}</pre>
+        <div class="rr">
+          <span class="rr-title">Arsenal resolves → renders</span>
+          <div class="tree">
+            <span class="node lit">HomeScreen</span>
+            <span class="node lit d1">Standings</span>
+            <span class="node lit d1">ClubCard · Liverpool</span>
+            <span class="node lit d1">ClubCard · Arsenal</span>
+            <span class="node lit d1">Sheet</span>
+          </div>
+        </div>
+        <ul>
+          <li>Matches what's already there. Nothing new to learn.</li>
+          <li class="con">Every response redraws the whole screen, including the sheet while it's still closing.</li>
+          <li class="con">The fetch rules end up inside a component that already runs about 200 lines.</li>
+          <li class="con">Testing the dedupe rule needs a DOM.</li>
+        </ul>
+      </div>
+
+      <div class="opt">
+        <div class="opt-head"><b>B. Module singleton</b><span class="tag no">leaks on the server</span></div>
+<pre><span class="c">// clubs/matches.ts</span>
+<span class="k">export const</span> matches =
+  <span class="k">new</span> MatchesModel();
+
+<span class="c">// anywhere</span>
+<span class="k">import</span> { matches } <span class="k">from</span> <span class="s">'./matches.ts'</span>;</pre>
+        <div class="rr">
+          <span class="rr-title">Arsenal resolves → renders</span>
+          <div class="tree">
+            <span class="node">HomeScreen</span>
+            <span class="node d1">Standings</span>
+            <span class="node d1">ClubCard · Liverpool</span>
+            <span class="node lit good d1">ClubCard · Arsenal</span>
+            <span class="node d1">Sheet</span>
+          </div>
+        </div>
+        <ul>
+          <li>Shortest code to reach from anywhere.</li>
+          <li class="con"><code>HomeScreen</code> is a <code>clientEntry</code>, so this module runs on the server too. One instance would be shared by every request and every user.</li>
+          <li class="con">Tests share state unless each one resets it.</li>
+        </ul>
+      </div>
+
+      <div class="opt pick">
+        <div class="opt-head"><b>C. Model owned by HomeScreen</b><span class="tag yes">recommended</span></div>
+<pre><span class="c">// inside HomeScreen setup</span>
+<span class="k">const</span> matches = <span class="k">new</span> MatchesModel(
+  handle.props.initialMatches,
+);
+
+<span class="c">// render</span>
+&lt;ClubCard club={club} matches={matches} /&gt;</pre>
+        <div class="rr">
+          <span class="rr-title">Arsenal resolves → renders</span>
+          <div class="tree">
+            <span class="node">HomeScreen</span>
+            <span class="node d1">Standings</span>
+            <span class="node d1">ClubCard · Liverpool</span>
+            <span class="node lit good d1">ClubCard · Arsenal</span>
+            <span class="node d1">Sheet</span>
+          </div>
+        </div>
+        <ul>
+          <li>One instance per render. On the server that's one per request, and in the browser one per page.</li>
+          <li>Only the card for the club that changed updates.</li>
+          <li>The rules are plain TypeScript and get tested without a DOM.</li>
+          <li class="con">One new file and one class to read.</li>
+        </ul>
+      </div>
+
+    </div>
+    <p class="small">Context would also work for C. Here every reader is a direct child of <code>HomeScreen</code>, so a prop is one level deep and makes it easy to see where the model comes from. Switch to <code>handle.context</code> if a reader ever ends up two or more components down.</p>
+  </section>
+
+  <!-- ───────── ownership ───────── -->
+  <section>
+    <h2>Who owns it, who reads it</h2>
+    <div class="two">
+      <div class="panel">
+        <h3>Component tree <small>app/actions/public/</small></h3>
+        <div class="own">
+          <div class="row owner"><span><b>&lt;HomeScreen&gt;</b> clientEntry<small>new MatchesModel(initialMatches)</small></span><span class="uses">owns · load()</span></div>
+          <div class="row i1 dim"><span>&lt;Standings&gt;</span><span class="uses none">doesn't need it</span></div>
+          <div class="row i1"><span><b>&lt;ClubCard&gt;</b> × follows<small>clubs/club-card.tsx · new</small></span><span class="uses">get() · listens</span></div>
+          <div class="row i1 dim"><span>&lt;Sheet&gt;</span><span class="uses none">passes children</span></div>
+          <div class="row i2 dim"><span>&lt;ClubPicker&gt;</span><span class="uses none">doesn't need it</span></div>
+          <div class="row i2" style="opacity:0.7"><span><b>&lt;TeamSheet&gt;</b> later<small>opened from a card</small></span><span class="uses">get() · listens</span></div>
+        </div>
+        <p class="small"><code>ClubPicker</code> never touches the model. It keeps reporting ids through <code>onChange</code>, and <code>close()</code> decides what to load.</p>
+      </div>
+
+      <div class="panel">
+        <h3>What stays as setup variables</h3>
+        <dl class="kv">
+          <dt>open</dt><dd>Is the sheet up?</dd>
+          <dt>content</dt><dd>Which sheet is showing</dd>
+          <dt>draft</dt><dd>Picker selection before Done</dd>
+          <dt>follows</dt><dd>Committed ids. The cookie is the source of truth.</dd>
+          <dt>dragOpenFraction</dt><dd>Gesture position</dd>
+        </dl>
+        <p class="small">These describe the screen, not fetched data. One component reads them and none of them need fetching, so a model would only add indirection.</p>
+        <h3 style="margin-top:0.5rem">What moves into the model</h3>
+        <dl class="kv">
+          <dt>entries</dt><dd><code>Map&lt;clubId, Entry&gt;</code></dd>
+          <dt>load(id)</dt><dd>Skips the request if one is in flight or the data is fresh</dd>
+          <dt>change</dt><dd>Event that carries the <code>clubId</code> that changed</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── entry states ───────── -->
+  <section>
+    <h2>One entry per club</h2>
+    <p class="note">A <code>loading</code> entry can hold the previous card. A refresh of stale data then keeps showing the old pills instead of dropping back to a skeleton.</p>
+    <div class="panel scroll">
+      <table>
+        <thead><tr><th>Entry</th><th>Card shows</th><th>How it gets here</th><th>load(id) does</th></tr></thead>
+        <tbody>
+          <tr><td>undefined</td><td>Header + skeleton</td><td>Club never requested</td><td>Fetches</td></tr>
+          <tr><td>loading</td><td>Header + skeleton</td><td>First request in flight</td><td>Nothing</td></tr>
+          <tr><td>loading + card</td><td>Previous card</td><td>Refreshing a stale card</td><td>Nothing</td></tr>
+          <tr><td>ready</td><td>Form pills + next fixture</td><td>Server responded, or seeded from <code>initialMatches</code></td><td>Nothing if <code>fetchedAt</code> is under 1h, otherwise refreshes</td></tr>
+          <tr><td>error</td><td>Header + "Couldn't load matches" + retry</td><td>Network failure or 5xx with no previous card</td><td>Fetches. Retry calls this.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ───────── code ───────── -->
+  <section>
+    <h2>The model</h2>
+    <p class="note">This is about 50 lines. <code>TypedEventTarget</code> comes from <code>remix/component</code>, and the href comes from the shared route contract in <code>app/routes.ts</code>. <code>fetch</code> and <code>now</code> are injectable so the tests can control them.</p>
+    <div class="panel">
+      <h3>app/actions/public/clubs/matches.ts <small>new</small></h3>
+<pre><span class="k">import</span> { TypedEventTarget } <span class="k">from</span> <span class="s">'remix/component'</span>;
+
+<span class="k">import</span> { routes } <span class="k">from</span> <span class="s">'../../../routes.ts'</span>;
+<span class="k">import type</span> { ClubCard } <span class="k">from</span> <span class="s">'../../../lib/club-card.ts'</span>;
+
+<span class="k">export const</span> MATCHES_MAX_AGE_MS = 60 * 60 * 1000;
+
+<span class="k">export type</span> MatchesEntry =
+  | { status: <span class="s">'loading'</span>; card?: ClubCard }   <span class="c">// card = previous data during a refresh</span>
+  | { status: <span class="s">'ready'</span>; card: ClubCard }
+  | { status: <span class="s">'error'</span> };
+
+<span class="k">export class</span> MatchesChange <span class="k">extends</span> Event {
+  <span class="k">constructor</span>(<span class="k">readonly</span> clubId: number) {
+    <span class="k">super</span>(<span class="s">'change'</span>);
+  }
+}
+
+<span class="k">type</span> Options = { fetch?: <span class="k">typeof</span> fetch; now?: () =&gt; number };
+
+<span class="k">export class</span> <span class="hl">MatchesModel</span> <span class="k">extends</span> TypedEventTarget&lt;{ change: MatchesChange }&gt; {
+  #entries = <span class="k">new</span> Map&lt;number, MatchesEntry&gt;();
+  #fetch: <span class="k">typeof</span> fetch;
+  #now: () =&gt; number;
+
+  <span class="k">constructor</span>(seed: ClubCard[] = [], options: Options = {}) {
+    <span class="k">super</span>();
+    <span class="k">this</span>.#fetch = options.fetch ?? globalThis.fetch.bind(globalThis);
+    <span class="k">this</span>.#now = options.now ?? Date.now;
+    <span class="k">for</span> (<span class="k">const</span> card <span class="k">of</span> seed) <span class="k">this</span>.#entries.set(card.teamId, { status: <span class="s">'ready'</span>, card });
+  }
+
+  <span class="hl">get</span>(clubId: number): MatchesEntry | undefined {
+    <span class="k">return this</span>.#entries.get(clubId);
+  }
+
+  <span class="hl">load</span>(clubId: number): void {
+    <span class="k">const</span> entry = <span class="k">this</span>.#entries.get(clubId);
+    <span class="k">if</span> (entry?.status === <span class="s">'loading'</span>) <span class="k">return</span>;
+    <span class="k">if</span> (entry?.status === <span class="s">'ready'</span> &amp;&amp; <span class="k">this</span>.#now() - entry.card.fetchedAt &lt; MATCHES_MAX_AGE_MS) <span class="k">return</span>;
+
+    <span class="k">const</span> previous = entry?.status === <span class="s">'ready'</span> ? entry.card : <span class="k">undefined</span>;
+    <span class="k">this</span>.#set(clubId, { status: <span class="s">'loading'</span>, card: previous });
+
+    <span class="k">this</span>.#request(clubId).then(
+      (card) =&gt; <span class="k">this</span>.#set(clubId, { status: <span class="s">'ready'</span>, card }),
+      () =&gt; <span class="k">this</span>.#set(clubId, previous ? { status: <span class="s">'ready'</span>, card: previous } : { status: <span class="s">'error'</span> }),
+    );
+  }
+
+  <span class="k">async</span> #request(clubId: number): Promise&lt;ClubCard&gt; {
+    <span class="k">const</span> res = <span class="k">await this</span>.#fetch(routes.clubMatches.href({ clubId }));
+    <span class="k">if</span> (!res.ok) <span class="k">throw new</span> Error(<span class="s">`matches ${clubId}: ${res.status}`</span>);
+    <span class="k">return</span> res.json();
+  }
+
+  #set(clubId: number, entry: MatchesEntry) {
+    <span class="k">this</span>.#entries.set(clubId, entry);
+    <span class="k">this</span>.dispatchEvent(<span class="k">new</span> MatchesChange(clubId));
+  }
+}</pre>
+    </div>
+  </section>
+
+  <!-- ───────── wiring ───────── -->
+  <section>
+    <h2>Wiring it in</h2>
+    <div class="two">
+      <div class="panel">
+        <h3>home-screen.tsx <small>changes only</small></h3>
+<pre>  <span class="k">type</span> Props = {
+    standings: StandingsResponse[];
+    follows: number[];
+<span class="add">+   initialMatches: ClubCard[];   // fresh cache hits from the home action</span>
+  };
+
+  <span class="k">function</span> HomeScreen(handle: Handle&lt;Props&gt;) {
+    ...
+    <span class="k">let</span> follows = handle.props.follows.filter(...);
+<span class="add">+   const matches = new MatchesModel(handle.props.initialMatches);</span>
+<span class="add">+   // no-op during SSR, runs after the first commit in the browser</span>
+<span class="add">+   handle.queueTask(() =&gt; follows.forEach((id) =&gt; matches.load(id)));</span>
+
+    <span class="k">async function</span> close() {
+<span class="del">-     if (open &amp;&amp; content?.kind === 'clubs') commitDraft();</span>
+<span class="add">+     if (open &amp;&amp; content?.kind === 'clubs') {</span>
+<span class="add">+       const before = new Set(follows);</span>
+<span class="add">+       commitDraft();</span>
+<span class="add">+       for (const id of follows) if (!before.has(id)) matches.load(id);</span>
+<span class="add">+     }</span>
+      open = <span class="k">false</span>;
+      ...
+
+    <span class="c">// render, in the "Your clubs" section</span>
+<span class="add">+   {follows.map((id) =&gt; (</span>
+<span class="add">+     &lt;ClubCard key={id} club={clubs.get(id)!} matches={matches} /&gt;</span>
+<span class="add">+   ))}</span></pre>
+      </div>
+
+      <div class="panel">
+        <h3>clubs/club-card.tsx <small>new · data part only</small></h3>
+<pre><span class="k">type</span> Props = { club: Club; matches: MatchesModel };
+
+<span class="k">export function</span> ClubCard(handle: Handle&lt;Props&gt;) {
+  <span class="k">const</span> { matches } = handle.props;   <span class="c">// same instance every render</span>
+
+  matches.addEventListener(
+    <span class="s">'change'</span>,
+    (event) =&gt; {
+      <span class="k">if</span> (event.clubId === handle.props.club.id) handle.update();
+    },
+    { signal: handle.signal },          <span class="c">// unsubscribes on unmount</span>
+  );
+
+  <span class="k">return</span> () =&gt; {
+    <span class="k">const</span> { club } = handle.props;
+    <span class="k">const</span> entry = matches.get(club.id);
+    <span class="k">const</span> card = entry?.status === <span class="s">'error'</span> ? <span class="k">undefined</span> : entry?.card;
+
+    <span class="k">return</span> (
+      &lt;article&gt;
+        &lt;ClubCrest crest={club.crest} /&gt; {club.name}
+        {card ? &lt;Form card={card} /&gt; : &lt;Skeleton /&gt;}
+        {entry?.status === <span class="s">'error'</span> &amp;&amp; (
+          &lt;button mix={on(<span class="s">'click'</span>, () =&gt; matches.load(club.id))}&gt;Retry&lt;/button&gt;
+        )}
+      &lt;/article&gt;
+    );
+  };
+}</pre>
+        <p class="small">Every card hears every <code>change</code> and ignores the ones for other ids. With a handful of followed clubs that check costs nothing. Per-id event names like <code>change:57</code> would lose the typed event map.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── lifecycle ───────── -->
+  <section>
+    <h2>The model across one visit</h2>
+    <p class="note">Each environment builds its own instance from the same serializable props. The server and the browser never share an object, so hydration renders the same entries the server did.</p>
+    <div class="life">
+      <div class="stage">
+        <div class="stage-head">Server render <span class="tag server">per request</span></div>
+        <ol class="steps">
+          <li><code>home</code> action reads fresh cache rows for follows → <code>initialMatches</code></li>
+          <li><code>new MatchesModel(initialMatches)</code></li>
+          <li>Cards render as ready or skeleton</li>
+          <li class="skip">queueTask(load)</li>
+        </ol>
+        <div class="chips"><span class="chip ready"><i></i>64 ready</span><span class="chip"><i></i>86 none</span></div>
+      </div>
+      <div class="stage">
+        <div class="stage-head">Hydration <span class="tag yes">browser</span></div>
+        <ol class="steps">
+          <li><code>new MatchesModel(initialMatches)</code> from the same props</li>
+          <li>The first render matches the server HTML</li>
+          <li>queueTask → <code>load(64)</code> skips because it's fresh. <code>load(86)</code> fetches.</li>
+        </ol>
+        <div class="chips"><span class="chip ready"><i></i>64 ready</span><span class="chip loading"><i></i>86 loading</span></div>
+      </div>
+      <div class="stage">
+        <div class="stage-head">Done with Arsenal added <span class="tag yes">browser</span></div>
+        <ol class="steps">
+          <li><code>close()</code> diffs follows → <code>[57]</code></li>
+          <li><code>load(57)</code>, not awaited</li>
+          <li>The sheet closes and the Arsenal card mounts as a skeleton</li>
+          <li>The response fires <code>change</code> for 57 and only that card updates</li>
+        </ol>
+        <div class="chips"><span class="chip ready"><i></i>64 ready</span><span class="chip ready"><i></i>86 ready</span><span class="chip loading"><i></i>57 loading</span></div>
+      </div>
+    </div>
+    <p class="small">I checked the SSR handle in <code>@remix-run/component/dist/server/stream.js</code>. <code>queueTask</code> is a no-op there and <code>update()</code> throws, so the initial loads have to go through <code>queueTask</code> and never run directly in setup.</p>
+  </section>
+
+  <!-- ───────── tests ───────── -->
+  <section>
+    <h2>Testing without a DOM</h2>
+    <div class="panel">
+      <h3>app/actions/public/clubs/matches.test.ts <small>remix/test, same as clubs.test.ts</small></h3>
+<pre><span class="k">it</span>(<span class="s">'requests a club once while it is loading'</span>, () =&gt; {
+  <span class="k">let</span> calls = 0;
+  <span class="k">const</span> model = <span class="k">new</span> MatchesModel([], {
+    fetch: <span class="k">async</span> () =&gt; { calls++; <span class="k">return</span> Response.json(card(57)); },
+  });
+  model.load(57);
+  model.load(57);
+  assert.equal(calls, 1);
+});
+
+<span class="k">it</span>(<span class="s">'skips a seeded card younger than an hour, refreshes an older one'</span>, ...);
+<span class="k">it</span>(<span class="s">'keeps the previous card when a refresh fails'</span>, ...);
+<span class="k">it</span>(<span class="s">'dispatches change with the club id'</span>, ...);</pre>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

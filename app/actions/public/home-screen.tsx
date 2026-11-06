@@ -11,6 +11,7 @@ import { StandingsSheet } from './standings/standings-sheet.tsx';
 import { Sheet } from './sheet.tsx';
 import { countRender } from './perf/renders.ts';
 import { space, v } from '../../ui/theme.ts';
+import { MatchesModel } from './clubs/matches.ts';
 
 const RECEDED_SCREEN_SCALE = 0.93;
 const STACK_PREVIEW_CLUBS = 3;
@@ -25,8 +26,13 @@ export const HomeScreen = clientEntry(
   import.meta.url,
   function HomeScreen(handle: Handle<Props>) {
     const sections = clubSections(handle.props.standings);
-    const stackPreview = leagueLeaders(handle.props.standings, STACK_PREVIEW_CLUBS);
-    const knownClubs = new Set(sections.flatMap((section) => section.clubs.map((club) => club.id)));
+    const stackPreview = leagueLeaders(
+      handle.props.standings,
+      STACK_PREVIEW_CLUBS,
+    );
+    const knownClubs = new Set(
+      sections.flatMap((section) => section.clubs.map((club) => club.id)),
+    );
     const titleId = `${handle.id}-sheet-title`;
     let follows = handle.props.follows.filter((id) => knownClubs.has(id));
     let draft = follows;
@@ -36,6 +42,8 @@ export const HomeScreen = clientEntry(
     let dragOpenFraction: number | null = null;
     let opener: HTMLButtonElement | undefined;
     let root: HTMLElement | undefined;
+
+    const matches = new MatchesModel();
 
     async function show(next: SheetContent, button: HTMLButtonElement) {
       opener = button;
@@ -50,7 +58,10 @@ export const HomeScreen = clientEntry(
       }
     }
 
-    function showStandings(standing: StandingsResponse, button: HTMLButtonElement) {
+    function showStandings(
+      standing: StandingsResponse,
+      button: HTMLButtonElement,
+    ) {
       show({ kind: 'standings', standing }, button);
     }
 
@@ -66,7 +77,15 @@ export const HomeScreen = clientEntry(
     }
 
     async function close() {
-      if (open && content?.kind === 'clubs') commitDraft();
+      if (open && content?.kind === 'clubs') {
+        const prevFollows = new Set(follows);
+        commitDraft();
+        for (const followId of follows) {
+          if (!prevFollows.has(followId)) {
+            matches.load(followId);
+          }
+        }
+      }
       open = false;
 
       const signal = await handle.update();
@@ -114,17 +133,25 @@ export const HomeScreen = clientEntry(
 
             <section mix={sectionStyles}>
               <p mix={[subtitleStyles, insetStyles]}>Competitions</p>
-              <Standings standings={handle.props.standings} onSelect={showStandings} />
+              <Standings
+                standings={handle.props.standings}
+                onSelect={showStandings}
+              />
             </section>
 
             <section mix={clubsSectionStyles}>
               <p mix={[subtitleStyles, insetStyles, clubsLabelStyles]}>
-                {follows.length ? `Your clubs · ${follows.length}` : 'Your clubs'}
+                {follows.length
+                  ? `Your clubs · ${follows.length}`
+                  : 'Your clubs'}
                 {follows.length > 0 && (
                   <button
                     type='button'
                     data-clubs-opener
-                    mix={[editStyles, on('click', (event) => chooseClubs(event.currentTarget))]}
+                    mix={[
+                      editStyles,
+                      on('click', (event) => chooseClubs(event.currentTarget)),
+                    ]}
                   >
                     Edit
                   </button>
@@ -146,7 +173,11 @@ export const HomeScreen = clientEntry(
             }}
           >
             {content?.kind === 'standings' && (
-              <StandingsSheet standing={content.standing} titleId={titleId} onClose={close} />
+              <StandingsSheet
+                standing={content.standing}
+                titleId={titleId}
+                onClose={close}
+              />
             )}
             {content?.kind === 'clubs' && (
               <ClubPicker
