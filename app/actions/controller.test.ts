@@ -55,6 +55,7 @@ describe('root controller', () => {
       }],
     }]
     t.mock.method(footballDataRepository, 'fetchAllStandings', async () => standings)
+    const cards = t.mock.method(footballDataRepository, 'fetchAllTeamCards', async () => [])
     const response = await router.fetch(
       new Request(new URL(routes.home.href(), 'http://localhost'), {
         headers: { Cookie: 'otp_follows=57.999' },
@@ -64,5 +65,6 @@ describe('root controller', () => {
     const html = await response.text()
     assert.match(html, /Your clubs · 1/)
     assert.doesNotMatch(html, /Build your stack/)
+    assert.deepEqual(cards.mock.calls[0]?.arguments, [[57]])
   })
 })

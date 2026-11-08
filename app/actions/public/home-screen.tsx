@@ -1,21 +1,28 @@
 import { clientEntry, css, on, ref, type Handle } from 'remix/component';
 
-import { clubSections, leagueLeaders } from '../../lib/clubs.ts';
+import { clubSections, leagueLeaders, type Club } from '../../lib/clubs.ts';
 import { followsCookie } from '../../lib/follows.ts';
+import type { TeamCard } from '../../lib/team-card.ts';
 import type { StandingsResponse } from '../../lib/types/api.ts';
 import { Logo } from '../../ui/logo.tsx';
 import { BuildYourStack } from './clubs/build-your-stack.tsx';
+import { ClubList } from './clubs/club-list.tsx';
 import { ClubPicker } from './clubs/club-picker.tsx';
 import { Standings } from './standings/index.tsx';
 import { StandingsSheet } from './standings/standings-sheet.tsx';
 import { Sheet } from './sheet.tsx';
 import { countRender } from './perf/renders.ts';
 import { space, v } from '../../ui/theme.ts';
+import { MatchesModel } from './clubs/matches.ts';
 
 const RECEDED_SCREEN_SCALE = 0.93;
 const STACK_PREVIEW_CLUBS = 3;
 
-type Props = { standings: StandingsResponse[]; follows: number[] };
+type Props = {
+  standings: StandingsResponse[];
+  follows: number[];
+  initialMatches?: TeamCard[];
+};
 
 type SheetContent =
   | { kind: 'standings'; standing: StandingsResponse }
@@ -25,10 +32,15 @@ export const HomeScreen = clientEntry(
   import.meta.url,
   function HomeScreen(handle: Handle<Props>) {
     const sections = clubSections(handle.props.standings);
-    const stackPreview = leagueLeaders(handle.props.standings, STACK_PREVIEW_CLUBS);
-    const knownClubs = new Set(sections.flatMap((section) => section.clubs.map((club) => club.id)));
+    const stackPreview = leagueLeaders(
+      handle.props.standings,
+      STACK_PREVIEW_CLUBS,
+    );
+    const clubsById = new Map<number, Club>(
+      sections.flatMap((section) => section.clubs.map((club) => [club.id, club])),
+    );
     const titleId = `${handle.id}-sheet-title`;
-    let follows = handle.props.follows.filter((id) => knownClubs.has(id));
+    let follows = handle.props.follows.filter((id) => clubsById.has(id));
     let draft = follows;
     let pickerSessions = 0;
     let content: SheetContent | null = null;
@@ -36,6 +48,9 @@ export const HomeScreen = clientEntry(
     let dragOpenFraction: number | null = null;
     let opener: HTMLButtonElement | undefined;
     let root: HTMLElement | undefined;
+
+    const matches = new MatchesModel(handle.props.initialMatches);
+    handle.queueTask(() => follows.forEach((id) => matches.load(id)));
 
     async function show(next: SheetContent, button: HTMLButtonElement) {
       opener = button;
@@ -50,7 +65,10 @@ export const HomeScreen = clientEntry(
       }
     }
 
-    function showStandings(standing: StandingsResponse, button: HTMLButtonElement) {
+    function showStandings(
+      standing: StandingsResponse,
+      button: HTMLButtonElement,
+    ) {
       show({ kind: 'standings', standing }, button);
     }
 
@@ -66,7 +84,15 @@ export const HomeScreen = clientEntry(
     }
 
     async function close() {
-      if (open && content?.kind === 'clubs') commitDraft();
+      if (open && content?.kind === 'clubs') {
+        const prevFollows = new Set(follows);
+        commitDraft();
+        for (const followId of follows) {
+          if (!prevFollows.has(followId)) {
+            matches.load(followId);
+          }
+        }
+      }
       open = false;
 
       const signal = await handle.update();
@@ -114,24 +140,42 @@ export const HomeScreen = clientEntry(
 
             <section mix={sectionStyles}>
               <p mix={[subtitleStyles, insetStyles]}>Competitions</p>
-              <Standings standings={handle.props.standings} onSelect={showStandings} />
+              <Standings
+                standings={handle.props.standings}
+                onSelect={showStandings}
+              />
             </section>
 
-            <section mix={clubsSectionStyles}>
+            <section
+              mix={[
+                clubsSectionStyles,
+                follows.length ? clubsListStyles : clubsEmptyStyles,
+              ]}
+            >
               <p mix={[subtitleStyles, insetStyles, clubsLabelStyles]}>
-                {follows.length ? `Your clubs · ${follows.length}` : 'Your clubs'}
+                {follows.length
+                  ? `Your clubs · ${follows.length}`
+                  : 'Your clubs'}
                 {follows.length > 0 && (
                   <button
                     type='button'
                     data-clubs-opener
-                    mix={[editStyles, on('click', (event) => chooseClubs(event.currentTarget))]}
+                    mix={[
+                      editStyles,
+                      on('click', (event) => chooseClubs(event.currentTarget)),
+                    ]}
                   >
                     Edit
                   </button>
                 )}
               </p>
-              {follows.length === 0 && (
+              {follows.length === 0 ? (
                 <BuildYourStack preview={stackPreview} onChoose={chooseClubs} />
+              ) : (
+                <ClubList
+                  clubs={follows.map((id) => clubsById.get(id)!)}
+                  matches={matches}
+                />
               )}
             </section>
           </main>
@@ -146,7 +190,11 @@ export const HomeScreen = clientEntry(
             }}
           >
             {content?.kind === 'standings' && (
-              <StandingsSheet standing={content.standing} titleId={titleId} onClose={close} />
+              <StandingsSheet
+                standing={content.standing}
+                titleId={titleId}
+                onClose={close}
+              />
             )}
             {content?.kind === 'clubs' && (
               <ClubPicker
@@ -224,7 +272,15 @@ const clubsSectionStyles = css({
   display: 'flex',
   flexDirection: 'column',
   gap: space(2.5),
+});
+
+const clubsEmptyStyles = css({
   paddingBottom: `calc(${v('--safe-area-inset-bottom')} + ${space(3)})`,
+});
+
+// The list runs to the bottom edge and pads (and fades) the home indicator itself.
+const clubsListStyles = css({
+  paddingBottom: 0,
 });
 
 const clubsLabelStyles = css({

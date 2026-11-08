@@ -67,3 +67,83 @@ export type StandingsResponse = {
   season: Season;
   standings: StandingGroup[];
 };
+
+type Filters = {
+  competitions: string;
+  permission: string;
+  limit: number;
+};
+
+type ResultSet = {
+  count: number;
+  competitions: string;
+  first: string;
+  last: string;
+  played: number;
+  wins: number;
+  draws: number;
+  losses: number;
+};
+
+type MatchStatus =
+  | 'FINISHED'
+  | 'TIMED'
+  | 'IN_PLAY'
+  | 'PAUSED'
+  | 'POSTPONED'
+  | 'SUSPENDED'
+  | 'CANCELLED';
+
+type ScoreDetail = {
+  home: number | null;
+  away: number | null;
+};
+
+type Score = {
+  winner: 'HOME_TEAM' | 'AWAY_TEAM' | 'DRAW' | null;
+  duration: 'REGULAR' | 'EXTRA_TIME' | 'PENALTY_SHOOTOUT';
+  fullTime: ScoreDetail;
+  halfTime: ScoreDetail;
+};
+
+type Odds = {
+  msg: string;
+};
+
+type Referee = {
+  id: number;
+  name: string;
+  type: 'REFEREE';
+  nationality: string;
+};
+
+export type Match = {
+  area: Area;
+  competition: Competition;
+  season: Season;
+  id: number;
+  utcDate: string;
+  status: MatchStatus;
+  venue: string | null;
+  matchday: number;
+  stage:
+    | 'REGULAR_SEASON'
+    | 'GROUP_STAGE'
+    | 'LAST_16'
+    | 'QUARTER_FINALS'
+    | 'SEMI_FINALS'
+    | 'FINAL';
+  group: string | null;
+  lastUpdated: string;
+  homeTeam: Team;
+  awayTeam: Team;
+  score: Score;
+  odds: Odds;
+  referees: Referee[];
+};
+
+export type MatchesResponse = {
+  filters: Filters;
+  resultSet: ResultSet;
+  matches: Match[];
+};

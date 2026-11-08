@@ -374,11 +374,12 @@ describe('home screen club picker', () => {
     await act(() => tile('Arsenal').click());
     assert.equal(tile('Arsenal').getAttribute('aria-pressed'), 'true');
     assert.ok($('[aria-label="Remove Arsenal"]'));
-    assert.ok($('main article'), 'home keeps the empty state until the sheet closes');
+    assert.match($('main')!.textContent!, /Build your stack/, 'home keeps the empty state until the sheet closes');
 
     await act(() => done!.click());
     assert.match(document.cookie, /otp_follows=57/);
-    assert.equal($('main article'), null);
+    assert.doesNotMatch($('main')!.textContent!, /Build your stack/);
+    assert.ok($('main [data-fc][data-id="57"][data-open]'), 'the new club gets an open card');
     assert.match($('main section:last-child p')!.textContent!, /Your clubs · 1/);
     assert.equal(document.activeElement?.textContent, 'Edit');
   });

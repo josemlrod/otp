@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Club matches data flow · On the Pitch</title>
+<style>
+  :root {
+    --color-bg: oklch(14.9% 0.003 248.1);
+    --color-surface: oklch(20.3% 0.005 248.1);
+    --color-surface-raised: oklch(24.6% 0.007 248.1);
+    --color-text: oklch(96.7% 0.002 247.8);
+    --color-text-secondary: oklch(94.3% 0.013 286.1 / 0.6);
+    --color-text-tertiary: oklch(94.3% 0.013 286.1 / 0.28);
+    --color-separator: oklch(100% 0 0 / 0.08);
+    --color-crest-plate: oklch(100% 0 0 / 0.94);
+    --color-accent: oklch(91.1% 0.197 124.6);
+    --color-win: oklch(68.7% 0.18 150.1);
+    --color-draw: oklch(71.4% 0.019 261.3);
+    --color-loss: oklch(62.6% 0.193 23);
+    --color-warning: oklch(78.2% 0.158 72.3);
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    --radius-md: 0.875rem;
+    --radius-lg: 1.125rem;
+    --radius-xl: 1.375rem;
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --shadow-card: 0 0.75rem 1.5rem oklch(0% 0 0 / 0.35);
+    --shadow-highlight: inset 0 1px 0 oklch(100% 0 0 / 0.2);
+    --shadow-crest: 0 0 0 0.5px oklch(0% 0 0 / 0.12), 0 0.25rem 0.75rem oklch(0% 0 0 / 0.2);
+    --gutter: 1.25rem;
+    --browser: var(--color-accent);
+    --server: var(--color-warning);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { background: var(--color-bg); color: var(--color-text); font-family: var(--font-mono); font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body { margin: 0; padding: 3rem var(--gutter) 5rem; }
+  h1, h2, h3, p, ol, ul { margin: 0; padding: 0; }
+  li { list-style: none; }
+  code { font-family: inherit; }
+
+  .wrap { max-width: 68rem; margin: 0 auto; display: flex; flex-direction: column; gap: 4rem; }
+
+  .eyebrow { text-transform: uppercase; font-size: 0.8125rem; font-weight: 500; color: var(--color-text-secondary); }
+  header h1 { margin-top: 0.5rem; font-size: 1.875rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+  header p.lede { margin-top: 0.875rem; max-width: 44rem; font-size: 0.875rem; line-height: 1.6; color: var(--color-text-secondary); }
+
+  section { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
+  section > *, .panel > *, .step > * { min-width: 0; }
+  section > h2 { font-size: 1.375rem; font-weight: 700; letter-spacing: -0.02em; }
+  section > p.note { max-width: 44rem; font-size: 0.875rem; line-height: 1.6; color: var(--color-text-secondary); }
+  .tag { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 99px; font-size: 0.6875rem; font-weight: 600; background: var(--color-surface-raised); color: var(--color-text-secondary); }
+  .tag.accent { background: color-mix(in oklab, var(--color-accent) 18%, transparent); color: var(--color-accent); }
+  .tag.server { background: color-mix(in oklab, var(--color-warning) 18%, transparent); color: var(--color-warning); }
+
+  /* ───────── phones ───────── */
+  .phones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+  .step { display: flex; flex-direction: column; gap: 0.875rem; }
+  .step-label { display: flex; align-items: baseline; gap: 0.5rem; font-size: 0.8125rem; }
+  .step-label b { color: var(--color-accent); font-weight: 700; }
+  .step-label span { color: var(--color-text-secondary); }
+  .step p { font-size: 0.8125rem; line-height: 1.55; color: var(--color-text-secondary); }
+
+  .phone {
+    position: relative; width: 100%; max-width: 17rem; aspect-ratio: 9 / 17; margin: 0 auto;
+    border-radius: 2.25rem; padding: 0.5rem; background: oklch(0% 0 0);
+    box-shadow: 0 0 0 1px var(--color-separator), var(--shadow-card);
+  }
+  .screen {
+    position: relative; height: 100%; overflow: hidden; border-radius: 1.75rem;
+    background: var(--color-bg); padding: 1.5rem 0.875rem 0.875rem;
+    display: flex; flex-direction: column; gap: 0.75rem;
+  }
+  .screen.receded { background: oklch(0% 0 0); padding: 0; }
+  .screen.receded > .home { transform: scale(0.93); transform-origin: 50% 0; border-radius: 1.125rem; }
+  .home { display: flex; flex-direction: column; gap: 0.75rem; }
+  .screen.receded > .home { height: 100%; background: var(--color-bg); padding: 1.5rem 0.875rem 0.875rem; opacity: 0.55; }
+  .mini-eyebrow { text-transform: uppercase; font-size: 0.5rem; font-weight: 500; color: var(--color-text-secondary); display: flex; justify-content: space-between; }
+  .mini-eyebrow em { font-style: normal; text-transform: none; color: var(--color-accent); font-weight: 600; }
+  .brand { font-size: 1rem; font-weight: 800; letter-spacing: -0.03em; margin-top: 0.125rem; }
+  .comp-row { display: flex; gap: 0.375rem; }
+  .comp-row i { flex: 1; height: 1.75rem; border-radius: 0.5rem; background: var(--color-surface); }
+
+  .crest { display: grid; place-items: center; flex: none; width: var(--s, 1.75rem); height: var(--s, 1.75rem); border-radius: 99px; background: var(--color-crest-plate); box-shadow: var(--shadow-crest); overflow: hidden; }
+  .crest img { width: 64%; height: 64%; object-fit: contain; }
+
+  .card {
+    position: relative; border-radius: var(--radius-lg); padding: 0.625rem;
+    background: linear-gradient(165deg, var(--color-surface-raised), var(--color-surface));
+    box-shadow: var(--shadow-highlight), 0 -0.25rem 1rem oklch(0% 0 0 / 0.4);
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .card.fresh { box-shadow: var(--shadow-highlight), 0 0 0 1.5px color-mix(in oklab, var(--color-accent) 70%, transparent); }
+  .strip { display: flex; align-items: center; gap: 0.5rem; }
+  .strip .id { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+  .strip .name { font-size: 0.75rem; font-weight: 700; letter-spacing: -0.02em; }
+  .pills { display: flex; gap: 0.1875rem; }
+  .pill { display: grid; place-items: center; width: 0.75rem; height: 0.75rem; border-radius: 0.1875rem; font-size: 0.4375rem; font-weight: 800; color: var(--color-bg); }
+  .pill.w { background: var(--color-win); } .pill.d { background: var(--color-draw); } .pill.l { background: var(--color-loss); }
+  .next { display: flex; gap: 0.5rem; align-items: center; padding: 0.4375rem 0.5rem; border-radius: 0.625rem; background: oklch(0% 0 0 / 0.25); }
+  .next .count { font-size: 0.875rem; font-weight: 800; letter-spacing: -0.03em; }
+  .next .count small { font-size: 0.5rem; color: var(--color-text-secondary); font-weight: 600; margin: 0 0.125rem; }
+  .next .info { display: flex; flex-direction: column; gap: 0.125rem; font-size: 0.5rem; color: var(--color-text-secondary); }
+  .next .info b { color: var(--color-text); font-size: 0.625rem; }
+
+  .sk { display: block; border-radius: 0.25rem; background: linear-gradient(90deg, var(--color-surface-raised) 0%, oklch(32% 0.007 248.1) 50%, var(--color-surface-raised) 100%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+  .sk.pills-sk { width: 4.25rem; height: 0.75rem; }
+  .sk.next-sk { height: 2.25rem; border-radius: 0.625rem; }
+  @keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+  @media (prefers-reduced-motion: reduce) { .sk { animation: none; } }
+
+  .sheet {
+    position: absolute; inset: 1.25rem 0 0; border-radius: 1.25rem 1.25rem 0 0;
+    background: var(--color-surface); padding: 0.5rem 0.75rem 0.75rem;
+    box-shadow: 0 -0.625rem 2.5rem oklch(0% 0 0 / 0.5);
+    display: flex; flex-direction: column; gap: 0.625rem;
+  }
+  .sheet.closing { transform: translateY(68%); opacity: 0.92; }
+  .grab { width: 2rem; height: 0.25rem; border-radius: 99px; background: oklch(100% 0 0 / 0.45); margin: 0 auto 0.25rem; }
+  .sheet-head { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; }
+  .done { padding: 0.25rem 0.625rem; border-radius: 99px; background: var(--color-accent); color: var(--color-bg); font-weight: 700; font-size: 0.625rem; position: relative; }
+  .done::after { content: ''; position: absolute; inset: -0.375rem; border-radius: 99px; border: 1.5px solid var(--color-accent); opacity: 0.6; }
+  .tray { display: flex; gap: 0.375rem; }
+  .chip { display: flex; align-items: center; gap: 0.25rem; padding: 0.1875rem 0.5rem 0.1875rem 0.1875rem; border-radius: 99px; background: var(--color-surface-raised); font-size: 0.5625rem; font-weight: 600; }
+  .chip.new { box-shadow: 0 0 0 1.5px var(--color-accent); }
+  .search { height: 1.5rem; border-radius: 0.5rem; background: var(--color-surface-raised); font-size: 0.5625rem; color: var(--color-text-tertiary); display: flex; align-items: center; padding: 0 0.5rem; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+  .grid i { aspect-ratio: 1; border-radius: 99px; background: var(--color-surface-raised); }
+  .grid i.on { box-shadow: 0 0 0 1.5px var(--color-accent); }
+
+  .callout { position: absolute; left: 0.75rem; right: 0.75rem; bottom: 0.75rem; padding: 0.5rem 0.625rem; border-radius: 0.625rem; font-size: 0.5625rem; line-height: 1.45; background: oklch(0% 0 0 / 0.72); backdrop-filter: blur(8px); color: var(--color-text-secondary); box-shadow: 0 0 0 1px var(--color-separator); }
+  .callout code { color: var(--color-accent); }
+
+  /* ───────── sequence ───────── */
+  .seq-scroll { overflow-x: auto; margin: 0 calc(var(--gutter) * -1); padding: 0 var(--gutter); }
+  .seq { --n: 6; --lane: calc(100% / var(--n)); position: relative; min-width: 58rem; border-radius: var(--radius-xl); background: var(--color-surface); padding: 0 0 1rem; box-shadow: 0 0 0 1px var(--color-separator); }
+  .bands { display: grid; grid-template-columns: 4fr 2fr; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; }
+  .bands div { padding: 0.75rem 1rem 0.5rem; }
+  .bands .b { color: var(--browser); border-bottom: 2px solid color-mix(in oklab, var(--browser) 40%, transparent); }
+  .bands .s { color: var(--server); border-bottom: 2px solid color-mix(in oklab, var(--server) 40%, transparent); }
+  .heads { display: grid; grid-template-columns: repeat(var(--n), 1fr); position: sticky; top: 0; }
+  .head { margin: 0.75rem 0.375rem 0.5rem; padding: 0.5rem; border-radius: 0.625rem; background: var(--color-surface-raised); text-align: center; display: flex; flex-direction: column; gap: 0.1875rem; }
+  .head b { font-size: 0.75rem; font-weight: 700; letter-spacing: -0.01em; }
+  .head small { font-size: 0.625rem; color: var(--color-text-tertiary); }
+  .body { position: relative; }
+  .life { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--color-separator); left: calc(var(--lane) * (var(--i) - 0.5)); }
+  .phase { position: relative; margin: 0.75rem 1rem 0.25rem; padding-top: 0.5rem; border-top: 1px dashed var(--color-separator); font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; color: var(--color-text-tertiary); display: flex; gap: 0.5rem; align-items: center; }
+  .phase span { background: var(--color-surface); padding-right: 0.5rem; }
+  .msg { position: relative; height: 2.375rem; }
+  .msg .line { position: absolute; top: 1.5rem; height: 0; border-top: 1.5px solid var(--c, var(--color-text-secondary)); left: calc(var(--lane) * (var(--a) - 0.5)); width: calc(var(--lane) * (var(--b) - var(--a))); }
+  .msg.async .line { border-top-style: dashed; }
+  .msg .line::after { content: ''; position: absolute; top: -5.5px; right: -1px; border: 5px solid transparent; border-left: 7px solid var(--c, var(--color-text-secondary)); border-right: 0; }
+  .msg.back .line::after { right: auto; left: -1px; border-left: 0; border-right: 7px solid var(--c, var(--color-text-secondary)); }
+  .msg .label { position: absolute; top: 0.25rem; left: calc(var(--lane) * (var(--a) - 0.5)); width: calc(var(--lane) * (var(--b) - var(--a))); text-align: center; font-size: 0.6875rem; white-space: nowrap; color: var(--color-text); }
+  .msg .label .tag { margin-left: 0.25rem; vertical-align: 1px; }
+  .msg.self .loop { position: absolute; top: 0.6rem; left: calc(var(--lane) * (var(--a) - 0.5)); width: 0.875rem; height: 1rem; border: 1.5px solid var(--c, var(--color-text-tertiary)); border-left: 0; border-radius: 0 0.375rem 0.375rem 0; }
+  .msg.self .label { left: calc(var(--lane) * (var(--a) - 0.5) + 1.375rem); width: auto; text-align: left; top: 0.625rem; color: var(--color-text-secondary); background: var(--color-surface); padding-right: 0.375rem; }
+  .msg.self.left .loop { left: calc(var(--lane) * (var(--a) - 0.5) - 0.875rem); border-left: 1.5px solid var(--c, var(--color-text-tertiary)); border-right: 0; border-radius: 0.375rem 0 0 0.375rem; }
+  .msg.self.left .label { left: auto; right: calc(var(--lane) * (var(--n) - var(--a) + 0.5) + 1.375rem); text-align: right; padding: 0 0 0 0.375rem; }
+  .msg.key .label { color: var(--color-text); font-weight: 600; }
+  .dot { position: absolute; top: calc(1.5rem - 4px); width: 8px; height: 8px; border-radius: 99px; background: var(--c, var(--color-text-secondary)); left: calc(var(--lane) * (var(--a) - 0.5) - 4px); }
+  .msg.back .dot { left: calc(var(--lane) * (var(--b) - 0.5) - 4px); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 1.25rem; font-size: 0.75rem; color: var(--color-text-secondary); }
+  .legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .legend i { display: inline-block; width: 1.75rem; border-top: 1.5px solid var(--color-text-secondary); }
+  .legend i.dash { border-top-style: dashed; }
+  .legend i.hot { border-color: var(--color-accent); }
+
+  /* ───────── store ───────── */
+  .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; align-items: start; }
+  .panel { border-radius: var(--radius-xl); background: var(--color-surface); box-shadow: 0 0 0 1px var(--color-separator); padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+  .panel h3 { font-size: 0.875rem; font-weight: 700; display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+  .panel h3 small { font-size: 0.6875rem; font-weight: 500; color: var(--color-text-tertiary); }
+  .states { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.75rem 0.5rem; }
+  .st { padding: 0.5rem 0.75rem; border-radius: 0.625rem; background: var(--color-surface-raised); font-size: 0.75rem; font-weight: 600; text-align: center; }
+  .st.loading { box-shadow: 0 0 0 1.5px color-mix(in oklab, var(--color-accent) 50%, transparent); }
+  .st.ready { color: var(--color-win); }
+  .st.error { color: var(--color-loss); }
+  .arrow { font-size: 0.625rem; color: var(--color-text-tertiary); text-align: center; border-bottom: 1.5px solid var(--color-separator); padding-bottom: 0.25rem; }
+  pre { margin: 0; padding: 1rem; border-radius: var(--radius-md); background: var(--color-bg); font-size: 0.75rem; line-height: 1.6; overflow-x: auto; color: var(--color-text-secondary); }
+  pre .k { color: var(--color-accent); }
+  pre .c { color: var(--color-text-tertiary); }
+  pre .s { color: var(--color-warning); }
+
+  .sizes { display: flex; flex-direction: column; gap: 0.625rem; font-size: 0.75rem; }
+  .bar { display: grid; grid-template-columns: 7.5rem 1fr; gap: 0.75rem; align-items: center; }
+  .bar span { color: var(--color-text-secondary); }
+  .bar i { display: block; height: 0.625rem; border-radius: 99px; background: var(--color-loss); opacity: 0.8; }
+  .bar i.small { width: 6%; background: var(--color-win); }
+
+  /* ───────── questions ───────── */
+  .qs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .q { border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: 0 0 0 1px var(--color-separator); padding: 1rem; display: flex; flex-direction: column; gap: 0.625rem; font-size: 0.8125rem; line-height: 1.55; }
+  .q b { font-size: 0.875rem; }
+  .q p { color: var(--color-text-secondary); }
+  .q .lean { color: var(--color-accent); font-size: 0.75rem; }
+
+  @media (max-width: 52rem) {
+    .phones, .two, .qs { grid-template-columns: minmax(0, 1fr); }
+    .phone { max-width: 15rem; }
+    body { padding-top: 2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">On the Pitch · data flow proposal</p>
+    <h1>Matches for a newly added club</h1>
+    <p class="lede">The fetch starts in the Done handler, before the sheet starts closing. The card mounts right away with the crest and name from the picker. When the response lands, that one card fills in.</p>
+  </header>
+
+  <!-- ───────── What the user sees ───────── -->
+  <section>
+    <h2>What the user sees</h2>
+    <div class="phones">
+
+      <div class="step">
+        <div class="step-label"><b>t0</b><span>tap Done</span></div>
+        <div class="phone"><div class="screen receded">
+          <div class="home">
+            <p class="mini-eyebrow">Saturday 10 October</p>
+            <p class="brand">On the Pitch</p>
+          </div>
+          <div class="sheet">
+            <div class="grab"></div>
+            <div class="sheet-head"><b>Your clubs</b><span class="done">Done</span></div>
+            <div class="tray">
+              <span class="chip"><span class="crest" style="--s:1rem"><img src="https://crests.football-data.org/64.png" alt=""></span>Liverpool</span>
+              <span class="chip new"><span class="crest" style="--s:1rem"><img src="https://crests.football-data.org/57.png" alt=""></span>Arsenal</span>
+            </div>
+            <div class="search">Search clubs</div>
+            <div class="grid"><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="callout"><code>added = [57]</code><br><code>matches.load(57)</code> fires here</div>
+        </div></div>
+        <p>Liverpool was already followed. Arsenal is new, so its id is the only one that gets loaded.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-label"><b>t0 + 1 frame</b><span>sheet closing</span></div>
+        <div class="phone"><div class="screen">
+          <p class="mini-eyebrow">Saturday 10 October</p>
+          <p class="brand">On the Pitch</p>
+          <p class="mini-eyebrow">Competitions</p>
+          <div class="comp-row"><i></i><i></i><i></i></div>
+          <p class="mini-eyebrow">Your clubs · 2 <em>Edit</em></p>
+          <article class="card">
+            <div class="strip">
+              <span class="crest"><img src="https://crests.football-data.org/64.png" alt=""></span>
+              <span class="id"><span class="name">Liverpool</span><span class="pills"><i class="pill w">W</i><i class="pill w">W</i><i class="pill d">D</i><i class="pill l">L</i><i class="pill w">W</i></span></span>
+            </div>
+          </article>
+          <article class="card fresh">
+            <div class="strip">
+              <span class="crest"><img src="https://crests.football-data.org/57.png" alt=""></span>
+              <span class="id"><span class="name">Arsenal</span><span class="sk pills-sk"></span></span>
+            </div>
+            <span class="sk next-sk"></span>
+          </article>
+          <div class="sheet closing" style="inset: 55% 0 0;"><div class="grab"></div></div>
+        </div></div>
+        <p>The crest and name come from the <code>Club</code> the picker already has. The pills and next fixture show as skeletons.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-label"><b>t0 + rtt</b><span>response lands</span></div>
+        <div class="phone"><div class="screen">
+          <p class="mini-eyebrow">Saturday 10 October</p>
+          <p class="brand">On the Pitch</p>
+          <p class="mini-eyebrow">Competitions</p>
+          <div class="comp-row"><i></i><i></i><i></i></div>
+          <p class="mini-eyebrow">Your clubs · 2 <em>Edit</em></p>
+          <article class="card">
+            <div class="strip">
+              <span class="crest"><img src="https://crests.football-data.org/64.png" alt=""></span>
+              <span class="id"><span class="name">Liverpool</span><span class="pills"><i class="pill w">W</i><i class="pill w">W</i><i class="pill d">D</i><i class="pill l">L</i><i class="pill w">W</i></span></span>
+            </div>
+          </article>
+          <article class="card fresh">
+            <div class="strip">
+              <span class="crest"><img src="https://crests.football-data.org/57.png" alt=""></span>
+              <span class="id"><span class="name">Arsenal</span><span class="pills"><i class="pill w">W</i><i class="pill d">D</i><i class="pill w">W</i><i class="pill w">W</i><i class="pill w">W</i></span></span>
+            </div>
+            <div class="next">
+              <span class="count">2<small>d</small>4<small>h</small></span>
+              <span class="info">Next · Mon · 20:00<b>vs Chelsea</b></span>
+            </div>
+          </article>
+          <div class="callout">Only the Arsenal card re-renders. <code>HomeScreen</code> doesn't.</div>
+        </div></div>
+        <p>The store flips 57 to <code>ready</code> and tells the cards. Only the card listening for 57 updates.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ───────── Sequence ───────── -->
+  <section>
+    <h2>Who does what</h2>
+    <div class="legend">
+      <span><i></i>sync call</span>
+      <span><i class="dash"></i>async, nothing waits on it</span>
+      <span><i class="hot"></i>critical path to first paint</span>
+    </div>
+    <div class="seq-scroll">
+      <div class="seq">
+        <div class="bands"><div class="b">Browser</div><div class="s">Server</div></div>
+        <div class="heads">
+          <div class="head"><b>ClubPicker</b><small>clubs/club-picker.tsx</small></div>
+          <div class="head"><b>HomeScreen</b><small>close()</small></div>
+          <div class="head"><b>matches store</b><small>clubs/matches.ts · new</small></div>
+          <div class="head"><b>ClubCard</b><small>clubs/club-card.tsx · new</small></div>
+          <div class="head"><b>clubMatches action</b><small>/api/clubs/:clubId/matches</small></div>
+          <div class="head"><b>repository</b><small>api_cache · 1h</small></div>
+        </div>
+        <div class="body">
+          <i class="life" style="--i:1"></i><i class="life" style="--i:2"></i><i class="life" style="--i:3"></i>
+          <i class="life" style="--i:4"></i><i class="life" style="--i:5"></i><i class="life" style="--i:6"></i>
+
+          <div class="phase"><span>Tap Done · one task, no awaits</span></div>
+          <div class="msg" style="--a:1;--b:2;--c:var(--color-accent)"><i class="dot"></i><i class="line"></i><span class="label">onDone()</span></div>
+          <div class="msg self" style="--a:2"><i class="loop"></i><span class="label">added = draft − follows → [57]</span></div>
+          <div class="msg key" style="--a:2;--b:3;--c:var(--color-accent)"><i class="dot"></i><i class="line"></i><span class="label">matches.load(57) <span class="tag accent">not awaited</span></span></div>
+          <div class="msg self" style="--a:3"><i class="loop"></i><span class="label">in flight, or fetchedAt &lt; 1h? → skip</span></div>
+          <div class="msg async key" style="--a:3;--b:5;--c:var(--color-accent)"><i class="dot"></i><i class="line"></i><span class="label">fetch('/api/clubs/57/matches')</span></div>
+          <div class="msg self" style="--a:2"><i class="loop"></i><span class="label">commitDraft() · open = false · update()</span></div>
+          <div class="msg key" style="--a:2;--b:4;--c:var(--color-accent)"><i class="dot"></i><i class="line"></i><span class="label">mount &lt;ClubCard club={Arsenal} /&gt;</span></div>
+          <div class="msg back" style="--a:3;--b:4"><i class="dot"></i><i class="line"></i><span class="label">get(57) → loading · subscribe</span></div>
+          <div class="msg self" style="--a:4"><i class="loop"></i><span class="label">crest + name + skeleton</span></div>
+
+          <div class="phase"><span>Network · sheet keeps closing</span></div>
+          <div class="msg" style="--a:5;--b:6;--c:var(--color-warning)"><i class="dot"></i><i class="line"></i><span class="label">fetchTeamMatches(57)</span></div>
+          <div class="msg self left" style="--a:6;--c:var(--color-warning)"><i class="loop"></i><span class="label">fresh ? cache : upstream</span></div>
+          <div class="msg back" style="--a:5;--b:6;--c:var(--color-warning)"><i class="dot"></i><i class="line"></i><span class="label">{ data, fetchedAt }</span></div>
+          <div class="msg self" style="--a:5;--c:var(--color-warning)"><i class="loop"></i><span class="label">toClubCard() trims it</span></div>
+          <div class="msg back async" style="--a:3;--b:5;--c:var(--color-warning)"><i class="dot"></i><i class="line"></i><span class="label">JSON { form, fixtures, fetchedAt }</span></div>
+
+          <div class="phase"><span>Response · one card updates</span></div>
+          <div class="msg self" style="--a:3"><i class="loop"></i><span class="label">set(57, ready)</span></div>
+          <div class="msg" style="--a:3;--b:4"><i class="dot"></i><i class="line"></i><span class="label">dispatch change · 57</span></div>
+          <div class="msg self" style="--a:4"><i class="loop"></i><span class="label">handle.update() on this card only</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── Store + payload ───────── -->
+  <section>
+    <h2>What the store and endpoint own</h2>
+    <div class="two">
+      <div class="panel">
+        <h3>One entry per club id <small>app/actions/public/clubs/matches.ts</small></h3>
+        <div class="states">
+          <span class="st">none</span><span class="arrow">load(id)</span><span class="st loading">loading</span>
+          <span class="st loading">loading</span><span class="arrow">200 · stale fallback counts</span><span class="st ready">ready</span>
+          <span class="st loading">loading</span><span class="arrow">network / 5xx</span><span class="st error">error</span>
+          <span class="st error">error</span><span class="arrow">retry → load(id)</span><span class="st loading">loading</span>
+        </div>
+<pre><span class="k">load</span>(id)
+  entry = entries.get(id)
+  <span class="k">if</span> entry is loading            <span class="c">// already in flight</span>
+    <span class="k">return</span>
+  <span class="k">if</span> entry is ready and age &lt; 1h  <span class="c">// age from server fetchedAt</span>
+    <span class="k">return</span>
+  set(id, loading)
+  fetch(<span class="s">`/api/clubs/${id}/matches`</span>)
+    .then(json  → set(id, ready, json))
+    .catch(()   → set(id, error))
+  <span class="c">// set() dispatches 'change' with the id</span></pre>
+        <p class="note" style="font-size:0.75rem;color:var(--color-text-tertiary);line-height:1.55">Removing a club doesn't abort its request. The result stays in the store, so adding it back is instant.</p>
+      </div>
+
+      <div class="panel">
+        <h3>The response is cut down to what the card draws <small>app/lib/club-card.ts · new</small></h3>
+        <div class="sizes">
+          <div class="bar"><span>MatchesResponse</span><i></i></div>
+          <div class="bar"><span>ClubCard</span><i class="small"></i></div>
+        </div>
+        <p class="note" style="font-size:0.75rem;color:var(--color-text-tertiary);line-height:1.55;margin-top:-0.25rem">Bars show shape, not measured bytes. Raw is every match this season, each with referees, odds, area, season and both full teams.</p>
+<pre><span class="k">type</span> ClubCard = {
+  teamId: number
+  fetchedAt: number
+  form: Array&lt;{             <span class="c">// last 5 FINISHED</span>
+    result: <span class="s">'W'</span> | <span class="s">'D'</span> | <span class="s">'L'</span>
+    gf: number; ga: number
+    venue: <span class="s">'H'</span> | <span class="s">'A'</span>
+    opponent: { id, name, crest }
+    competition: string
+  }&gt;
+  fixtures: Array&lt;{         <span class="c">// upcoming, TIMED / SCHEDULED</span>
+    utcDate: string
+    venue: <span class="s">'H'</span> | <span class="s">'A'</span>
+    opponent: { id, name, crest }
+    competition: string
+  }&gt;
+}</pre>
+        <p class="note" style="font-size:0.75rem;color:var(--color-text-tertiary);line-height:1.55">The action rejects ids that aren't known clubs, so random ids can't burn upstream quota. The repository shares one in-flight promise per team id.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── Open questions ───────── -->
+  <section>
+    <h2>Still open</h2>
+    <div class="qs">
+      <div class="q">
+        <b>1. Clubs already in the cookie</b>
+        <p>Those cards need data on first load too. Either the client calls <code>load</code> for each follow after hydration, or the <code>home</code> action seeds fresh cache hits as <code>initialMatches</code>. Seeding is a DB read only and never calls upstream. Misses still go through the client path.</p>
+        <span class="lean">I lean: seed from cache</span>
+      </div>
+      <div class="q">
+        <b>2. Error state</b>
+        <p>The header stays visible, plus "Couldn't load matches" and a retry that calls <code>load(id)</code>. If the server falls back to stale cache, that counts as ready, not error.</p>
+        <span class="lean">I lean: header + retry</span>
+      </div>
+      <div class="q">
+        <b>3. Upstream rate limit</b>
+        <p>Adding six cold clubs at once means six upstream calls. The known-club check and the in-flight dedupe keep that number from growing. I wouldn't add a client concurrency cap yet.</p>
+        <span class="lean">I lean: no cap for now</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
