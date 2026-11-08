@@ -1,10 +1,12 @@
 import { clientEntry, css, on, ref, type Handle } from 'remix/component';
 
-import { clubSections, leagueLeaders } from '../../lib/clubs.ts';
+import { clubSections, leagueLeaders, type Club } from '../../lib/clubs.ts';
 import { followsCookie } from '../../lib/follows.ts';
+import type { TeamCard } from '../../lib/team-card.ts';
 import type { StandingsResponse } from '../../lib/types/api.ts';
 import { Logo } from '../../ui/logo.tsx';
 import { BuildYourStack } from './clubs/build-your-stack.tsx';
+import { ClubList } from './clubs/club-list.tsx';
 import { ClubPicker } from './clubs/club-picker.tsx';
 import { Standings } from './standings/index.tsx';
 import { StandingsSheet } from './standings/standings-sheet.tsx';
@@ -16,7 +18,11 @@ import { MatchesModel } from './clubs/matches.ts';
 const RECEDED_SCREEN_SCALE = 0.93;
 const STACK_PREVIEW_CLUBS = 3;
 
-type Props = { standings: StandingsResponse[]; follows: number[] };
+type Props = {
+  standings: StandingsResponse[];
+  follows: number[];
+  initialMatches?: TeamCard[];
+};
 
 type SheetContent =
   | { kind: 'standings'; standing: StandingsResponse }
@@ -30,11 +36,11 @@ export const HomeScreen = clientEntry(
       handle.props.standings,
       STACK_PREVIEW_CLUBS,
     );
-    const knownClubs = new Set(
-      sections.flatMap((section) => section.clubs.map((club) => club.id)),
+    const clubsById = new Map<number, Club>(
+      sections.flatMap((section) => section.clubs.map((club) => [club.id, club])),
     );
     const titleId = `${handle.id}-sheet-title`;
-    let follows = handle.props.follows.filter((id) => knownClubs.has(id));
+    let follows = handle.props.follows.filter((id) => clubsById.has(id));
     let draft = follows;
     let pickerSessions = 0;
     let content: SheetContent | null = null;
@@ -43,7 +49,7 @@ export const HomeScreen = clientEntry(
     let opener: HTMLButtonElement | undefined;
     let root: HTMLElement | undefined;
 
-    const matches = new MatchesModel();
+    const matches = new MatchesModel(handle.props.initialMatches);
     handle.queueTask(() => follows.forEach((id) => matches.load(id)));
 
     async function show(next: SheetContent, button: HTMLButtonElement) {
@@ -140,7 +146,12 @@ export const HomeScreen = clientEntry(
               />
             </section>
 
-            <section mix={clubsSectionStyles}>
+            <section
+              mix={[
+                clubsSectionStyles,
+                follows.length ? clubsListStyles : clubsEmptyStyles,
+              ]}
+            >
               <p mix={[subtitleStyles, insetStyles, clubsLabelStyles]}>
                 {follows.length
                   ? `Your clubs · ${follows.length}`
@@ -158,8 +169,13 @@ export const HomeScreen = clientEntry(
                   </button>
                 )}
               </p>
-              {follows.length === 0 && (
+              {follows.length === 0 ? (
                 <BuildYourStack preview={stackPreview} onChoose={chooseClubs} />
+              ) : (
+                <ClubList
+                  clubs={follows.map((id) => clubsById.get(id)!)}
+                  matches={matches}
+                />
               )}
             </section>
           </main>
@@ -256,7 +272,15 @@ const clubsSectionStyles = css({
   display: 'flex',
   flexDirection: 'column',
   gap: space(2.5),
+});
+
+const clubsEmptyStyles = css({
   paddingBottom: `calc(${v('--safe-area-inset-bottom')} + ${space(3)})`,
+});
+
+// The list runs to the bottom edge and pads (and fades) the home indicator itself.
+const clubsListStyles = css({
+  paddingBottom: 0,
 });
 
 const clubsLabelStyles = css({

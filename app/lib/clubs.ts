@@ -6,6 +6,7 @@ export type Club = {
   fullName: string;
   crest: string;
   competitionCode: string;
+  position: number;
 };
 
 export type ClubSection = {
@@ -20,12 +21,13 @@ function teamsOf(standing: StandingsResponse): Club[] {
   return standing.standings
     .filter((group) => group.type === 'TOTAL')
     .flatMap((group) => group.table)
-    .map(({ team }) => ({
+    .map(({ team, position }) => ({
       id: team.id,
       name: team.shortName || team.name,
       fullName: team.name,
       crest: team.crest,
       competitionCode: standing.competition.code,
+      position,
     }));
 }
 

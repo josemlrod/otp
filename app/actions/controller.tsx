@@ -5,6 +5,7 @@ import { assets } from '../assets.ts';
 import { routes } from '../routes.ts';
 import { HomePage } from './home-page.tsx';
 import { footballDataRepository } from '../lib/football-data-repository.ts';
+import { clubSections } from '../lib/clubs.ts';
 import { FOLLOWS_COOKIE, parseFollows } from '../lib/follows.ts';
 
 export default createController(routes, {
@@ -21,11 +22,10 @@ export default createController(routes, {
 
       // TODO: if it's not a team we support we should short-circuit
 
-      const { data: matches } =
-        await footballDataRepository.fetchTeamMatches(teamId);
-      if (!matches) return new Response('Bad Gateway', { status: 502 });
+      const card = await footballDataRepository.fetchTeamCard(teamId);
+      if (!card) return new Response('Bad Gateway', { status: 502 });
 
-      return Response.json(matches);
+      return Response.json(card);
     },
 
     async home(context) {
@@ -33,11 +33,21 @@ export default createController(routes, {
       const follows = parseFollows(cookie.get(FOLLOWS_COOKIE));
 
       const standings = await footballDataRepository.fetchAllStandings();
-      const initialMatches =
-        await footballDataRepository.fetchAllTeamMatches(follows);
+      const known = new Set(
+        clubSections(standings).flatMap((section) =>
+          section.clubs.map((club) => club.id),
+        ),
+      );
+      const initialMatches = await footballDataRepository.fetchAllTeamCards(
+        follows.filter((id) => known.has(id)),
+      );
 
       return context.render(
-        <HomePage standings={standings} follows={follows} />,
+        <HomePage
+          standings={standings}
+          follows={follows}
+          initialMatches={initialMatches}
+        />,
       );
     },
   },

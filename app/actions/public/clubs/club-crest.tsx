@@ -13,7 +13,15 @@ export function ClubCrest(handle: Handle<Props>) {
 
     return (
       <span mix={plateStyles} style={{ '--crest-size': size }} data-club-crest>
-        {crest && <img src={crest} alt='' loading='lazy' mix={imageStyles} />}
+        {crest && (
+          <img
+            src={crest}
+            alt=''
+            loading='lazy'
+            draggable={false}
+            mix={imageStyles}
+          />
+        )}
       </span>
     );
   };
@@ -35,4 +43,5 @@ const imageStyles = css({
   width: '64%',
   height: '64%',
   objectFit: 'contain',
+  pointerEvents: 'none',
 });

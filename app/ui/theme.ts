@@ -18,9 +18,19 @@ export const tokens = {
   '--color-draw': 'oklch(71.4% 0.019 261.3)',
   '--color-loss': 'oklch(62.6% 0.193 23)',
   '--color-warning': 'oklch(78.2% 0.158 72.3)',
+  '--color-well': 'oklch(0% 0 0 / 0.25)',
+  '--color-press': 'oklch(100% 0 0 / 0.04)',
+  '--color-outline': 'oklch(100% 0 0 / 0.16)',
+  '--color-ring-rest': 'oklch(100% 0 0 / 0.22)',
+  '--color-float': 'oklch(28% 0.008 248 / 0.92)',
+  '--card-fill':
+    'linear-gradient(170deg, var(--color-surface-raised) 0rem, var(--color-surface) 8.5rem)',
 
   '--font-mono':
     "'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace",
+  '--text-4xs': '0.5625rem',
+  '--text-3xs': '0.625rem',
+  '--text-unit': '0.75rem',
   '--text-2xs': '0.6875rem',
   '--text-xs': '0.8125rem',
   '--text-sm': '0.875rem',
@@ -53,12 +63,14 @@ export const tokens = {
     'inset 0 1px 0 oklch(100% 0 0 / 0.12), 0 -0.3125rem 0 -0.125rem var(--color-surface-raised), 0 -0.625rem 0 -0.25rem var(--color-surface)',
   '--shadow-accent-glow':
     '0 0.5rem 1.5rem color-mix(in oklab, var(--color-accent) 22%, transparent)',
+  '--shadow-mark': 'inset 0 0 0 1px oklch(100% 0 0 / 0.14)',
   '--shadow-badge':
     'inset 0 0 0 1px oklch(100% 0 0 / 0.25), 0 0.25rem 0.75rem oklch(0% 0 0 / 0.3)',
 
   '--ease-out': 'cubic-bezier(0.23, 1, 0.32, 1)',
   '--ease-ios': 'cubic-bezier(0.32, 0.72, 0, 1)',
   '--duration-press': '120ms',
+  '--duration-focus': '380ms',
   '--duration-sheet-open': '480ms',
   '--duration-sheet-close': '340ms',
 

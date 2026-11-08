@@ -1,38 +1,10 @@
 import { TypedEventTarget } from 'remix/component';
+import type { TeamCard } from '../../../lib/team-card.ts';
 import { routes } from '../../../routes.ts';
 
 const MAX_AGE = 60 * 60 * 1000;
 
-type Team = {
-  id: number;
-  name: string;
-  shortName: string;
-  tla: string;
-  crest: string;
-};
-
-type TeamCard = {
-  teamId: number;
-  fetchedAt: number;
-  form: Array<{
-    // last 5 FINISHED
-    result: 'W' | 'D' | 'L';
-    gf: number;
-    ga: number;
-    venue: 'H' | 'A';
-    opponent: Team;
-    competition: string;
-  }>;
-  fixtures: Array<{
-    // upcoming, TIMED / SCHEDULED
-    utcDate: string;
-    venue: 'H' | 'A';
-    opponent: Team;
-    competition: string;
-  }>;
-};
-
-type MatchesEntry =
+export type MatchesEntry =
   | { status: 'loading'; card?: TeamCard }
   | { status: 'ready'; card: TeamCard }
   | { status: 'error' };
@@ -90,7 +62,7 @@ export class MatchesModel extends TypedEventTarget<{ change: MatchesChange }> {
     );
   }
 
-  async #request(teamId: number) {
+  async #request(teamId: number): Promise<TeamCard> {
     const res = await this.#fetch(routes.teamMatches.href({ teamId }));
     if (!res.ok) throw new Error(`Matches for ${teamId} failed: ${res.status}`);
     return res.json();

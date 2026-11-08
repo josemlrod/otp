@@ -10,6 +10,7 @@ describe('competition metadata', () => {
         color: 'oklch(32.4% 0.014 261.7)',
         accent: 'oklch(100% 0 0)',
         mark: code,
+        short: code,
       });
     }
   });

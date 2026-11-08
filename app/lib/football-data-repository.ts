@@ -1,5 +1,6 @@
 import { tryCatch } from './utils.ts';
 import { readCache, writeCache } from './api-cache.ts';
+import { toTeamCard, type TeamCard } from './team-card.ts';
 
 import type { MatchesResponse, StandingsResponse } from './types/api.ts';
 
@@ -29,6 +30,9 @@ function authHeaders() {
 }
 
 type FetchResult<T> = { data: T; err: null } | { data: null; err: string };
+type CachedResult<T> =
+  | { data: T; err: null; fetchedAt: number }
+  | { data: null; err: string };
 
 async function fetchFootballData<T>(
   path: string,
@@ -67,26 +71,27 @@ async function readThrough<T>(
   key: string,
   path: string,
   errorMessage: string,
-): Promise<FetchResult<T>> {
+): Promise<CachedResult<T>> {
   const [cached, readErr] = await tryCatch(readCache<T>(key));
   if (readErr) logError(`cache read failed ${key}`, readErr);
 
   if (cached && Date.now() - cached.fetchedAt < MAX_AGE_MS) {
     log(`cache hit ${key}`);
-    return { data: cached.data, err: null };
+    return { data: cached.data, err: null, fetchedAt: cached.fetchedAt };
   }
   log(`${cached ? 'cache stale' : 'cache miss'} ${key}`);
 
   const res = await fetchFootballData<T>(path, errorMessage);
   if (res.data) {
-    const [, writeErr] = await tryCatch(writeCache(key, res.data));
+    const fetchedAt = Date.now();
+    const [, writeErr] = await tryCatch(writeCache(key, res.data, fetchedAt));
     if (writeErr) logError(`cache write failed ${key}`, writeErr);
-    return { data: res.data, err: null };
+    return { data: res.data, err: null, fetchedAt };
   }
 
   if (cached) {
     log(`serving stale ${key}`);
-    return { data: cached.data, err: null };
+    return { data: cached.data, err: null, fetchedAt: cached.fetchedAt };
   }
 
   return { data: null, err: res.err ?? errorMessage };
@@ -119,11 +124,16 @@ export const footballDataRepository = {
     );
   },
 
-  async fetchAllTeamMatches(teamIds: number[]) {
-    const results = await Promise.all(
-      teamIds.map((id) => footballDataRepository.fetchTeamMatches(id)),
+  async fetchTeamCard(teamId: number) {
+    const res = await footballDataRepository.fetchTeamMatches(teamId);
+    return res.data ? toTeamCard(res.data, teamId, res.fetchedAt) : null;
+  },
+
+  async fetchAllTeamCards(teamIds: number[]): Promise<TeamCard[]> {
+    const cards = await Promise.all(
+      teamIds.map((id) => footballDataRepository.fetchTeamCard(id)),
     );
 
-    return results.flatMap(({ data }) => (data ? [data] : []));
+    return cards.flatMap((card) => (card ? [card] : []));
   },
 };
