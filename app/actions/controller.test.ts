@@ -1,50 +1,100 @@
-import * as assert from 'remix/assert'
-import { describe, it } from 'remix/test'
+import * as assert from 'remix/assert';
+import { describe, it } from 'remix/test';
+import {
+  buildTeam,
+  buildStandings,
+  buildMatches,
+  buildClubCard,
+  NOW,
+} from '../fixtures/builders.ts';
+import { createMemoryCache } from '../lib/api-cache.ts';
+import { createFootballData, type FootballDataFetcher } from '../lib/football-data.ts';
+import { createAppRouter } from '../router.ts';
 
-import { footballDataRepository } from '../lib/football-data-repository.ts'
-import { buildTeam, buildStandings } from '../fixtures/builders.ts'
-import { router } from '../router.ts'
-import { routes } from '../routes.ts'
+// Every tracked competition answers, so an unknown id is reliably 'not tracked'.
+const TRACKED_CODES: Record<string, string> = {
+  2021: 'PL',
+  2002: 'BL1',
+  2019: 'SA',
+  2014: 'PD',
+  2015: 'FL1',
+  2001: 'CL',
+};
+
+function setup(unavailable = false) {
+  const calls: string[] = [];
+  const fetcher: FootballDataFetcher = async (path) => {
+    calls.push(path);
+    if (path === '/v4/competitions/2021/standings') {
+      return Response.json(
+        buildStandings('PL', { clubs: [buildTeam({ id: 57, shortName: 'Arsenal' })] }),
+      );
+    }
+    const competition = path.match(/^\/v4\/competitions\/(\d+)\/standings$/)?.[1];
+    if (competition) {
+      return Response.json(buildStandings(TRACKED_CODES[competition]!));
+    }
+    if (path === '/v4/teams/57/matches' && !unavailable) {
+      return Response.json(buildMatches({ form: 'WDL', fixtures: [2] }));
+    }
+    return new Response(null, { status: 503 });
+  };
+  const footballData = createFootballData({ fetcher, cache: createMemoryCache(), now: () => NOW });
+  return { router: createAppRouter({ footballData }), calls };
+}
 
 describe('root controller', () => {
-  it('GET / renders standings for multiple competitions', async (t) => {
-    const standings = [buildStandings('PL', { groups: [] }), buildStandings('PD', { groups: [] })]
-    const fetch = t.mock.method(
-      footballDataRepository, 'fetchAllStandings', async () => standings,
-    )
-    const response = await router.fetch(new URL(routes.home.href(), 'http://localhost'))
+  it('GET / renders standings for multiple competitions', async () => {
+    const { router } = setup();
+    const response = await router.fetch('http://localhost/');
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    assert.match(html, /Premier League/);
+    assert.match(html, /La Liga/);
+    assert.match(html, /Build your stack/);
+  });
 
-    assert.equal(response.status, 200)
-    const html = await response.text()
-    assert.match(html, /Premier League/)
-    assert.match(html, /La Liga/)
-    assert.equal(fetch.mock.calls.length, 1)
-    assert.match(html, /Build your stack/)
-  })
-
-  it('GET / swaps the empty state for a count when the follows cookie names known clubs', async (t) => {
-    const standings = [buildStandings('PL', {
-      clubs: [buildTeam({ id: 57, shortName: 'Arsenal', tla: 'ARS' })],
-      rows: [{
-        playedGames: 7,
-        won: 7,
-        points: 21,
-        goalsFor: 14,
-        goalsAgainst: 2,
-        goalDifference: 12,
-      }],
-    })]
-    t.mock.method(footballDataRepository, 'fetchAllStandings', async () => standings)
-    const cards = t.mock.method(footballDataRepository, 'fetchAllTeamCards', async () => [])
+  it('GET / swaps the empty state for a count when the follows cookie names tracked clubs', async () => {
+    const { router, calls } = setup();
     const response = await router.fetch(
-      new Request(new URL(routes.home.href(), 'http://localhost'), {
-        headers: { Cookie: 'otp_follows=57.999' },
-      }),
-    )
+      new Request('http://localhost/', { headers: { Cookie: 'otp_follows=57.999' } }),
+    );
+    const html = await response.text();
+    assert.match(html, /Your clubs · 1/);
+    assert.doesNotMatch(html, /Build your stack/);
+    assert.deepEqual(
+      calls.filter((path) => path.includes('/teams/')),
+      ['/v4/teams/57/matches'],
+    );
+  });
 
-    const html = await response.text()
-    assert.match(html, /Your clubs · 1/)
-    assert.doesNotMatch(html, /Build your stack/)
-    assert.deepEqual(cards.mock.calls[0]?.arguments, [[57]])
-  })
-})
+  for (const id of ['abc', '0', '-3', '1.5', '1e2']) {
+    it(`GET matches rejects invalid id ${id} before any fetch`, async () => {
+      const { router, calls } = setup();
+      assert.equal((await router.fetch(`http://localhost/api/team/${id}/matches`)).status, 404);
+      assert.deepEqual(calls, []);
+    });
+  }
+
+  it('GET matches rejects untracked clubs without a matches request', async () => {
+    const { router, calls } = setup();
+    assert.equal((await router.fetch('http://localhost/api/team/999/matches')).status, 404);
+    assert.deepEqual(
+      calls.filter((path) => path.includes('/teams/')),
+      [],
+    );
+  });
+
+  it('GET matches returns 502 for unavailable club data', async () => {
+    const { router } = setup(true);
+    assert.equal((await router.fetch('http://localhost/api/team/57/matches')).status, 502);
+  });
+
+  it('GET matches returns the club card as JSON', async () => {
+    const { router } = setup();
+    const response = await router.fetch('http://localhost/api/team/57/matches');
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get('Content-Type') ?? '', /application\/json/);
+    assert.deepEqual(await response.json(), buildClubCard({ form: 'WDL', fixtures: [2] }));
+  });
+});

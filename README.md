@@ -53,3 +53,9 @@ Press <kbd>Option</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, tap the logo or title fiv
 To count a component's renders, call `countRender('Name')` at the top of its render function.
 
 Some metrics are Chromium-only (JS heap, long frames) and show `n/a` elsewhere. Chrome rounds heap sizes unless launched with `--enable-precise-memory-info`.
+
+## Dev scenarios
+
+Run without an API key using `OTP_SCENARIO=matchday bun run dev`. The same variable works with `bun run hmr`. `matchday` includes all six tracked competitions, varied form, and kickoff within a few hours. `api-down` simulates an outage; `no-fixtures` gives Arsenal no upcoming fixtures. Scenarios use an in-memory cache and dates relative to startup.
+
+Set the browser cookie `otp_follows=57.64.5` to show Arsenal, Liverpool and Bayern club cards on the home screen. Unknown names fail at startup and list the valid names. Scenarios are rejected with `NODE_ENV=production`, including `bun run start`; to run the server directly use `OTP_SCENARIO=matchday NODE_ENV=development node --import remix/node-tsx server.ts`.

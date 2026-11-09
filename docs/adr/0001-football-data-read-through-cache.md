@@ -5,5 +5,6 @@ football-data.org (v4) is OTP's only source of standings and matches. Every call
 ## Consequences
 
 - Data can be up to an hour old, and older during an outage. Live scores would mean revisiting this decision.
+- After a request fails, that request isn't retried for 60 seconds (an in-memory cooldown). A stale copy, if there is one, is served in the meantime. Without the cooldown, an outage would multiply calls, because one home render checks the tracked clubs against the standings more than once.
 - The browser's freshness rule for club matches has to agree with the server's max age.
 - Club and competition ids throughout the app (including the `otp_follows` cookie, see ADR-0002) are football-data ids. Changing the data source means mapping ids.
