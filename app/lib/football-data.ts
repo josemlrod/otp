@@ -1,13 +1,13 @@
 import { tryCatch } from './utils.ts';
 import type { FootballDataCache } from './api-cache.ts';
 import { clubSections } from './clubs.ts';
+import { isFresh } from './freshness.ts';
 import { toTeamCard, type TeamCard } from './team-card.ts';
 
 import type { MatchesResponse, StandingsResponse } from './types/api.ts';
 
 export const RETRY_AFTER_MS = 60_000;
 
-const MAX_AGE_MS = 60 * 60 * 1000;
 const COMPETITION_IDS = {
   PL: 2021,
   BL1: 2002,
@@ -82,7 +82,7 @@ export function createFootballData({
     const [cached, readErr] = await tryCatch(cache.read<T>(key));
     if (readErr) logError(`cache read failed ${key}`, readErr);
 
-    if (cached && now() - cached.fetchedAt < MAX_AGE_MS) {
+    if (cached && isFresh(cached.fetchedAt, now())) {
       log(`cache hit ${key}`);
       return { data: cached.data, err: null, fetchedAt: cached.fetchedAt };
     }

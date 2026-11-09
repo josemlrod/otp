@@ -1,8 +1,7 @@
 import { TypedEventTarget } from 'remix/component';
+import { isFresh } from '../../../lib/freshness.ts';
 import type { TeamCard } from '../../../lib/team-card.ts';
 import { routes } from '../../../routes.ts';
-
-const MAX_AGE = 60 * 60 * 1000;
 
 export type MatchesEntry =
   | { status: 'loading'; card?: TeamCard }
@@ -45,7 +44,7 @@ export class MatchesModel extends TypedEventTarget<{ change: MatchesChange }> {
 
       const isNotStale =
         entry?.status === 'ready' &&
-        this.#now() - entry.card.fetchedAt < MAX_AGE;
+        isFresh(entry.card.fetchedAt, this.#now());
       if (isNotStale) return;
     }
 

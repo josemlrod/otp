@@ -22,6 +22,7 @@ export const assets = createAssetServer({
     'app/lib/clubs.ts',
     'app/lib/competition-metadata.ts',
     'app/lib/follows.ts',
+    'app/lib/freshness.ts',
     'app/lib/match-format.ts',
     'app/lib/team-card.ts',
     'app/ui/logo.tsx',
