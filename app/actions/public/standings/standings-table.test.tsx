@@ -2,57 +2,31 @@ import * as assert from 'remix/assert';
 import { renderToString } from 'remix/component/server';
 import { describe, it } from 'remix/test';
 
+import { buildTeam, buildStandingRow, buildStandings } from '../../../fixtures/builders.ts';
 import type { StandingsResponse, StandingTableRow } from '../../../lib/types/api.ts';
 import { StandingsSheet } from './standings-sheet.tsx';
 import { StandingsTable } from './standings-table.tsx';
 
-function row(overrides: Partial<StandingTableRow> = {}): StandingTableRow {
-  return {
-    position: 1,
-    team: {
+const row = (overrides: Partial<StandingTableRow> = {}) =>
+  buildStandingRow({
+    team: buildTeam({
       id: 65,
       name: 'Manchester City FC',
       shortName: 'Man City',
       tla: 'MCI',
       crest: 'https://crests.football-data.org/65.png',
-    },
+    }),
     playedGames: 6,
-    form: null,
     won: 6,
-    draw: 0,
-    lost: 0,
     points: 18,
     goalsFor: 16,
     goalsAgainst: 5,
     goalDifference: 11,
     ...overrides,
-  };
-}
+  });
 
-function response(
-  table: StandingTableRow[] = [row()],
-  code = 'PL',
-): StandingsResponse {
-  return {
-    filters: { season: '2026' },
-    area: { id: 2072, name: 'England', code: 'ENG', flag: '' },
-    competition: {
-      id: 2021,
-      name: 'Premier League',
-      code,
-      type: 'LEAGUE',
-      emblem: 'https://crests.football-data.org/PL.png',
-    },
-    season: {
-      id: 2502,
-      startDate: '2026-08-21',
-      endDate: '2027-05-30',
-      currentMatchday: 7,
-      winner: null,
-    },
-    standings: [{ stage: 'REGULAR_SEASON', type: 'TOTAL', group: 'Matchday', table }],
-  };
-}
+const response = (rows: StandingTableRow[] = [row()], code = 'PL') =>
+  buildStandings(code, { rows, group: 'Matchday' });
 
 function clean(html: string) {
   return html.replace(/<!--[\s\S]*?-->/g, '');
@@ -64,11 +38,13 @@ async function render(standing: StandingsResponse) {
 
 describe('standings table', () => {
   it('signs positive goal differences only', async () => {
-    const html = await render(response([
-      row({ goalDifference: 11 }),
-      row({ goalDifference: 0 }),
-      row({ goalDifference: -4 }),
-    ]));
+    const html = await render(
+      response([
+        row({ goalDifference: 11 }),
+        row({ goalDifference: 0 }),
+        row({ goalDifference: -4 }),
+      ]),
+    );
 
     for (const expected of ['+11', '0', '-4']) {
       assert.ok(html.includes(`<td>${expected}</td>`), expected);
@@ -118,7 +94,7 @@ describe('standings sheet', () => {
   ]) {
     it(`labels ${code} progress as "${label}"`, async () => {
       const html = await renderToString(
-        <StandingsSheet standing={response([], code)} titleId='title' onClose={() => {}} />,
+        <StandingsSheet standing={response([], code)} titleId="title" onClose={() => {}} />,
       );
 
       assert.ok(clean(html).includes(`>${label}<`));

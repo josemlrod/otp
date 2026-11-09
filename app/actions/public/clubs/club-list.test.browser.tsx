@@ -2,48 +2,24 @@ import * as assert from 'remix/assert';
 import { render } from 'remix/component/test';
 import { describe, it } from 'remix/test';
 
-import type { Club } from '../../../lib/clubs.ts';
-import type { TeamCard } from '../../../lib/team-card.ts';
+import { buildTeam, buildClubCard, buildClub } from '../../../fixtures/builders.ts';
 import { tokens } from '../../../ui/theme.ts';
 import { ClubList } from './club-list.tsx';
 import { MatchesModel } from './matches.ts';
 
-const club = (id: number, name: string, position: number): Club => ({
-  id,
-  name,
-  fullName: `${name} FC`,
-  crest: '',
-  competitionCode: 'PL',
-  position,
-});
-
-const opponent = { id: 99, name: 'Chelsea', tla: 'CHE', crest: '' };
-const day = 86_400_000;
-
-const card = (teamId: number): TeamCard => ({
-  teamId,
-  fetchedAt: Date.now(),
-  form: (['W', 'D', 'L', 'W', 'W'] as const).map((result, i) => ({
-    utcDate: new Date(Date.now() - (5 - i) * 7 * day).toISOString(),
-    result,
-    gf: result === 'L' ? 0 : 2,
-    ga: result === 'W' ? 0 : 2,
-    venue: 'H',
-    opponent,
-    competition: 'PL',
-  })),
-  fixtures: [2, 9].map((days) => ({
-    utcDate: new Date(Date.now() + days * day + 3_600_000).toISOString(),
-    venue: 'A',
-    opponent,
-    competition: 'PL',
-  })),
-});
-
-const clubs = [club(57, 'Arsenal', 1), club(64, 'Liverpool', 3), club(5, 'Bayern', 1)];
+const clubs = [
+  buildClub({ id: 57, name: 'Arsenal', position: 1 }),
+  buildClub({ id: 64, name: 'Liverpool', position: 3 }),
+  buildClub({ id: 5, name: 'Bayern', position: 1 }),
+];
 
 function mount(height = 700) {
-  const matches = new MatchesModel(clubs.map((c) => card(c.id)));
+  // #25: soon() and countdown() still read the real clock.
+  const now = Date.now();
+  const matches = new MatchesModel(clubs.map((club) => buildClubCard({
+    team: buildTeam({ id: club.id }), now, form: 'WDLWW',
+    fixtures: [2, 9].map((days) => ({ days: days + 1 / 24, venue: 'A' })),
+  })));
   const view = render(<ClubList clubs={clubs} matches={matches} />);
   view.container.style.cssText = `display: flex; flex-direction: column; width: 390px; height: ${height}px;`;
   for (const [token, value] of Object.entries(tokens)) {
