@@ -1,38 +1,49 @@
-import * as http from 'node:http'
-import { createRequestListener } from 'remix/node-fetch-server'
+import * as http from 'node:http';
+import { createRequestListener } from 'remix/node-fetch-server';
 
-import { db, migrateDatabase } from './app/db.ts'
-import { router } from './app/router.ts'
+import { db, migrateDatabase } from './app/db.ts';
+import { createAppRouter } from './app/router.ts';
+import { footballDataFromEnv } from './app/lib/football-data-env.ts';
 
-await migrateDatabase()
+const { footballData, scenario, shouldMigrate } = footballDataFromEnv(process.env, {
+  db,
+  now: Date.now,
+});
+if (scenario !== undefined) {
+  console.info(`[football-data] scenario ${scenario}`);
+}
+if (shouldMigrate) {
+  await migrateDatabase();
+}
+const router = createAppRouter({ footballData });
 
-const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 44100
+const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 44100;
 const hmrProxyPort = process.env.HMR_PROXY_PORT
   ? Number.parseInt(process.env.HMR_PROXY_PORT, 10)
-  : null
-const isHmr = process.env.REMIX_NODE_HMR === '1'
+  : null;
+const isHmr = process.env.REMIX_NODE_HMR === '1';
 
-const server = http.createServer(createRequestListener(router.fetch, { trustProxy: isHmr }))
+const server = http.createServer(createRequestListener(router.fetch, { trustProxy: isHmr }));
 
 server.listen(port, () => {
   if (isHmr) {
-    import('remix/node-hmr/runtime').then((nodeHmr) => nodeHmr.emitServerReady())
+    import('remix/node-hmr/runtime').then((nodeHmr) => nodeHmr.emitServerReady());
   }
 
-  console.log(`Server listening on http://localhost:${hmrProxyPort ?? port}`)
-})
+  console.log(`Server listening on http://localhost:${hmrProxyPort ?? port}`);
+});
 
-let shuttingDown = false
+let shuttingDown = false;
 
 function shutdown() {
   if (shuttingDown) {
-    return
+    return;
   }
 
-  shuttingDown = true
-  server.close(() => db.close().finally(() => process.exit(0)))
-  server.closeAllConnections()
+  shuttingDown = true;
+  server.close(() => db.close().finally(() => process.exit(0)));
+  server.closeAllConnections();
 }
 
-process.on('SIGINT', shutdown)
-process.on('SIGTERM', shutdown)
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
