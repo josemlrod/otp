@@ -3,27 +3,12 @@ import { describe, it } from 'remix/test';
 
 import { clubSections, leagueLeaders } from './clubs.ts';
 import { parseFollows } from './follows.ts';
-import type { StandingsResponse } from './types/api.ts';
+import { buildTeam, buildStandings } from '../fixtures/builders.ts';
 
-function standing(code: string, type: string, teams: [number, string][]): StandingsResponse {
-  return {
-    filters: { season: '2026' },
-    area: { id: 1, name: 'Area', code: 'AR', flag: '' },
-    competition: { id: teams[0]![0], name: `${code} name`, code, type, emblem: '' },
-    season: { id: 1, startDate: '', endDate: '', currentMatchday: 1, winner: null },
-    standings: [{
-      stage: 'REGULAR_SEASON',
-      type: 'TOTAL',
-      group: null,
-      table: teams.map(([id, shortName], index) => ({
-        position: index + 1,
-        team: { id, name: `${shortName} FC`, shortName, tla: '', crest: '' },
-        playedGames: 0, form: null, won: 0, draw: 0, lost: 0, points: 0,
-        goalsFor: 0, goalsAgainst: 0, goalDifference: 0,
-      })),
-    }],
-  };
-}
+const standing = (code: string, type: string, clubs: [number, string][]) => buildStandings(code, {
+  competition: { name: `${code} name`, type },
+  clubs: clubs.map(([id, shortName]) => buildTeam({ id, shortName })),
+});
 
 const cup = standing('CL', 'CUP', [[1, 'Leader'], [9, 'Porto'], [3, 'Ajax']]);
 const premier = standing('PL', 'LEAGUE', [[1, 'Leader'], [2, 'Arsenal']]);

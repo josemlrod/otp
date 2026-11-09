@@ -5,31 +5,13 @@ import { apiCache } from '../data/tables.ts';
 import { db, migrateDatabase } from '../db.ts';
 import { readCache, writeCache } from './api-cache.ts';
 import { footballDataRepository } from './football-data-repository.ts';
-import type { StandingsResponse } from './types/api.ts';
+import { buildStandings } from '../fixtures/builders.ts';
 
 const competitionIds = [2021, 2002, 2019, 2014, 2015, 2001];
 
-function standing(id: number): StandingsResponse {
-  return {
-    filters: { season: '2026' },
-    area: { id: 2072, name: 'England', code: 'ENG', flag: '' },
-    competition: {
-      id,
-      name: `Competition ${id}`,
-      code: String(id),
-      type: 'LEAGUE',
-      emblem: '',
-    },
-    season: {
-      id: 2502,
-      startDate: '2026-08-21',
-      endDate: '2027-05-30',
-      currentMatchday: 7,
-      winner: null,
-    },
-    standings: [{ stage: 'REGULAR_SEASON', type: 'TOTAL', group: null, table: [] }],
-  };
-}
+const standing = (id: number) => buildStandings(String(id), {
+  competition: { id, name: `Competition ${id}` },
+});
 
 function competitionIdFrom(url: string) {
   return Number(url.match(/\/competitions\/(\d+)\/standings$/)?.[1]);
@@ -44,7 +26,7 @@ describe('all competition standings', () => {
   });
 
   it('fetches missing and expired standings and caches them', async (t) => {
-    await writeCache('standings-2021', { ...standing(2021), standings: [] }, 0);
+    await writeCache('standings-2021', buildStandings('2021', { competition: { id: 2021 }, groups: [] }), 0);
     const fetch = t.mock.method(globalThis, 'fetch', async (url: string) =>
       Response.json(standing(competitionIdFrom(url))),
     );

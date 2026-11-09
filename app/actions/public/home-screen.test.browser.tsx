@@ -2,34 +2,12 @@ import * as assert from 'remix/assert';
 import { render } from 'remix/component/test';
 import { describe, it } from 'remix/test';
 
-import type { StandingsResponse } from '../../lib/types/api.ts';
+import { buildTeam, buildStandings } from '../../fixtures/builders.ts';
 import { tokens } from '../../ui/theme.ts';
 import { HomeScreen } from './home-screen.tsx';
 
-const standing: StandingsResponse = {
-  filters: { season: '2026' },
-  area: { id: 2072, name: 'England', code: 'ENG', flag: '' },
-  competition: {
-    id: 2021,
-    name: 'Premier League',
-    code: 'PL',
-    type: 'LEAGUE',
-    emblem: '',
-  },
-  season: {
-    id: 2502,
-    startDate: '2026-08-21',
-    endDate: '2027-05-30',
-    currentMatchday: 7,
-    winner: null,
-  },
-  standings: [{ stage: 'REGULAR_SEASON', type: 'TOTAL', group: 'Matchday', table: [] }],
-};
-
-const otherStanding: StandingsResponse = {
-  ...standing,
-  competition: { ...standing.competition, id: 2014, name: 'La Liga', code: 'PD' },
-};
+const standing = buildStandings('PL', { group: 'Matchday' });
+const otherStanding = buildStandings('PD', { group: 'Matchday' });
 
 function mount() {
   const view = render(<HomeScreen standings={[standing, otherStanding]} follows={[]} />);
@@ -326,20 +304,12 @@ describe('home screen standings sheet drag', () => {
 });
 
 describe('home screen club picker', () => {
-  const clubs: StandingsResponse = {
-    ...standing,
-    standings: [{
-      ...standing.standings[0]!,
-      table: [[57, 'Arsenal', 'Arsenal FC'], [5, 'Bayern', 'FC Bayern München']].map(
-        ([id, shortName, name], index) => ({
-          position: index + 1,
-          team: { id: id as number, name: name as string, shortName: shortName as string, tla: '', crest: '' },
-          playedGames: 7, form: null, won: 0, draw: 0, lost: 0, points: 0,
-          goalsFor: 0, goalsAgainst: 0, goalDifference: 0,
-        }),
-      ),
-    }],
-  };
+  const clubs = buildStandings('PL', {
+    clubs: [
+      buildTeam({ id: 57, shortName: 'Arsenal', name: 'Arsenal FC' }),
+      buildTeam({ id: 5, shortName: 'Bayern', name: 'FC Bayern München' }),
+    ],
+  });
 
   function mountPicker() {
     const view = render(<HomeScreen standings={[clubs]} follows={[]} />);

@@ -88,6 +88,7 @@ type ResultSet = {
 type MatchStatus =
   | 'FINISHED'
   | 'TIMED'
+  | 'SCHEDULED'
   | 'IN_PLAY'
   | 'PAUSED'
   | 'POSTPONED'
