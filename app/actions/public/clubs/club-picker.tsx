@@ -25,7 +25,10 @@ const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
 const EASE_IOS = 'cubic-bezier(0.32, 0.72, 0, 1)';
 
 const fold = (text: string) =>
-  text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+  text
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase();
 
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -41,7 +44,7 @@ export function ClubPicker(handle: Handle<Props>) {
   const clubs = new Map<number, Club>(
     handle.props.sections.flatMap((section) => section.clubs.map((club) => [club.id, club])),
   );
-  let tray = handle.props.initial.filter((id) => clubs.has(id));
+  let tray = [...handle.props.initial];
   const leaving = new Map<number, Animation | null>();
   const ripples = new Map<number, { x: number; y: number }>();
   let query = '';
@@ -92,8 +95,18 @@ export function ClubPicker(handle: Handle<Props>) {
     if (!chip || leaving.get(id) !== null) return;
     const exit = chip.animate(
       [
-        { width: space(10), marginRight: space(1.5), opacity: 1, transform: 'scale(1)' },
-        { width: '0px', marginRight: '0px', opacity: 0, transform: 'scale(0.4)' },
+        {
+          width: space(10),
+          marginRight: space(1.5),
+          opacity: 1,
+          transform: 'scale(1)',
+        },
+        {
+          width: '0px',
+          marginRight: '0px',
+          opacity: 0,
+          transform: 'scale(0.4)',
+        },
       ],
       { duration: CHIP_EXIT_MS, easing: EASE_OUT, fill: 'forwards' },
     );
@@ -198,8 +211,8 @@ export function ClubPicker(handle: Handle<Props>) {
     const sections = Array.from(scrollEl.querySelectorAll<HTMLElement>('[data-section]'));
     const current = atBottom
       ? sections.at(-1)
-      : sections.filter((section) => section.offsetTop - SPY_OFFSET_PX <= top).at(-1) ??
-        sections[0];
+      : (sections.filter((section) => section.offsetTop - SPY_OFFSET_PX <= top).at(-1) ??
+        sections[0]);
     const code = current?.dataset.section;
     if (code) activate(code);
   }
@@ -219,9 +232,7 @@ export function ClubPicker(handle: Handle<Props>) {
       .map((section) => ({
         ...section,
         clubs: query
-          ? section.clubs.filter((club) =>
-              fold(`${club.name} ${club.fullName}`).includes(query),
-            )
+          ? section.clubs.filter((club) => fold(`${club.name} ${club.fullName}`).includes(query))
           : section.clubs,
       }))
       .filter((section) => section.clubs.length > 0);
@@ -237,11 +248,7 @@ export function ClubPicker(handle: Handle<Props>) {
                 {countText(selected.length)}
               </span>
             </div>
-            <button
-              type='button'
-              data-sheet-autofocus
-              mix={[doneStyles, on('click', onDone)]}
-            >
+            <button type='button' data-sheet-autofocus mix={[doneStyles, on('click', onDone)]}>
               Done
             </button>
           </div>
@@ -394,9 +401,7 @@ export function ClubPicker(handle: Handle<Props>) {
               </div>
             </section>
           ))}
-          {visible.length === 0 && (
-            <p mix={noneStyles}>No clubs match “{query}”</p>
-          )}
+          {visible.length === 0 && <p mix={noneStyles}>No clubs match “{query}”</p>}
         </div>
       </>
     );

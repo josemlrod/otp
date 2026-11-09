@@ -32,7 +32,7 @@ describe('football data startup selection', () => {
     const selected = footballDataFromEnv({ OTP_SCENARIO: 'matchday' }, dependencies);
     assert.equal(selected.scenario, 'matchday');
     assert.equal(selected.shouldMigrate, false);
-    assert.equal((await selected.footballData.standings()).length, 6);
+    assert.equal((await selected.footballData.trackedCompetitions()).standings.length, 6);
     await selected.cache.write('startup-test', 'memory', NOW);
     const other = footballDataFromEnv({ OTP_SCENARIO: 'matchday' }, dependencies);
     assert.equal(await other.cache.read('startup-test'), null);

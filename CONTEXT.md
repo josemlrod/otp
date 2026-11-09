@@ -96,7 +96,7 @@ _Avoid_: modal, drawer, dialog (except for its ARIA role)
 
 - A **Tracked competition** has one **Standings**, and the **Standings** list many **Clubs**
 - A **Club** belongs to exactly one **Club section**: the first **League** it appears in, otherwise **Rest of Europe**
-- **Your clubs** holds zero or more **Tracked clubs** in the user's order; ids that aren't tracked clubs are dropped
+- **Your clubs** holds zero or more **Tracked clubs** in the user's order. A saved id is dropped only once every **Tracked competition**'s standings have loaded and it isn't among them; until then it is kept, even though it can't be shown
 - A **Club card** shows one **Club**'s **Form** (up to five **Results**) and up to four **Fixtures**
 - The **Timeline** has one slot per **Result** plus a Next slot, and one page per **Result** and per **Fixture**
 - Changes in the **Club picker** are saved to **Your clubs** when the sheet closes, whichever way it closes

@@ -9,6 +9,7 @@ import {
 } from '../fixtures/builders.ts';
 import { createMemoryCache } from '../lib/api-cache.ts';
 import { createFootballData, type FootballDataFetcher } from '../lib/football-data.ts';
+import { scenarioFetcher } from '../fixtures/scenarios.ts';
 import { createAppRouter } from '../router.ts';
 
 // Every tracked competition answers, so an unknown id is reliably 'not tracked'.
@@ -44,6 +45,21 @@ function setup(unavailable = false) {
 }
 
 describe('root controller', () => {
+  it('GET / fetches each tracked competition once on a cold cache', async () => {
+    const { router, calls } = setup();
+    const response = await router.fetch(
+      new Request('http://localhost/', { headers: { Cookie: 'otp_follows=57.5' } }),
+    );
+    assert.equal(response.status, 200);
+    await response.text();
+    assert.deepEqual(
+      calls.filter((path) => path.endsWith('/standings')).sort(),
+      Object.keys(TRACKED_CODES)
+        .map((id) => `/v4/competitions/${id}/standings`)
+        .sort(),
+    );
+  });
+
   it('GET / renders standings for multiple competitions', async () => {
     const { router } = setup();
     const response = await router.fetch('http://localhost/');
@@ -98,3 +114,42 @@ describe('root controller', () => {
     assert.deepEqual(await response.json(), buildClubCard({ form: 'WDL', fixtures: [2] }));
   });
 });
+
+for (const scenario of ['api-down', 'league-down', 'matchday']) {
+  it(`${scenario} renders saved Your clubs without setting a cookie`, async () => {
+    const calls: string[] = [];
+    const fetcher = scenarioFetcher(scenario, NOW);
+    const footballData = createFootballData({
+      fetcher: (path) => {
+        calls.push(path);
+        return fetcher(path);
+      },
+      cache: createMemoryCache(),
+      now: () => NOW,
+    });
+    const response = await createAppRouter({ footballData }).fetch(
+      new Request('http://localhost/', { headers: { Cookie: 'otp_follows=57.5' } }),
+    );
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('Set-Cookie'), null);
+    const html = await response.text();
+    assert.doesNotMatch(html, /Build your stack/);
+    if (scenario === 'api-down') {
+      assert.match(html, /Your clubs/);
+      assert.match(html, /Couldn't load your clubs right now/);
+      assert.doesNotMatch(html, />Edit</);
+    } else {
+      assert.match(html, /Arsenal/);
+      assert.match(html, scenario === 'league-down' ? /Your clubs · 1/ : /Your clubs · 2/);
+    }
+    assert.deepEqual(
+      calls.filter((path) => path.includes('/teams/')),
+      scenario === 'api-down'
+        ? []
+        : scenario === 'league-down'
+          ? ['/v4/teams/57/matches']
+          : ['/v4/teams/57/matches', '/v4/teams/5/matches'],
+    );
+    assert.equal(calls.filter((path) => path.includes('/standings')).length, 6);
+  });
+}

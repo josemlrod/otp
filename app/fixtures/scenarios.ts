@@ -2,7 +2,7 @@ import { buildMatches, buildStandings, buildTeam } from './builders.ts';
 import type { MatchOptions } from './builders.ts';
 import type { FootballDataFetcher } from '../lib/football-data.ts';
 
-export const scenarioNames = ['matchday', 'api-down', 'no-fixtures'] as const;
+export const scenarioNames = ['matchday', 'api-down', 'no-fixtures', 'league-down'] as const;
 export type ScenarioName = (typeof scenarioNames)[number];
 
 export function scenarioFetcher(name: string, now: number): FootballDataFetcher {
@@ -66,7 +66,12 @@ export function scenarioFetcher(name: string, now: number): FootballDataFetcher 
     ],
   ] as const;
   competitions.forEach(([code, descriptions]) => {
-    const clubs = descriptions.map(([id, shortName]) => buildTeam({ id, shortName }));
+    // Bayern must also be absent from CL to exercise an unresolved saved club.
+    const available =
+      name === 'league-down' && code === 'CL'
+        ? descriptions.filter(([id]) => id !== 5)
+        : descriptions;
+    const clubs = available.map(([id, shortName]) => buildTeam({ id, shortName }));
     const standings = buildStandings(code, { clubs });
     responses.set(`/v4/competitions/${standings.competition.id}/standings`, standings);
     clubs.forEach((team, i) => {
@@ -105,7 +110,10 @@ export function scenarioFetcher(name: string, now: number): FootballDataFetcher 
     });
   });
   return async (path) => {
-    if (name === 'api-down') {
+    if (
+      name === 'api-down' ||
+      (name === 'league-down' && path === '/v4/competitions/2002/standings')
+    ) {
       return new Response('Service unavailable', { status: 503 });
     }
     const data = responses.get(path);

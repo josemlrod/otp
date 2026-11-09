@@ -5,6 +5,7 @@ import { assets } from '../assets.ts';
 import { routes } from '../routes.ts';
 import { HomePage } from './home-page.tsx';
 import type { FootballData } from '../lib/football-data.ts';
+import { resolveYourClubs } from '../lib/your-clubs.ts';
 import { FOLLOWS_COOKIE, parseFollows } from '../lib/follows.ts';
 
 function parseClubId(param: string): number | null {
@@ -34,11 +35,20 @@ export function createAppController({ footballData }: { footballData: FootballDa
         const cookie = Cookie.from(context.request.headers.get('Cookie'));
         const follows = parseFollows(cookie.get(FOLLOWS_COOKIE));
 
-        const standings = await footballData.standings();
-        const initialMatches = await footballData.clubCards(follows);
+        const tracked = await footballData.trackedCompetitions();
+        const yourClubs = resolveYourClubs(follows, tracked.sections, tracked.complete);
+        const initialMatches = await footballData.clubCards(
+          yourClubs.clubs.map((club) => club.id),
+          tracked,
+        );
 
         return context.render(
-          <HomePage standings={standings} follows={follows} initialMatches={initialMatches} />,
+          <HomePage
+            standings={tracked.standings}
+            sections={tracked.sections}
+            yourClubs={yourClubs}
+            initialMatches={initialMatches}
+          />,
         );
       },
     },
