@@ -3,14 +3,36 @@ import { render } from 'remix/component/test';
 import { describe, it } from 'remix/test';
 
 import { buildTeam, buildStandings } from '../../fixtures/builders.ts';
+import { clubSections } from '../../lib/clubs.ts';
+import { resolveYourClubs } from '../../lib/your-clubs.ts';
+import type { StandingsResponse } from '../../lib/types/api.ts';
 import { tokens } from '../../ui/theme.ts';
 import { HomeScreen } from './home-screen.tsx';
 
 const standing = buildStandings('PL', { group: 'Matchday' });
 const otherStanding = buildStandings('PD', { group: 'Matchday' });
 
+function mountHome({
+  standings,
+  saved = [],
+  complete = true,
+}: {
+  standings: StandingsResponse[];
+  saved?: number[];
+  complete?: boolean;
+}) {
+  const sections = clubSections(standings);
+  return render(
+    <HomeScreen
+      standings={standings}
+      sections={sections}
+      yourClubs={resolveYourClubs(saved, sections, complete)}
+    />,
+  );
+}
+
 function mount() {
-  const view = render(<HomeScreen standings={[standing, otherStanding]} follows={[]} />);
+  const view = mountHome({ standings: [standing, otherStanding] });
   view.container.style.cssText = 'height: 600px; width: 390px;';
   for (const [token, value] of Object.entries(tokens)) {
     view.container.style.setProperty(token, value);
@@ -22,7 +44,13 @@ function mount() {
   const overlay = view.$('[aria-label="Close sheet"]');
   assert.ok(tile && screen && sheet && overlay);
 
-  return { ...view, tile, screen, sheet, overlay };
+  return {
+    ...view,
+    tile,
+    screen,
+    sheet,
+    overlay,
+  };
 }
 
 describe('home screen standings sheet', () => {
@@ -53,9 +81,7 @@ describe('home screen standings sheet', () => {
     const title = document.getElementById(sheet.getAttribute('aria-labelledby')!);
     assert.equal(title?.textContent, 'Premier League');
 
-    const duration = matchMedia('(prefers-reduced-motion: reduce)').matches
-      ? '0s'
-      : '0.48s';
+    const duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? '0s' : '0.48s';
     for (const layer of [screen, sheet, overlay]) {
       assert.equal(getComputedStyle(layer).transitionDuration, duration);
     }
@@ -74,9 +100,13 @@ describe('home screen standings sheet', () => {
         if (method === 'close button') closeButton.click();
         if (method === 'overlay') overlay.click();
         if (method === 'Escape') {
-          closeButton.dispatchEvent(new KeyboardEvent('keydown', {
-            key: 'Escape', bubbles: true, cancelable: true,
-          }));
+          closeButton.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'Escape',
+              bubbles: true,
+              cancelable: true,
+            }),
+          );
         }
       });
 
@@ -91,9 +121,7 @@ describe('home screen standings sheet', () => {
       assert.equal(overlay.style.opacity, '0');
       assert.ok(sheet.querySelector('table'));
 
-      const duration = matchMedia('(prefers-reduced-motion: reduce)').matches
-        ? '0s'
-        : '0.34s';
+      const duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? '0s' : '0.34s';
       for (const layer of [screen, sheet, overlay]) {
         assert.equal(getComputedStyle(layer).transitionDuration, duration);
       }
@@ -111,21 +139,28 @@ describe('home screen standings sheet', () => {
     assert.equal(getComputedStyle(scroll).overflowY, 'auto');
 
     const backwards = new KeyboardEvent('keydown', {
-      key: 'Tab', shiftKey: true, bubbles: true, cancelable: true,
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      cancelable: true,
     });
     closeButton.dispatchEvent(backwards);
     assert.equal(backwards.defaultPrevented, true);
     assert.equal(document.activeElement, scroll);
 
     const forwards = new KeyboardEvent('keydown', {
-      key: 'Tab', bubbles: true, cancelable: true,
+      key: 'Tab',
+      bubbles: true,
+      cancelable: true,
     });
     scroll.dispatchEvent(forwards);
     assert.equal(forwards.defaultPrevented, true);
     assert.equal(document.activeElement, closeButton);
 
     const withinSheet = new KeyboardEvent('keydown', {
-      key: 'Tab', bubbles: true, cancelable: true,
+      key: 'Tab',
+      bubbles: true,
+      cancelable: true,
     });
     closeButton.dispatchEvent(withinSheet);
     assert.equal(withinSheet.defaultPrevented, false);
@@ -135,7 +170,10 @@ describe('home screen standings sheet', () => {
     sheet.focus();
     assert.equal(document.activeElement, sheet);
     const backwardsFromSheet = new KeyboardEvent('keydown', {
-      key: 'Tab', shiftKey: true, bubbles: true, cancelable: true,
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      cancelable: true,
     });
     sheet.dispatchEvent(backwardsFromSheet);
     assert.equal(document.activeElement, scroll);
@@ -177,14 +215,16 @@ function pointer(
   type: 'pointerdown' | 'pointermove' | 'pointerup',
   clientY: number,
 ) {
-  target.dispatchEvent(new PointerEvent(type, {
-    bubbles: true,
-    cancelable: true,
-    isPrimary: true,
-    pointerId: 1,
-    pointerType: 'mouse',
-    clientY,
-  }));
+  target.dispatchEvent(
+    new PointerEvent(type, {
+      bubbles: true,
+      cancelable: true,
+      isPrimary: true,
+      pointerId: 1,
+      pointerType: 'mouse',
+      clientY,
+    }),
+  );
 }
 
 function waitForFlickToFade() {
@@ -196,16 +236,11 @@ function scaleOf(element: HTMLElement) {
 }
 
 function radiusOf(element: HTMLElement) {
-  return Number(
-    element.style.borderRadius.match(/calc\(var\(--radius-lg\) \* (.+)\)/)?.[1],
-  );
+  return Number(element.style.borderRadius.match(/calc\(var\(--radius-lg\) \* (.+)\)/)?.[1]);
 }
 
 function assertNear(actual: number, expected: number) {
-  assert.ok(
-    Math.abs(actual - expected) < 1e-3,
-    `expected ${actual} to be near ${expected}`,
-  );
+  assert.ok(Math.abs(actual - expected) < 1e-3, `expected ${actual} to be near ${expected}`);
 }
 
 describe('home screen standings sheet drag', () => {
@@ -258,8 +293,7 @@ describe('home screen standings sheet drag', () => {
   });
 
   it('snaps back open before halfway and closes past it', async (t) => {
-    const { act, cleanup, tile, title, closedPullDown, screen, sheet, overlay } =
-      await openSheet();
+    const { act, cleanup, tile, title, closedPullDown, screen, sheet, overlay } = await openSheet();
     t.after(cleanup);
 
     async function dragAndRelease(distance: number) {
@@ -275,9 +309,7 @@ describe('home screen standings sheet drag', () => {
     assert.equal(screen.style.transform, 'scale(0.93)');
     assert.equal(radiusOf(screen), 1);
     assert.equal(overlay.style.opacity, '0.45');
-    const duration = matchMedia('(prefers-reduced-motion: reduce)').matches
-      ? '0s'
-      : '0.48s';
+    const duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? '0s' : '0.48s';
     for (const layer of [screen, sheet, overlay]) {
       assert.equal(getComputedStyle(layer).transitionDuration, duration);
     }
@@ -312,7 +344,7 @@ describe('home screen club picker', () => {
   });
 
   function mountPicker() {
-    const view = render(<HomeScreen standings={[clubs]} follows={[]} />);
+    const view = mountHome({ standings: [clubs] });
     for (const [token, value] of Object.entries(tokens)) {
       view.container.style.setProperty(token, value);
     }
@@ -344,7 +376,11 @@ describe('home screen club picker', () => {
     await act(() => tile('Arsenal').click());
     assert.equal(tile('Arsenal').getAttribute('aria-pressed'), 'true');
     assert.ok($('[aria-label="Remove Arsenal"]'));
-    assert.match($('main')!.textContent!, /Build your stack/, 'home keeps the empty state until the sheet closes');
+    assert.match(
+      $('main')!.textContent!,
+      /Build your stack/,
+      'home keeps the empty state until the sheet closes',
+    );
 
     await act(() => done!.click());
     assert.match(document.cookie, /otp_follows=57/);
@@ -352,6 +388,28 @@ describe('home screen club picker', () => {
     assert.ok($('main [data-fc][data-id="57"][data-open]'), 'the new club gets an open card');
     assert.match($('main section:last-child p')!.textContent!, /Your clubs · 1/);
     assert.equal(document.activeElement?.textContent, 'Edit');
+  });
+
+  it('saves picked clubs when Escape closes the picker', async (t) => {
+    const { $, act, cleanup, choose } = mountPicker();
+    t.after(() => {
+      document.cookie = 'otp_follows=; Path=/; Max-Age=0';
+      cleanup();
+    });
+    await act(() => choose.click());
+    await act(() => tile('Arsenal').click());
+    await act(() =>
+      $('[data-sheet-autofocus]')!.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'Escape',
+          bubbles: true,
+          cancelable: true,
+        }),
+      ),
+    );
+    assert.match(document.cookie, /otp_follows=57/);
+    assert.equal($('[role="dialog"]')!.inert, true);
+    assert.ok($('main [data-fc][data-id="57"]'));
   });
 
   it('matches full names ignoring accents and reports misses', async (t) => {
@@ -365,7 +423,9 @@ describe('home screen club picker', () => {
       search.dispatchEvent(new Event('input', { bubbles: true }));
     });
     assert.deepEqual(
-      Array.from(document.querySelectorAll('[role="dialog"] [data-section] b')).map((b) => b.textContent),
+      Array.from(document.querySelectorAll('[role="dialog"] [data-section] b')).map(
+        (b) => b.textContent,
+      ),
       ['Bayern'],
     );
 
@@ -374,5 +434,25 @@ describe('home screen club picker', () => {
       search.dispatchEvent(new Event('input', { bubbles: true }));
     });
     assert.match($('[role="dialog"]')!.textContent!, /No clubs match “zzz”/);
+  });
+
+  it('preserves Bayern when adding Arsenal during a partial standings outage', async (t) => {
+    const standings = [
+      buildStandings('PL', {
+        clubs: [
+          buildTeam({ id: 57, shortName: 'Arsenal' }),
+          buildTeam({ id: 61, shortName: 'Chelsea' }),
+        ],
+      }),
+    ];
+    const view = mountHome({ standings, saved: [61, 5], complete: false });
+    t.after(() => {
+      document.cookie = 'otp_follows=; Path=/; Max-Age=0';
+      view.cleanup();
+    });
+    await view.act(() => view.$('main [data-clubs-opener]')!.click());
+    await view.act(() => tile('Arsenal').click());
+    await view.act(() => view.$('[data-sheet-autofocus]')!.click());
+    assert.match(document.cookie, /otp_follows=61\.57\.5(?:;|$)/);
   });
 });

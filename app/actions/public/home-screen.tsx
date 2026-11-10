@@ -1,7 +1,8 @@
 import { clientEntry, css, on, ref, type Handle } from 'remix/component';
 
-import { clubSections, leagueLeaders, type Club } from '../../lib/clubs.ts';
-import { followsCookie } from '../../lib/follows.ts';
+import { leagueLeaders, type ClubSection } from '../../lib/clubs.ts';
+import type { YourClubs } from '../../lib/your-clubs.ts';
+import { YourClubsModel } from './clubs/your-clubs.ts';
 import type { TeamCard } from '../../lib/team-card.ts';
 import type { StandingsResponse } from '../../lib/types/api.ts';
 import { Logo } from '../../ui/logo.tsx';
@@ -20,200 +21,161 @@ const STACK_PREVIEW_CLUBS = 3;
 
 type Props = {
   standings: StandingsResponse[];
-  follows: number[];
+  sections: ClubSection[];
+  yourClubs: YourClubs;
   initialMatches?: TeamCard[];
 };
 
 type SheetContent =
-  | { kind: 'standings'; standing: StandingsResponse }
-  | { kind: 'clubs'; session: number };
+  { kind: 'standings'; standing: StandingsResponse } | { kind: 'clubs'; session: number };
 
-export const HomeScreen = clientEntry(
-  import.meta.url,
-  function HomeScreen(handle: Handle<Props>) {
-    const sections = clubSections(handle.props.standings);
-    const stackPreview = leagueLeaders(
-      handle.props.standings,
-      STACK_PREVIEW_CLUBS,
-    );
-    const clubsById = new Map<number, Club>(
-      sections.flatMap((section) => section.clubs.map((club) => [club.id, club])),
-    );
-    const titleId = `${handle.id}-sheet-title`;
-    let follows = handle.props.follows.filter((id) => clubsById.has(id));
-    let draft = follows;
-    let pickerSessions = 0;
-    let content: SheetContent | null = null;
-    let open = false;
-    let dragOpenFraction: number | null = null;
-    let opener: HTMLButtonElement | undefined;
-    let root: HTMLElement | undefined;
+export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handle: Handle<Props>) {
+  const sections = handle.props.sections;
+  const stackPreview = leagueLeaders(handle.props.standings, STACK_PREVIEW_CLUBS);
+  const titleId = `${handle.id}-sheet-title`;
+  let pickerSessions = 0;
+  let content: SheetContent | null = null;
+  let open = false;
+  let dragOpenFraction: number | null = null;
+  let opener: HTMLButtonElement | undefined;
+  let root: HTMLElement | undefined;
 
-    const matches = new MatchesModel(handle.props.initialMatches);
-    handle.queueTask(() => follows.forEach((id) => matches.load(id)));
+  const matches = new MatchesModel(handle.props.initialMatches);
+  const yourClubs = new YourClubsModel(handle.props.yourClubs, sections, {
+    load: (id) => matches.load(id),
+  });
+  yourClubs.addEventListener('change', () => handle.update(), { signal: handle.signal });
+  handle.queueTask(() => yourClubs.current.clubs.forEach((club) => matches.load(club.id)));
 
-    async function show(next: SheetContent, button: HTMLButtonElement) {
-      opener = button;
-      content = next;
-      open = true;
+  async function show(next: SheetContent, button: HTMLButtonElement) {
+    opener = button;
+    content = next;
+    open = true;
 
-      const signal = await handle.update();
-      if (!signal.aborted && open) {
-        root
-          ?.querySelector<HTMLElement>('[role="dialog"] [data-sheet-autofocus]')
-          ?.focus({ preventScroll: true });
-      }
+    const signal = await handle.update();
+    if (!signal.aborted && open) {
+      root
+        ?.querySelector<HTMLElement>('[role="dialog"] [data-sheet-autofocus]')
+        ?.focus({ preventScroll: true });
     }
+  }
 
-    function showStandings(
-      standing: StandingsResponse,
-      button: HTMLButtonElement,
-    ) {
-      show({ kind: 'standings', standing }, button);
+  function showStandings(standing: StandingsResponse, button: HTMLButtonElement) {
+    show({ kind: 'standings', standing }, button);
+  }
+
+  function chooseClubs(button: HTMLButtonElement) {
+    yourClubs.beginEdit();
+    show({ kind: 'clubs', session: ++pickerSessions }, button);
+  }
+
+  async function close() {
+    if (open && content?.kind === 'clubs') {
+      yourClubs.commit();
     }
+    open = false;
 
-    function chooseClubs(button: HTMLButtonElement) {
-      draft = follows;
-      show({ kind: 'clubs', session: ++pickerSessions }, button);
-    }
+    const signal = await handle.update();
+    if (signal.aborted || open) return;
+    const returnTo = opener?.isConnected
+      ? opener
+      : root?.querySelector<HTMLElement>('main [data-clubs-opener]');
+    returnTo?.focus({ preventScroll: true });
+  }
 
-    function commitDraft() {
-      if (draft.join() === follows.join()) return;
-      follows = draft;
-      document.cookie = followsCookie(follows);
-    }
+  return () => {
+    countRender('HomeScreen');
+    const { clubs, unavailable } = yourClubs.current;
+    const openFraction = dragOpenFraction ?? (open ? 1 : 0);
+    const isDragging = dragOpenFraction !== null;
 
-    async function close() {
-      if (open && content?.kind === 'clubs') {
-        const prevFollows = new Set(follows);
-        commitDraft();
-        for (const followId of follows) {
-          if (!prevFollows.has(followId)) {
-            matches.load(followId);
-          }
-        }
-      }
-      open = false;
-
-      const signal = await handle.update();
-      if (signal.aborted || open) return;
-      const returnTo = opener?.isConnected
-        ? opener
-        : root?.querySelector<HTMLElement>('main [data-clubs-opener]');
-      returnTo?.focus({ preventScroll: true });
-    }
-
-    return () => {
-      countRender('HomeScreen');
-      const openFraction = dragOpenFraction ?? (open ? 1 : 0);
-      const isDragging = dragOpenFraction !== null;
-
-      return (
-        <div
-          mix={[
-            containerStyles,
-            ref((node) => {
-              root = node;
-            }),
-          ]}
+    return (
+      <div
+        mix={[
+          containerStyles,
+          ref((node) => {
+            root = node;
+          }),
+        ]}
+        style={{
+          '--sheet-duration': isDragging
+            ? '0ms'
+            : v(open ? '--duration-sheet-open' : '--duration-sheet-close'),
+        }}
+      >
+        <main
+          mix={screenStyles}
+          inert={open}
           style={{
-            '--sheet-duration': isDragging
-              ? '0ms'
-              : v(open ? '--duration-sheet-open' : '--duration-sheet-close'),
+            transform: `scale(${1 - openFraction * (1 - RECEDED_SCREEN_SCALE)})`,
+            borderRadius: `calc(${v('--radius-lg')} * ${openFraction})`,
           }}
         >
-          <main
-            mix={screenStyles}
-            inert={open}
-            style={{
-              transform: `scale(${1 - openFraction * (1 - RECEDED_SCREEN_SCALE)})`,
-              borderRadius: `calc(${v('--radius-lg')} * ${openFraction})`,
-            }}
-          >
-            <header mix={headerStyles}>
-              <p mix={subtitleStyles}>Saturday 10 October</p>
-              <div data-perf-toggle mix={brandStyles}>
-                <Logo size={space(7.5)} />
-                <h3 mix={titleStyles}>On the Pitch</h3>
-              </div>
-            </header>
+          <header mix={headerStyles}>
+            <p mix={subtitleStyles}>Saturday 10 October</p>
+            <div data-perf-toggle mix={brandStyles}>
+              <Logo size={space(7.5)} />
+              <h3 mix={titleStyles}>On the Pitch</h3>
+            </div>
+          </header>
 
-            <section mix={sectionStyles}>
-              <p mix={[subtitleStyles, insetStyles]}>Competitions</p>
-              <Standings
-                standings={handle.props.standings}
-                onSelect={showStandings}
-              />
-            </section>
+          <section mix={sectionStyles}>
+            <p mix={[subtitleStyles, insetStyles]}>Competitions</p>
+            <Standings standings={handle.props.standings} onSelect={showStandings} />
+          </section>
 
-            <section
-              mix={[
-                clubsSectionStyles,
-                follows.length ? clubsListStyles : clubsEmptyStyles,
-              ]}
-            >
-              <p mix={[subtitleStyles, insetStyles, clubsLabelStyles]}>
-                {follows.length
-                  ? `Your clubs · ${follows.length}`
-                  : 'Your clubs'}
-                {follows.length > 0 && (
-                  <button
-                    type='button'
-                    data-clubs-opener
-                    mix={[
-                      editStyles,
-                      on('click', (event) => chooseClubs(event.currentTarget)),
-                    ]}
-                  >
-                    Edit
-                  </button>
-                )}
-              </p>
-              {follows.length === 0 ? (
-                <BuildYourStack preview={stackPreview} onChoose={chooseClubs} />
-              ) : (
-                <ClubList
-                  clubs={follows.map((id) => clubsById.get(id)!)}
-                  matches={matches}
-                />
+          <section mix={[clubsSectionStyles, clubs.length ? clubsListStyles : clubsEmptyStyles]}>
+            <p mix={[subtitleStyles, insetStyles, clubsLabelStyles]}>
+              {clubs.length ? `Your clubs · ${clubs.length}` : 'Your clubs'}
+              {clubs.length > 0 && (
+                <button
+                  type='button'
+                  data-clubs-opener
+                  mix={[editStyles, on('click', (event) => chooseClubs(event.currentTarget))]}
+                >
+                  Edit
+                </button>
               )}
-            </section>
-          </main>
+            </p>
+            {clubs.length === 0 ? (
+              unavailable ? (
+                <p mix={[insetStyles, unavailableStyles]}>Couldn't load your clubs right now</p>
+              ) : (
+                <BuildYourStack preview={stackPreview} onChoose={chooseClubs} />
+              )
+            ) : (
+              <ClubList clubs={clubs} matches={matches} />
+            )}
+          </section>
+        </main>
 
-          <Sheet
-            open={open}
-            labelledBy={content ? titleId : undefined}
-            onClose={close}
-            onDragOpenFraction={(fraction) => {
-              dragOpenFraction = fraction;
-              handle.update();
-            }}
-          >
-            {content?.kind === 'standings' && (
-              <StandingsSheet
-                standing={content.standing}
-                titleId={titleId}
-                onClose={close}
-              />
-            )}
-            {content?.kind === 'clubs' && (
-              <ClubPicker
-                key={content.session}
-                sections={sections}
-                initial={follows}
-                titleId={titleId}
-                onChange={(ids) => {
-                  draft = ids;
-                }}
-                onDone={close}
-              />
-            )}
-          </Sheet>
-        </div>
-      );
-    };
-  },
-);
+        <Sheet
+          open={open}
+          labelledBy={content ? titleId : undefined}
+          onClose={close}
+          onDragOpenFraction={(fraction) => {
+            dragOpenFraction = fraction;
+            handle.update();
+          }}
+        >
+          {content?.kind === 'standings' && (
+            <StandingsSheet standing={content.standing} titleId={titleId} onClose={close} />
+          )}
+          {content?.kind === 'clubs' && (
+            <ClubPicker
+              key={content.session}
+              sections={sections}
+              initial={clubs.map((club) => club.id)}
+              titleId={titleId}
+              onChange={(ids) => yourClubs.setDraft(ids)}
+              onDone={close}
+            />
+          )}
+        </Sheet>
+      </div>
+    );
+  };
+});
 
 const containerStyles = css({
   position: 'fixed',
@@ -307,4 +269,9 @@ const titleStyles = css({
   fontSize: v('--text-2xl'),
   fontWeight: v('--font-weight-extrabold'),
   letterSpacing: v('--tracking-tighter'),
+});
+
+const unavailableStyles = css({
+  fontSize: v('--text-sm'),
+  color: v('--color-text-secondary'),
 });
