@@ -62,6 +62,10 @@ _Avoid_: streak, recent results
 A match that hasn't been played yet (scheduled or timed).
 _Avoid_: upcoming match, next game
 
+**ClubMatches**:
+The server projection of one club's form and fixtures, with its club id and fetch time.
+_Avoid_: TeamCard
+
 **Next match**:
 A club's soonest fixture.
 
@@ -115,6 +119,6 @@ _Avoid_: modal, drawer, dialog (except for its ARIA role)
 ## Flagged ambiguities
 
 - "follows", "favourites" and "stack" were all used for the clubs a user follows. Resolved: the concept is **Your clubs** and the verb is **follow**. "Build your stack" is empty-state copy only. The `otp_follows` cookie keeps its name (see ADR-0002).
-- "Favourite" (the first four clubs stay on top) came from the Fold direction and has been **retired**. The Fade list gives no special treatment beyond opening the first club.
-- "team" vs "club": resolved as **Club**. `TeamCard` (`app/lib/team-card.ts`), the server's cut-down form and fixtures for one club, still needs a club-based name. It is not the **Club card**, which is the UI that draws it.
-- "known" clubs in code mean **Tracked clubs**.
+- "Favourite" (the first four clubs stay on top) came from the Fold direction and has been **retired and removed from the code**. The Fade list gives no special treatment beyond opening the first club.
+- "team" vs "club": resolved as **Club**. The server projection is **ClubMatches** (`app/lib/club-matches.ts`); the **Club card** is the UI that draws it.
+- "known" vs "tracked" clubs: resolved as **Tracked clubs** in code.

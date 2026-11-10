@@ -12,7 +12,7 @@ import {
   time,
   versus,
 } from '../../../lib/match-format.ts';
-import type { Fixture, PlayedMatch, TeamCard } from '../../../lib/team-card.ts';
+import type { Fixture, PlayedMatch, ClubMatches } from '../../../lib/club-matches.ts';
 import { space, v } from '../../../ui/theme.ts';
 import { countRender } from '../perf/renders.ts';
 import { ClubCrest } from './club-crest.tsx';
@@ -22,13 +22,13 @@ import { wireTimeline } from './timeline.ts';
 // are one timeline (see timeline.ts). A card that hasn't loaded yet keeps its header and shows a
 // skeleton, or a retry if the request failed.
 
-type CardProps = { club: Club; card: TeamCard; clock: Clock };
+type CardProps = { club: Club; matches: ClubMatches; clock: Clock };
 
 export function ClubCard(handle: Handle<CardProps>) {
   return () => {
     countRender('ClubCard');
-    const { club, card, clock } = handle.props;
-    const fixtures = card.fixtures;
+    const { club, matches, clock } = handle.props;
+    const fixtures = matches.fixtures;
 
     return (
       <article
@@ -40,7 +40,7 @@ export function ClubCard(handle: Handle<CardProps>) {
           <span data-form mix={formStyles}>
             <span data-lens aria-hidden='true' mix={lensStyles} />
             <ol data-pills aria-label='Last five, oldest first' mix={pillsStyles}>
-              {card.form.map((match, i) => (
+              {matches.form.map((match, i) => (
                 <li key={i} data-pill data-r={match.result} mix={pillStyles}>
                   {match.result}
                 </li>
@@ -57,9 +57,9 @@ export function ClubCard(handle: Handle<CardProps>) {
             <div
               data-track
               mix={trackStyles}
-              style={{ transform: `translateX(-${card.form.length * 100}%)` }}
+              style={{ transform: `translateX(-${matches.form.length * 100}%)` }}
             >
-              {card.form.map((match, i) => (
+              {matches.form.map((match, i) => (
                 <PastMatch key={i} match={match} clock={clock} />
               ))}
               {fixtures.length ? (

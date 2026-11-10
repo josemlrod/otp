@@ -17,15 +17,15 @@ export type ClubSection = {
 
 const REST_OF_EUROPE = 'Rest of Europe';
 
-function teamsOf(standing: StandingsResponse): Club[] {
+function clubsOf(standing: StandingsResponse): Club[] {
   return standing.standings
     .filter((group) => group.type === 'TOTAL')
     .flatMap((group) => group.table)
-    .map(({ team, position }) => ({
-      id: team.id,
-      name: team.shortName || team.name,
-      fullName: team.name,
-      crest: team.crest,
+    .map(({ team: club, position }) => ({
+      id: club.id,
+      name: club.shortName || club.name,
+      fullName: club.name,
+      crest: club.crest,
       competitionCode: standing.competition.code,
       position,
     }));
@@ -41,7 +41,7 @@ export function clubSections(standings: StandingsResponse[]): ClubSection[] {
 
   return ordered
     .map((standing) => {
-      const clubs = teamsOf(standing)
+      const clubs = clubsOf(standing)
         .filter((club) => !seen.has(club.id))
         .sort((a, b) => a.name.localeCompare(b.name));
       for (const club of clubs) seen.add(club.id);
@@ -57,6 +57,6 @@ export function clubSections(standings: StandingsResponse[]): ClubSection[] {
 export function leagueLeaders(standings: StandingsResponse[], count: number): Club[] {
   return standings
     .filter(isLeague)
-    .flatMap((standing) => teamsOf(standing).slice(0, 1))
+    .flatMap((standing) => clubsOf(standing).slice(0, 1))
     .slice(0, count);
 }

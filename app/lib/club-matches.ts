@@ -32,8 +32,8 @@ export type Fixture = {
   competition: string;
 };
 
-export type TeamCard = {
-  teamId: number;
+export type ClubMatches = {
+  clubId: number;
   fetchedAt: number;
   form: PlayedMatch[]; // oldest → newest, so the newest result sits on the right
   fixtures: Fixture[]; // soonest first
@@ -45,30 +45,30 @@ function byDate(a: Match, b: Match) {
   return Date.parse(a.utcDate) - Date.parse(b.utcDate);
 }
 
-function sideOf(match: Match, teamId: number) {
-  const venue: Venue = match.homeTeam.id === teamId ? 'H' : 'A';
-  const team = venue === 'H' ? match.awayTeam : match.homeTeam;
+function sideOf(match: Match, clubId: number) {
+  const venue: Venue = match.homeTeam.id === clubId ? 'H' : 'A';
+  const club = venue === 'H' ? match.awayTeam : match.homeTeam;
   const opponent: Opponent = {
-    id: team.id,
-    name: team.shortName || team.name,
-    tla: team.tla,
-    crest: team.crest,
+    id: club.id,
+    name: club.shortName || club.name,
+    tla: club.tla,
+    crest: club.crest,
   };
   return { venue, opponent, competition: match.competition.code };
 }
 
-export function toTeamCard(
+export function toClubMatches(
   response: MatchesResponse,
-  teamId: number,
+  clubId: number,
   fetchedAt: number,
-): TeamCard {
+): ClubMatches {
   const matches = [...response.matches].sort(byDate);
 
   const form = matches
     .filter((match) => match.status === 'FINISHED')
     .slice(-FORM_LENGTH)
     .flatMap((match): PlayedMatch[] => {
-      const side = sideOf(match, teamId);
+      const side = sideOf(match, clubId);
       const { home, away } = match.score.fullTime;
       if (home == null || away == null) return [];
       const gf = side.venue === 'H' ? home : away;
@@ -80,7 +80,7 @@ export function toTeamCard(
   const fixtures = matches
     .filter((match) => UPCOMING.has(match.status))
     .slice(0, FIXTURES_SHOWN)
-    .map((match): Fixture => ({ utcDate: match.utcDate, ...sideOf(match, teamId) }));
+    .map((match): Fixture => ({ utcDate: match.utcDate, ...sideOf(match, clubId) }));
 
-  return { teamId, fetchedAt, form, fixtures };
+  return { clubId, fetchedAt, form, fixtures };
 }

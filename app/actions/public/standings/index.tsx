@@ -24,7 +24,7 @@ export function Standings(handle: Handle<Props>) {
             code={standing.competition.code}
             emblem={standing.competition.emblem}
             name={standing.competition.name}
-            selectedTeams={[]}
+            selectedClubs={[]}
             onPress={(button) => handle.props.onSelect(standing, button)}
           />
         ))}

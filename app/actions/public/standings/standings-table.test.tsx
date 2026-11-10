@@ -51,9 +51,9 @@ describe('standings table', () => {
     }
   });
 
-  it('falls back to the full team name and omits a missing crest', async () => {
-    const team = { ...row().team, shortName: '', crest: '' };
-    const html = await render(response([row({ team })]));
+  it('falls back to the full club name and omits a missing crest', async () => {
+    const club = { ...row().team, shortName: '', crest: '' };
+    const html = await render(response([row({ team: club })]));
 
     assert.match(html, /title="Manchester City FC">Manchester City FC<\/span>/);
     assert.doesNotMatch(html, /<img\b/);

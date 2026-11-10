@@ -1,11 +1,11 @@
 // Test and dev-scenario data in real football-data shapes, relative to fixed NOW.
 // Builders never read the real clock.
 // "Arsenal lost their last two, next match in 2 days":
-// const team = buildTeam({ id: 57, shortName: 'Arsenal' });
-// const card = buildClubCard({ team, form: 'LL', fixtures: [2] });
+// const club = buildTeam({ id: 57, shortName: 'Arsenal' });
+// const card = buildClubMatches({ club, form: 'LL', fixtures: [2] });
 import type { Club } from '../lib/clubs.ts';
-import { toTeamCard } from '../lib/team-card.ts';
-import type { Outcome, TeamCard, Venue } from '../lib/team-card.ts';
+import { toClubMatches } from '../lib/club-matches.ts';
+import type { Outcome, ClubMatches, Venue } from '../lib/club-matches.ts';
 import type {
   Match,
   MatchesResponse,
@@ -105,7 +105,7 @@ export function buildStandings(code = 'PL', options: StandingsOptions = {}): Sta
         stage,
         type,
         group,
-        table: (clubs.length ? clubs.map((team, i) => ({ ...rows[i], team })) : rows).map(
+        table: (clubs.length ? clubs.map((club, i) => ({ ...rows[i], team: club })) : rows).map(
           (row, i) => buildStandingRow({ ...row, position: i + 1 }),
         ),
       }),
@@ -124,7 +124,7 @@ export type MatchOptions = {
   overrides?: Partial<Match>;
 };
 export type MatchesOptions = {
-  team?: ApiTeam;
+  club?: ApiTeam;
   now?: number;
   form?: string;
   results?: MatchOptions[];
@@ -132,7 +132,7 @@ export type MatchesOptions = {
   matches?: Match[]; // Raw API order, for projection tests.
 };
 
-export function buildMatch(options: MatchOptions = {}, team = buildTeam(), now = NOW): Match {
+export function buildMatch(options: MatchOptions = {}, club = buildTeam(), now = NOW): Match {
   const { result, venue = 'H', opponent = buildTeam({ id: 99, shortName: 'Chelsea' }) } = options;
   const defaultScores: Record<Outcome, [number, number]> = {
     W: [2, 0],
@@ -167,8 +167,8 @@ export function buildMatch(options: MatchOptions = {}, team = buildTeam(), now =
     stage: 'REGULAR_SEASON',
     group: null,
     lastUpdated: utcDate,
-    homeTeam: venue === 'H' ? team : opponent,
-    awayTeam: venue === 'H' ? opponent : team,
+    homeTeam: venue === 'H' ? club : opponent,
+    awayTeam: venue === 'H' ? opponent : club,
     score: {
       winner,
       duration: 'REGULAR',
@@ -182,7 +182,7 @@ export function buildMatch(options: MatchOptions = {}, team = buildTeam(), now =
 }
 
 export function buildMatches(options: MatchesOptions = {}): MatchesResponse {
-  const { team = buildTeam(), now = NOW, form = '', fixtures = [] } = options;
+  const { club = buildTeam(), now = NOW, form = '', fixtures = [] } = options;
   const results: MatchOptions[] =
     options.results ??
     [...form].map((result, i) => {
@@ -199,7 +199,7 @@ export function buildMatches(options: MatchesOptions = {}): MatchesResponse {
       .map((description, i) =>
         buildMatch(
           { ...description, overrides: { id: i + 1, ...description.overrides } },
-          team,
+          club,
           now,
         ),
       )
@@ -208,7 +208,7 @@ export function buildMatches(options: MatchesOptions = {}): MatchesResponse {
   const outcomes = finished.map((match) => {
     const { home, away } = match.score.fullTime;
     if (home == null || away == null) return null;
-    const difference = match.homeTeam.id === team.id ? home - away : away - home;
+    const difference = match.homeTeam.id === club.id ? home - away : away - home;
     if (difference > 0) return 'W';
     if (difference < 0) return 'L';
     return 'D';
@@ -230,8 +230,8 @@ export function buildMatches(options: MatchesOptions = {}): MatchesResponse {
   };
 }
 
-export function buildClubCard(options: MatchesOptions = {}): TeamCard {
-  return toTeamCard(buildMatches(options), options.team?.id ?? 57, options.now ?? NOW);
+export function buildClubMatches(options: MatchesOptions = {}): ClubMatches {
+  return toClubMatches(buildMatches(options), options.club?.id ?? 57, options.now ?? NOW);
 }
 
 export function buildClub(overrides: Partial<Club> = {}): Club {

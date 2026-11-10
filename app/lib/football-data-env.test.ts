@@ -51,7 +51,7 @@ describe('football data startup selection', () => {
   it('defaults the HTTP API key to an empty string', () => {
     const selected = footballDataFromEnv({}, dependencies);
     assert.equal(selected.shouldMigrate, true);
-    assert.equal(typeof selected.footballData.clubCard, 'function');
+    assert.equal(typeof selected.footballData.clubMatches, 'function');
   });
 });
 
@@ -63,9 +63,9 @@ it('pins render, scenario dates and cache timestamps to OTP_NOW', async () => {
   assert.equal(selected.clock.now(), NOW);
   assert.equal(selected.clock.pinned, true);
   assert.equal(selected.clock.timeZone, 'Europe/London');
-  const result = await selected.footballData.clubCard(57);
+  const result = await selected.footballData.clubMatches(57);
   assert.equal(result.status, 'ok');
-  if (result.status === 'ok') assert.equal(result.card.fetchedAt, NOW);
+  if (result.status === 'ok') assert.equal(result.matches.fetchedAt, NOW);
 });
 
 it('rejects time overrides in production independently of scenarios', () => {

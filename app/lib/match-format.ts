@@ -1,5 +1,5 @@
 import type { Clock } from './clock.ts';
-import type { Outcome, Venue } from './team-card.ts';
+import type { Outcome, Venue } from './club-matches.ts';
 
 const MINUTE_MS = 60_000;
 const HOUR_MS = 3_600_000;

@@ -2,7 +2,7 @@ import { tryCatch } from './utils.ts';
 import type { FootballDataCache } from './api-cache.ts';
 import { clubSections, type ClubSection } from './clubs.ts';
 import { isFresh } from './freshness.ts';
-import { toTeamCard, type TeamCard } from './team-card.ts';
+import { toClubMatches, type ClubMatches } from './club-matches.ts';
 
 import type { MatchesResponse, StandingsResponse } from './types/api.ts';
 
@@ -30,8 +30,8 @@ type FetchResult<T> = { data: T; err: null } | { data: null; err: string };
 type CachedResult<T> = { data: T; err: null; fetchedAt: number } | { data: null; err: string };
 
 export type FootballDataFetcher = (path: string) => Promise<Response>;
-export type ClubCardResult =
-  { status: 'ok'; card: TeamCard } | { status: 'not-tracked' } | { status: 'unavailable' };
+export type ClubMatchesResult =
+  { status: 'ok'; matches: ClubMatches } | { status: 'not-tracked' } | { status: 'unavailable' };
 export type TrackedCompetitions = {
   standings: StandingsResponse[];
   sections: ClubSection[];
@@ -40,8 +40,8 @@ export type TrackedCompetitions = {
 
 export type FootballData = {
   trackedCompetitions(): Promise<TrackedCompetitions>;
-  clubCard(clubId: number): Promise<ClubCardResult>;
-  clubCards(clubIds: number[], tracked: TrackedCompetitions): Promise<TeamCard[]>;
+  clubMatches(clubId: number): Promise<ClubMatchesResult>;
+  matchesForClubs(clubIds: number[], tracked: TrackedCompetitions): Promise<ClubMatches[]>;
 };
 
 export function createFootballData({
@@ -132,14 +132,14 @@ export function createFootballData({
     return results.flatMap(({ data }) => (data ? [data] : []));
   }
 
-  async function cardForTracked(clubId: number): Promise<ClubCardResult> {
+  async function matchesForTracked(clubId: number): Promise<ClubMatchesResult> {
     const result = await readThrough<MatchesResponse>(
       `matches-${clubId}`,
       `/v4/teams/${clubId}/matches`,
       'Failed to fetch matches',
     );
     return result.data
-      ? { status: 'ok', card: toTeamCard(result.data, clubId, result.fetchedAt) }
+      ? { status: 'ok', matches: toClubMatches(result.data, clubId, result.fetchedAt) }
       : { status: 'unavailable' };
   }
 
@@ -155,22 +155,22 @@ export function createFootballData({
 
   return {
     trackedCompetitions,
-    async clubCard(clubId) {
+    async clubMatches(clubId) {
       const tracked = await trackedCompetitions();
       if (!tracked.sections.some((section) => section.clubs.some((club) => club.id === clubId))) {
         return { status: tracked.complete ? 'not-tracked' : 'unavailable' };
       }
-      return cardForTracked(clubId);
+      return matchesForTracked(clubId);
     },
-    async clubCards(clubIds, tracked) {
+    async matchesForClubs(clubIds, tracked) {
       if (!clubIds.length) return [];
       const trackedIds = new Set(
         tracked.sections.flatMap((section) => section.clubs.map((club) => club.id)),
       );
       const results = await Promise.all(
-        clubIds.filter((id) => trackedIds.has(id)).map(cardForTracked),
+        clubIds.filter((id) => trackedIds.has(id)).map(matchesForTracked),
       );
-      return results.flatMap((result) => (result.status === 'ok' ? [result.card] : []));
+      return results.flatMap((result) => (result.status === 'ok' ? [result.matches] : []));
     },
   };
 }

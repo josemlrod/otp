@@ -7,7 +7,7 @@ import { HomeScreen } from './public/home-screen.tsx';
 
 import type { ClubSection } from '../lib/clubs.ts';
 import type { YourClubs } from '../lib/your-clubs.ts';
-import type { TeamCard } from '../lib/team-card.ts';
+import type { ClubMatches } from '../lib/club-matches.ts';
 import type { StandingsResponse } from '../lib/types/api.ts';
 
 type Props = {
@@ -15,7 +15,7 @@ type Props = {
   standings: StandingsResponse[];
   sections: ClubSection[];
   yourClubs: YourClubs;
-  initialMatches: TeamCard[];
+  initialMatches: ClubMatches[];
 };
 
 export function HomePage(handle: Handle<Props>) {

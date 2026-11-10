@@ -4,7 +4,7 @@ import {
   buildTeam,
   buildStandings,
   buildMatches,
-  buildClubCard,
+  buildClubMatches,
   NOW,
 } from '../fixtures/builders.ts';
 import { createMemoryCache } from '../lib/api-cache.ts';
@@ -70,7 +70,7 @@ describe('root controller', () => {
     assert.match(html, /Build your stack/);
   });
 
-  it('GET / swaps the empty state for a count when the follows cookie names tracked clubs', async () => {
+  it('GET / swaps the empty state for a count when the Your clubs cookie names tracked clubs', async () => {
     const { router, calls } = setup();
     const response = await router.fetch(
       new Request('http://localhost/', { headers: { Cookie: 'otp_follows=57.999' } }),
@@ -87,14 +87,14 @@ describe('root controller', () => {
   for (const id of ['abc', '0', '-3', '1.5', '1e2']) {
     it(`GET matches rejects invalid id ${id} before any fetch`, async () => {
       const { router, calls } = setup();
-      assert.equal((await router.fetch(`http://localhost/api/team/${id}/matches`)).status, 404);
+      assert.equal((await router.fetch(`http://localhost/api/clubs/${id}/matches`)).status, 404);
       assert.deepEqual(calls, []);
     });
   }
 
   it('GET matches rejects untracked clubs without a matches request', async () => {
     const { router, calls } = setup();
-    assert.equal((await router.fetch('http://localhost/api/team/999/matches')).status, 404);
+    assert.equal((await router.fetch('http://localhost/api/clubs/999/matches')).status, 404);
     assert.deepEqual(
       calls.filter((path) => path.includes('/teams/')),
       [],
@@ -103,15 +103,15 @@ describe('root controller', () => {
 
   it('GET matches returns 502 for unavailable club data', async () => {
     const { router } = setup(true);
-    assert.equal((await router.fetch('http://localhost/api/team/57/matches')).status, 502);
+    assert.equal((await router.fetch('http://localhost/api/clubs/57/matches')).status, 502);
   });
 
-  it('GET matches returns the club card as JSON', async () => {
+  it('GET matches returns club matches as JSON', async () => {
     const { router } = setup();
-    const response = await router.fetch('http://localhost/api/team/57/matches');
+    const response = await router.fetch('http://localhost/api/clubs/57/matches');
     assert.equal(response.status, 200);
     assert.match(response.headers.get('Content-Type') ?? '', /application\/json/);
-    assert.deepEqual(await response.json(), buildClubCard({ form: 'WDL', fixtures: [2] }));
+    assert.deepEqual(await response.json(), buildClubMatches({ form: 'WDL', fixtures: [2] }));
   });
 });
 

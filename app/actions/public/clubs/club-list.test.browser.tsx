@@ -2,7 +2,7 @@ import * as assert from 'remix/assert';
 import { render } from 'remix/component/test';
 import { describe, it } from 'remix/test';
 
-import { NOW, buildTeam, buildClubCard, buildClub } from '../../../fixtures/builders.ts';
+import { NOW, buildTeam, buildClubMatches, buildClub } from '../../../fixtures/builders.ts';
 import { tokens } from '../../../ui/theme.ts';
 import { ClubList } from './club-list.tsx';
 import { MatchesModel } from './matches.ts';
@@ -15,8 +15,8 @@ const clubs = [
 
 function mount(height = 700) {
   const now = NOW;
-  const matches = new MatchesModel(clubs.map((club) => buildClubCard({
-    team: buildTeam({ id: club.id }), now, form: 'WDLWW',
+  const matches = new MatchesModel(clubs.map((club) => buildClubMatches({
+    club: buildTeam({ id: club.id }), now, form: 'WDLWW',
     fixtures: [2, 9].map((days) => ({ days: days + 1 / 24, venue: 'A' })),
   })), { now: () => NOW });
   const clock = { now: NOW, timeZone: 'Europe/Madrid' };

@@ -1,7 +1,7 @@
 import * as assert from 'remix/assert';
 import { describe, it } from 'remix/test';
 
-import { toTeamCard } from './team-card.ts';
+import { toClubMatches } from './club-matches.ts';
 import { buildTeam, buildMatch, buildMatches } from '../fixtures/builders.ts';
 import type { Match } from './types/api.ts';
 
@@ -30,9 +30,9 @@ function match(
 
 const response = (matches: Match[]) => buildMatches({ matches });
 
-describe('team card', () => {
+describe('club matches', () => {
   it('keeps the last five results, oldest first, from the club’s side', () => {
-    const card = toTeamCard(
+    const matches = toClubMatches(
       response([
         match('2026-10-20T19:00:00Z', 'FINISHED', CLUB_ID, 2, [0, 1]),
         match('2026-08-01T19:00:00Z', 'FINISHED', CLUB_ID, 3, [9, 9]), // sixth-newest, dropped
@@ -46,7 +46,7 @@ describe('team card', () => {
     );
 
     assert.deepEqual(
-      card.form.map((m) => [m.result, m.gf, m.ga, m.venue, m.opponent.id, m.competition]),
+      matches.form.map((m) => [m.result, m.gf, m.ga, m.venue, m.opponent.id, m.competition]),
       [
         ['W', 2, 0, 'A', 4, 'PL'],
         ['D', 1, 1, 'H', 5, 'PL'],
@@ -55,7 +55,7 @@ describe('team card', () => {
         ['L', 0, 1, 'H', 2, 'PL'],
       ],
     );
-    assert.deepEqual(card.form[0]!.opponent, {
+    assert.deepEqual(matches.form[0]!.opponent, {
       id: 4,
       name: 'T4',
       tla: 'T4',
@@ -64,7 +64,7 @@ describe('team card', () => {
   });
 
   it('lists the next four scheduled fixtures, soonest first, skipping postponed ones', () => {
-    const card = toTeamCard(
+    const matches = toClubMatches(
       response([
         match('2026-12-20T15:00:00Z', 'TIMED', CLUB_ID, 6),
         match('2026-11-20T15:00:00Z', 'POSTPONED', CLUB_ID, 9),
@@ -77,10 +77,10 @@ describe('team card', () => {
       1234,
     );
 
-    assert.equal(card.teamId, CLUB_ID);
-    assert.equal(card.fetchedAt, 1234);
+    assert.equal(matches.clubId, CLUB_ID);
+    assert.equal(matches.fetchedAt, 1234);
     assert.deepEqual(
-      card.fixtures.map((f) => [f.utcDate.slice(0, 10), f.venue, f.opponent.id]),
+      matches.fixtures.map((f) => [f.utcDate.slice(0, 10), f.venue, f.opponent.id]),
       [
         ['2026-11-22', 'A', 2],
         ['2026-12-01', 'H', 3],

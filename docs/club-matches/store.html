@@ -137,7 +137,7 @@
   <header>
     <p class="eyebrow">On the Pitch · club matches · 2 of 2</p>
     <h1>Where the matches live</h1>
-    <p class="lede">The answer is <b>a small model class</b>. <code>HomeScreen</code> creates one in setup and passes it to the cards as a prop. <code>follows</code>, <code>draft</code> and <code>open</code> stay plain setup variables, because they describe the UI. The matches are fetched data with rules for staleness and dedupe, and more than one component reads them. Remix's interactivity guide draws the line in the same place, in "Keep application logic outside components".</p>
+    <p class="lede">The answer is <b>a small model class</b>. <code>HomeScreen</code> creates one in setup and passes it to the cards as a prop. <code>savedIds</code>, <code>draft</code> and <code>open</code> stay plain setup variables, because they describe the UI. The matches are fetched data with rules for staleness and dedupe, and more than one component reads them. Remix's interactivity guide draws the line in the same place, in "Keep application logic outside components".</p>
   </header>
 
   <!-- ───────── options ───────── -->
@@ -152,8 +152,8 @@
 
 <span class="k">function</span> load(id) {
   <span class="c">// dedupe + staleness + fetch here</span>
-  ... .then(card =&gt; {
-    matches.set(id, card);
+  ... .then(clubMatches =&gt; {
+    matches.set(id, clubMatches);
     handle.update();
   });
 }</pre>
@@ -240,10 +240,10 @@
         <div class="own">
           <div class="row owner"><span><b>&lt;HomeScreen&gt;</b> clientEntry<small>new MatchesModel(initialMatches)</small></span><span class="uses">owns · load()</span></div>
           <div class="row i1 dim"><span>&lt;Standings&gt;</span><span class="uses none">doesn't need it</span></div>
-          <div class="row i1"><span><b>&lt;ClubCard&gt;</b> × follows<small>clubs/club-card.tsx · new</small></span><span class="uses">get() · listens</span></div>
+          <div class="row i1"><span><b>&lt;ClubCard&gt;</b> × savedIds<small>clubs/club-card.tsx · new</small></span><span class="uses">get() · listens</span></div>
           <div class="row i1 dim"><span>&lt;Sheet&gt;</span><span class="uses none">passes children</span></div>
           <div class="row i2 dim"><span>&lt;ClubPicker&gt;</span><span class="uses none">doesn't need it</span></div>
-          <div class="row i2" style="opacity:0.7"><span><b>&lt;TeamSheet&gt;</b> later<small>opened from a card</small></span><span class="uses">get() · listens</span></div>
+          <div class="row i2" style="opacity:0.7"><span><b>&lt;ClubSheet&gt;</b> later<small>opened from a card</small></span><span class="uses">get() · listens</span></div>
         </div>
         <p class="small"><code>ClubPicker</code> never touches the model. It keeps reporting ids through <code>onChange</code>, and <code>close()</code> decides what to load.</p>
       </div>
@@ -254,7 +254,7 @@
           <dt>open</dt><dd>Is the sheet up?</dd>
           <dt>content</dt><dd>Which sheet is showing</dd>
           <dt>draft</dt><dd>Picker selection before Done</dd>
-          <dt>follows</dt><dd>Committed ids. The cookie is the source of truth.</dd>
+          <dt>savedIds</dt><dd>Committed ids. The cookie is the source of truth.</dd>
           <dt>dragOpenFraction</dt><dd>Gesture position</dd>
         </dl>
         <p class="small">These describe the screen, not fetched data. One component reads them and none of them need fetching, so a model would only add indirection.</p>
@@ -295,13 +295,13 @@
 <pre><span class="k">import</span> { TypedEventTarget } <span class="k">from</span> <span class="s">'remix/component'</span>;
 
 <span class="k">import</span> { routes } <span class="k">from</span> <span class="s">'../../../routes.ts'</span>;
-<span class="k">import type</span> { ClubCard } <span class="k">from</span> <span class="s">'../../../lib/club-card.ts'</span>;
+<span class="k">import type</span> { ClubMatches } <span class="k">from</span> <span class="s">'../../../lib/club-matches.ts'</span>;
 
 <span class="k">export const</span> MATCHES_MAX_AGE_MS = 60 * 60 * 1000;
 
 <span class="k">export type</span> MatchesEntry =
-  | { status: <span class="s">'loading'</span>; card?: ClubCard }   <span class="c">// card = previous data during a refresh</span>
-  | { status: <span class="s">'ready'</span>; card: ClubCard }
+  | { status: <span class="s">'loading'</span>; matches?: ClubMatches }   <span class="c">// matches = previous data during a refresh</span>
+  | { status: <span class="s">'ready'</span>; matches: ClubMatches }
   | { status: <span class="s">'error'</span> };
 
 <span class="k">export class</span> MatchesChange <span class="k">extends</span> Event {
@@ -317,11 +317,11 @@
   #fetch: <span class="k">typeof</span> fetch;
   #now: () =&gt; number;
 
-  <span class="k">constructor</span>(seed: ClubCard[] = [], options: Options = {}) {
+  <span class="k">constructor</span>(seed: ClubMatches[] = [], options: Options = {}) {
     <span class="k">super</span>();
     <span class="k">this</span>.#fetch = options.fetch ?? globalThis.fetch.bind(globalThis);
     <span class="k">this</span>.#now = options.now ?? Date.now;
-    <span class="k">for</span> (<span class="k">const</span> card <span class="k">of</span> seed) <span class="k">this</span>.#entries.set(card.teamId, { status: <span class="s">'ready'</span>, card });
+    <span class="k">for</span> (<span class="k">const</span> matches <span class="k">of</span> seed) <span class="k">this</span>.#entries.set(matches.clubId, { status: <span class="s">'ready'</span>, matches });
   }
 
   <span class="hl">get</span>(clubId: number): MatchesEntry | undefined {
@@ -331,18 +331,18 @@
   <span class="hl">load</span>(clubId: number): void {
     <span class="k">const</span> entry = <span class="k">this</span>.#entries.get(clubId);
     <span class="k">if</span> (entry?.status === <span class="s">'loading'</span>) <span class="k">return</span>;
-    <span class="k">if</span> (entry?.status === <span class="s">'ready'</span> &amp;&amp; <span class="k">this</span>.#now() - entry.card.fetchedAt &lt; MATCHES_MAX_AGE_MS) <span class="k">return</span>;
+    <span class="k">if</span> (entry?.status === <span class="s">'ready'</span> &amp;&amp; <span class="k">this</span>.#now() - entry.matches.fetchedAt &lt; MATCHES_MAX_AGE_MS) <span class="k">return</span>;
 
-    <span class="k">const</span> previous = entry?.status === <span class="s">'ready'</span> ? entry.card : <span class="k">undefined</span>;
-    <span class="k">this</span>.#set(clubId, { status: <span class="s">'loading'</span>, card: previous });
+    <span class="k">const</span> previous = entry?.status === <span class="s">'ready'</span> ? entry.matches : <span class="k">undefined</span>;
+    <span class="k">this</span>.#set(clubId, { status: <span class="s">'loading'</span>, matches: previous });
 
     <span class="k">this</span>.#request(clubId).then(
-      (card) =&gt; <span class="k">this</span>.#set(clubId, { status: <span class="s">'ready'</span>, card }),
-      () =&gt; <span class="k">this</span>.#set(clubId, previous ? { status: <span class="s">'ready'</span>, card: previous } : { status: <span class="s">'error'</span> }),
+      (matches) =&gt; <span class="k">this</span>.#set(clubId, { status: <span class="s">'ready'</span>, matches }),
+      () =&gt; <span class="k">this</span>.#set(clubId, previous ? { status: <span class="s">'ready'</span>, matches: previous } : { status: <span class="s">'error'</span> }),
     );
   }
 
-  <span class="k">async</span> #request(clubId: number): Promise&lt;ClubCard&gt; {
+  <span class="k">async</span> #request(clubId: number): Promise&lt;ClubMatches&gt; {
     <span class="k">const</span> res = <span class="k">await this</span>.#fetch(routes.clubMatches.href({ clubId }));
     <span class="k">if</span> (!res.ok) <span class="k">throw new</span> Error(<span class="s">`matches ${clubId}: ${res.status}`</span>);
     <span class="k">return</span> res.json();
@@ -364,29 +364,29 @@
         <h3>home-screen.tsx <small>changes only</small></h3>
 <pre>  <span class="k">type</span> Props = {
     standings: StandingsResponse[];
-    follows: number[];
-<span class="add">+   initialMatches: ClubCard[];   // fresh cache hits from the home action</span>
+    savedIds: number[];
+<span class="add">+   initialMatches: ClubMatches[];   // fresh cache hits from the home action</span>
   };
 
   <span class="k">function</span> HomeScreen(handle: Handle&lt;Props&gt;) {
     ...
-    <span class="k">let</span> follows = handle.props.follows.filter(...);
+    <span class="k">let</span> savedIds = handle.props.savedIds.filter(...);
 <span class="add">+   const matches = new MatchesModel(handle.props.initialMatches);</span>
 <span class="add">+   // no-op during SSR, runs after the first commit in the browser</span>
-<span class="add">+   handle.queueTask(() =&gt; follows.forEach((id) =&gt; matches.load(id)));</span>
+<span class="add">+   handle.queueTask(() =&gt; savedIds.forEach((id) =&gt; matches.load(id)));</span>
 
     <span class="k">async function</span> close() {
 <span class="del">-     if (open &amp;&amp; content?.kind === 'clubs') commitDraft();</span>
 <span class="add">+     if (open &amp;&amp; content?.kind === 'clubs') {</span>
-<span class="add">+       const before = new Set(follows);</span>
+<span class="add">+       const before = new Set(savedIds);</span>
 <span class="add">+       commitDraft();</span>
-<span class="add">+       for (const id of follows) if (!before.has(id)) matches.load(id);</span>
+<span class="add">+       for (const id of savedIds) if (!before.has(id)) matches.load(id);</span>
 <span class="add">+     }</span>
       open = <span class="k">false</span>;
       ...
 
     <span class="c">// render, in the "Your clubs" section</span>
-<span class="add">+   {follows.map((id) =&gt; (</span>
+<span class="add">+   {savedIds.map((id) =&gt; (</span>
 <span class="add">+     &lt;ClubCard key={id} club={clubs.get(id)!} matches={matches} /&gt;</span>
 <span class="add">+   ))}</span></pre>
       </div>
@@ -409,12 +409,12 @@
   <span class="k">return</span> () =&gt; {
     <span class="k">const</span> { club } = handle.props;
     <span class="k">const</span> entry = matches.get(club.id);
-    <span class="k">const</span> card = entry?.status === <span class="s">'error'</span> ? <span class="k">undefined</span> : entry?.card;
+    <span class="k">const</span> clubMatches = entry?.status === <span class="s">'error'</span> ? <span class="k">undefined</span> : entry?.matches;
 
     <span class="k">return</span> (
       &lt;article&gt;
         &lt;ClubCrest crest={club.crest} /&gt; {club.name}
-        {card ? &lt;Form card={card} /&gt; : &lt;Skeleton /&gt;}
+        {clubMatches ? &lt;Form matches={clubMatches} /&gt; : &lt;Skeleton /&gt;}
         {entry?.status === <span class="s">'error'</span> &amp;&amp; (
           &lt;button mix={on(<span class="s">'click'</span>, () =&gt; matches.load(club.id))}&gt;Retry&lt;/button&gt;
         )}
@@ -435,7 +435,7 @@
       <div class="stage">
         <div class="stage-head">Server render <span class="tag server">per request</span></div>
         <ol class="steps">
-          <li><code>home</code> action reads fresh cache rows for follows → <code>initialMatches</code></li>
+          <li><code>home</code> action reads fresh cache rows for savedIds → <code>initialMatches</code></li>
           <li><code>new MatchesModel(initialMatches)</code></li>
           <li>Cards render as ready or skeleton</li>
           <li class="skip">queueTask(load)</li>
@@ -454,7 +454,7 @@
       <div class="stage">
         <div class="stage-head">Done with Arsenal added <span class="tag yes">browser</span></div>
         <ol class="steps">
-          <li><code>close()</code> diffs follows → <code>[57]</code></li>
+          <li><code>close()</code> diffs savedIds → <code>[57]</code></li>
           <li><code>load(57)</code>, not awaited</li>
           <li>The sheet closes and the Arsenal card mounts as a skeleton</li>
           <li>The response fires <code>change</code> for 57 and only that card updates</li>
