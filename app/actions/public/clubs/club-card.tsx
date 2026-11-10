@@ -1,5 +1,6 @@
 import { css, on, ref, type Handle, type RemixNode } from 'remix/component';
 
+import type { Clock } from '../../../lib/clock.ts';
 import type { Club } from '../../../lib/clubs.ts';
 import { getCompetitionMetadata } from '../../../lib/competition-metadata.ts';
 import {
@@ -21,12 +22,12 @@ import { wireTimeline } from './timeline.ts';
 // are one timeline (see timeline.ts). A card that hasn't loaded yet keeps its header and shows a
 // skeleton, or a retry if the request failed.
 
-type CardProps = { club: Club; card: TeamCard };
+type CardProps = { club: Club; card: TeamCard; clock: Clock };
 
 export function ClubCard(handle: Handle<CardProps>) {
   return () => {
     countRender('ClubCard');
-    const { club, card } = handle.props;
+    const { club, card, clock } = handle.props;
     const fixtures = card.fixtures;
 
     return (
@@ -59,12 +60,12 @@ export function ClubCard(handle: Handle<CardProps>) {
               style={{ transform: `translateX(-${card.form.length * 100}%)` }}
             >
               {card.form.map((match, i) => (
-                <PastMatch key={i} match={match} />
+                <PastMatch key={i} match={match} clock={clock} />
               ))}
               {fixtures.length ? (
                 fixtures.map((fixture, i) => (
                   <div key={`f${i}`} mix={pageStyles}>
-                    <NextMatch fixture={fixture} label={i ? 'Then' : 'Next'} />
+                    <NextMatch fixture={fixture} label={i ? 'Then' : 'Next'} clock={clock} />
                   </div>
                 ))
               ) : (
@@ -157,9 +158,9 @@ function CompetitionMark(handle: Handle<{ code: string }>) {
 }
 
 // Match details are a later pass; the button is here so a picked result already reads as tappable.
-function PastMatch(handle: Handle<{ match: PlayedMatch }>) {
+function PastMatch(handle: Handle<{ match: PlayedMatch; clock: Clock }>) {
   return () => {
-    const { match } = handle.props;
+    const { match, clock } = handle.props;
     const date = new Date(match.utcDate);
 
     return (
@@ -169,7 +170,7 @@ function PastMatch(handle: Handle<{ match: PlayedMatch }>) {
         </span>
         <span mix={infoStyles}>
           <span mix={whenStyles}>
-            {resultWord[match.result]} · {day(date)} {shortDate(date)}{' '}
+            {resultWord[match.result]} · {day(date, clock)} {shortDate(date, clock)}{' '}
             <CompetitionMark code={match.competition} />
           </span>
           <b>{versus(match.venue, match.opponent.name)}</b>
@@ -193,22 +194,22 @@ function PastMatch(handle: Handle<{ match: PlayedMatch }>) {
   };
 }
 
-function NextMatch(handle: Handle<{ fixture: Fixture; label: string }>) {
+function NextMatch(handle: Handle<{ fixture: Fixture; label: string; clock: Clock }>) {
   return () => {
-    const { fixture, label } = handle.props;
+    const { fixture, label, clock } = handle.props;
     const date = new Date(fixture.utcDate);
 
     return (
       <>
         <span mix={countStyles}>
-          {countdown(date).flatMap(([n, unit]) => [
+          {countdown(date, clock).flatMap(([n, unit]) => [
             String(n),
             <small key={unit}>{unit}</small>,
           ])}
         </span>
         <span mix={infoStyles}>
           <span mix={whenStyles}>
-            {label} · {day(date)} {time(date)}{' '}
+            {label} · {day(date, clock)} {time(date, clock)}{' '}
             <CompetitionMark code={fixture.competition} />
           </span>
           <b>{versus(fixture.venue, fixture.opponent.name)}</b>

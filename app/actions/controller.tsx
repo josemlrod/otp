@@ -6,6 +6,12 @@ import { routes } from '../routes.ts';
 import { HomePage } from './home-page.tsx';
 import type { FootballData } from '../lib/football-data.ts';
 import { resolveYourClubs } from '../lib/your-clubs.ts';
+import {
+  TIME_ZONE_COOKIE,
+  timeZoneFromCookie,
+  type Clock,
+  type ClockSource,
+} from '../lib/clock.ts';
 import { FOLLOWS_COOKIE, parseFollows } from '../lib/follows.ts';
 
 function parseClubId(param: string): number | null {
@@ -13,7 +19,15 @@ function parseClubId(param: string): number | null {
   return /^[0-9]+$/.test(param) && Number.isSafeInteger(id) && id > 0 ? id : null;
 }
 
-export function createAppController({ footballData }: { footballData: FootballData }) {
+const SYSTEM_CLOCK: ClockSource = { now: Date.now, pinned: false };
+
+export function createAppController({
+  footballData,
+  clock: clockSource = SYSTEM_CLOCK,
+}: {
+  footballData: FootballData;
+  clock?: ClockSource;
+}) {
   return createController(routes, {
     actions: {
       async assets(context) {
@@ -42,8 +56,15 @@ export function createAppController({ footballData }: { footballData: FootballDa
           tracked,
         );
 
+        const clock: Clock = {
+          now: clockSource.now(),
+          timeZone: clockSource.timeZone ?? timeZoneFromCookie(cookie.get(TIME_ZONE_COOKIE)),
+          pinned: clockSource.pinned,
+          timeZonePinned: clockSource.timeZone !== undefined,
+        };
         return context.render(
           <HomePage
+            clock={clock}
             standings={tracked.standings}
             sections={tracked.sections}
             yourClubs={yourClubs}

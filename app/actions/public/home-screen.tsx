@@ -1,5 +1,7 @@
 import { clientEntry, css, on, type Handle } from 'remix/component';
 
+import { alignedNow, timeZoneCookie, type Clock } from '../../lib/clock.ts';
+import { today } from '../../lib/match-format.ts';
 import { leagueLeaders, type ClubSection } from '../../lib/clubs.ts';
 import type { YourClubs } from '../../lib/your-clubs.ts';
 import { YourClubsModel } from './clubs/your-clubs.ts';
@@ -19,6 +21,7 @@ import { MatchesModel } from './clubs/matches.ts';
 const STACK_PREVIEW_CLUBS = 3;
 
 type Props = {
+  clock: Clock;
   standings: StandingsResponse[];
   sections: ClubSection[];
   yourClubs: YourClubs;
@@ -32,7 +35,19 @@ export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handl
   let pickerSessions = 0;
   const sheet = new SheetController();
 
-  const matches = new MatchesModel(handle.props.initialMatches);
+  // Hydrate with the server's clock so the first paint matches the HTML. Then measure time on
+  // the server's clock (a wrong device clock can't skew freshness) and switch to local time.
+  let clock = handle.props.clock;
+  let now = () => clock.now;
+  const matches = new MatchesModel(handle.props.initialMatches, { now: () => now() });
+  handle.queueTask(() => {
+    now = alignedNow(handle.props.clock, Date.now);
+    const localZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    document.cookie = timeZoneCookie(localZone);
+    if (clock.timeZonePinned || clock.timeZone === localZone) return;
+    clock = { ...clock, now: now(), timeZone: localZone };
+    handle.update();
+  });
   const yourClubs = new YourClubsModel(handle.props.yourClubs, sections, {
     load: (id) => matches.load(id),
   });
@@ -79,7 +94,7 @@ export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handl
         focusFallback={(screen) => screen.querySelector('[data-clubs-opener]')}
       >
         <header mix={headerStyles}>
-          <p mix={subtitleStyles}>Saturday 10 October</p>
+          <p mix={subtitleStyles}>{today(clock)}</p>
           <div data-perf-toggle mix={brandStyles}>
             <Logo size={space(7.5)} />
             <h3 mix={titleStyles}>On the Pitch</h3>
@@ -111,7 +126,7 @@ export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handl
               <BuildYourStack preview={stackPreview} onChoose={chooseClubs} />
             )
           ) : (
-            <ClubList clubs={clubs} matches={matches} />
+            <ClubList clubs={clubs} matches={matches} clock={clock} />
           )}
         </section>
       </Sheet>
