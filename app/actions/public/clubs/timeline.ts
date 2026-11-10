@@ -16,6 +16,8 @@ import {
 //
 // DOM hooks (rendered by club-card.tsx):
 //   [data-club-card]  card root; gets data-picked, data-scrubbing, data-future, data-now
+//                     (data-picked = the lens is showing, Next included; a Picked result is
+//                     data-picked without data-now)
 //   [data-form]       the scrub target, holding [data-lens] and [data-pills] > [data-pill]
 //   [data-pager]      viewport, holding [data-track] > one child per page
 //   [data-dot]        one per fixture
