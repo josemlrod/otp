@@ -2,7 +2,7 @@ import * as assert from 'remix/assert';
 import { render } from 'remix/component/test';
 import { describe, it } from 'remix/test';
 
-import { buildTeam, buildClubCard, buildClub } from '../../../fixtures/builders.ts';
+import { NOW, buildTeam, buildClubCard, buildClub } from '../../../fixtures/builders.ts';
 import { tokens } from '../../../ui/theme.ts';
 import { ClubList } from './club-list.tsx';
 import { MatchesModel } from './matches.ts';
@@ -14,13 +14,13 @@ const clubs = [
 ];
 
 function mount(height = 700) {
-  // #25: soon() and countdown() still read the real clock.
-  const now = Date.now();
+  const now = NOW;
   const matches = new MatchesModel(clubs.map((club) => buildClubCard({
     team: buildTeam({ id: club.id }), now, form: 'WDLWW',
     fixtures: [2, 9].map((days) => ({ days: days + 1 / 24, venue: 'A' })),
-  })));
-  const view = render(<ClubList clubs={clubs} matches={matches} />);
+  })), { now: () => NOW });
+  const clock = { now: NOW, timeZone: 'Europe/Madrid' };
+  const view = render(<ClubList clubs={clubs} matches={matches} clock={clock} />);
   view.container.style.cssText = `display: flex; flex-direction: column; width: 390px; height: ${height}px;`;
   for (const [token, value] of Object.entries(tokens)) {
     view.container.style.setProperty(token, value);
@@ -52,6 +52,8 @@ describe('club list', () => {
     assert.ok(open.hasAttribute('data-now'));
     assert.match(open.querySelector<HTMLElement>('[data-track]')!.style.transform, /translate3d\(-\d+(\.\d+)?px/);
     assert.match(open.textContent!, /3rd|1st/);
+    assert.match(open.textContent!, /2d1h/);
+    assert.match(open.textContent!, /Next · Tue 14:00/);
   });
 
   it('opens a row when tapped and folds the previous card back into a row', async (t) => {

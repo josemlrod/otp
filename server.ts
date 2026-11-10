@@ -5,7 +5,7 @@ import { db, migrateDatabase } from './app/db.ts';
 import { createAppRouter } from './app/router.ts';
 import { footballDataFromEnv } from './app/lib/football-data-env.ts';
 
-const { footballData, scenario, shouldMigrate } = footballDataFromEnv(process.env, {
+const { footballData, clock, scenario, shouldMigrate } = footballDataFromEnv(process.env, {
   db,
   now: Date.now,
 });
@@ -15,7 +15,7 @@ if (scenario !== undefined) {
 if (shouldMigrate) {
   await migrateDatabase();
 }
-const router = createAppRouter({ footballData });
+const router = createAppRouter({ footballData, clock });
 
 const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 44100;
 const hmrProxyPort = process.env.HMR_PROXY_PORT

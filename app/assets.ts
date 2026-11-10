@@ -20,6 +20,7 @@ export const assets = createAssetServer({
     'app/routes.ts',
     'app/**/public/**',
     'app/lib/clubs.ts',
+    'app/lib/clock.ts',
     'app/lib/competition-metadata.ts',
     'app/lib/follows.ts',
     'app/lib/freshness.ts',

@@ -41,7 +41,7 @@ function setup(unavailable = false) {
     return new Response(null, { status: 503 });
   };
   const footballData = createFootballData({ fetcher, cache: createMemoryCache(), now: () => NOW });
-  return { router: createAppRouter({ footballData }), calls };
+  return { router: createAppRouter({ footballData, clock: { now: () => NOW, pinned: false } }), calls };
 }
 
 describe('root controller', () => {
@@ -153,3 +153,20 @@ for (const scenario of ['api-down', 'league-down', 'matchday']) {
     assert.equal(calls.filter((path) => path.includes('/standings')).length, 6);
   });
 }
+
+it('renders and serializes one fixed clock using a validated timezone cookie', async () => {
+  for (const [zone, expectedTime, expectedZone] of [
+    ['Europe/Madrid', '13:00', 'Europe/Madrid'],
+    ['bad-zone', '12:00', 'UTC'],
+  ]) {
+    const { router } = setup();
+    const response = await router.fetch(new Request('http://localhost/', {
+      headers: { Cookie: `otp_follows=57; otp_tz=${zone}` },
+    }));
+    const html = await response.text();
+    assert.match(html, /Sunday 8 November/);
+    assert.ok(html.includes(expectedTime!));
+    assert.ok(html.includes(`"now":${NOW}`));
+    assert.ok(html.includes(`"timeZone":"${expectedZone}"`));
+  }
+});

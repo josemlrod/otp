@@ -54,3 +54,34 @@ describe('football data startup selection', () => {
     assert.equal(typeof selected.footballData.clubCard, 'function');
   });
 });
+
+it('pins render, scenario dates and cache timestamps to OTP_NOW', async () => {
+  const selected = footballDataFromEnv(
+    { OTP_SCENARIO: 'matchday', OTP_NOW: new Date(NOW).toISOString(), OTP_TZ: 'Europe/London' },
+    { db, now: () => NOW + 86400000 },
+  );
+  assert.equal(selected.clock.now(), NOW);
+  assert.equal(selected.clock.pinned, true);
+  assert.equal(selected.clock.timeZone, 'Europe/London');
+  const result = await selected.footballData.clubCard(57);
+  assert.equal(result.status, 'ok');
+  if (result.status === 'ok') assert.equal(result.card.fetchedAt, NOW);
+});
+
+it('rejects time overrides in production independently of scenarios', () => {
+  for (const env of [{ OTP_NOW: new Date(NOW).toISOString() }, { OTP_TZ: 'UTC' }]) {
+    assert.throws(
+      () => footballDataFromEnv({ ...env, NODE_ENV: 'production' }, dependencies),
+      /cannot be used with NODE_ENV=production/,
+    );
+  }
+});
+
+it('rejects invalid time overrides at startup', () => {
+  for (const OTP_NOW of ['', 'tomorrow', '2026-02-30T12:00:00Z', '2026-11-08', '2026-11-08T12:00:00']) {
+    assert.throws(() => footballDataFromEnv({ OTP_NOW }, dependencies), /OTP_NOW must be a valid ISO instant/);
+  }
+  for (const OTP_TZ of ['', 'bad-zone', '+01:00']) {
+    assert.throws(() => footballDataFromEnv({ OTP_TZ }, dependencies), /OTP_TZ must be a valid IANA timezone/);
+  }
+});
