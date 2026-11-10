@@ -23,8 +23,10 @@ describe('dev scenarios', () => {
       );
       assert.equal(response.status, 200);
       const html = await response.text();
-      if (name === 'api-down') assert.match(html, /Build your stack/);
-      else {
+      if (name === 'api-down') {
+        assert.match(html, /Couldn't load your clubs right now/);
+        assert.doesNotMatch(html, /Build your stack/);
+      } else {
         assert.match(html, /Arsenal/);
         assert.match(html, /Liverpool/);
         assert.match(html, /Your clubs · 3/);
@@ -38,8 +40,8 @@ describe('dev scenarios', () => {
       cache: createMemoryCache(),
       now: () => NOW,
     });
-    assert.equal((await data.standings()).length, 6);
-    const cards = await data.clubCards([57, 64]);
+    assert.equal((await data.trackedCompetitions()).standings.length, 6);
+    const cards = await data.clubCards([57, 64], await data.trackedCompetitions());
     assert.equal(cards.length, 2);
     assert.notDeepEqual(
       cards[0].form.map((match) => match.result),
@@ -78,7 +80,7 @@ it('uses real club ids and puts only CL-only clubs in Rest of Europe', async () 
     cache: createMemoryCache(),
     now: () => NOW,
   });
-  const standings = await data.standings();
+  const standings = (await data.trackedCompetitions()).standings;
   const sections = clubSections(standings);
   assert.deepEqual(
     sections.find((section) => section.code === 'PL')?.clubs.map((club) => club.id),
@@ -95,7 +97,7 @@ it('uses real club ids and puts only CL-only clubs in Rest of Europe', async () 
 it('uses opponents from each clubs competition and alternates venue', async () => {
   const fetcher = scenarioFetcher('matchday', NOW);
   const data = createFootballData({ fetcher, cache: createMemoryCache(), now: () => NOW });
-  const standings = await data.standings();
+  const standings = (await data.trackedCompetitions()).standings;
   for (const section of clubSections(standings)) {
     for (const club of section.clubs) {
       const response = await fetcher(`/v4/teams/${club.id}/matches`);

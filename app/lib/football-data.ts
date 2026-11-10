@@ -1,6 +1,6 @@
 import { tryCatch } from './utils.ts';
 import type { FootballDataCache } from './api-cache.ts';
-import { clubSections } from './clubs.ts';
+import { clubSections, type ClubSection } from './clubs.ts';
 import { isFresh } from './freshness.ts';
 import { toTeamCard, type TeamCard } from './team-card.ts';
 
@@ -32,10 +32,16 @@ type CachedResult<T> = { data: T; err: null; fetchedAt: number } | { data: null;
 export type FootballDataFetcher = (path: string) => Promise<Response>;
 export type ClubCardResult =
   { status: 'ok'; card: TeamCard } | { status: 'not-tracked' } | { status: 'unavailable' };
+export type TrackedCompetitions = {
+  standings: StandingsResponse[];
+  sections: ClubSection[];
+  complete: boolean;
+};
+
 export type FootballData = {
-  standings(): Promise<StandingsResponse[]>;
+  trackedCompetitions(): Promise<TrackedCompetitions>;
   clubCard(clubId: number): Promise<ClubCardResult>;
-  clubCards(clubIds: number[]): Promise<TeamCard[]>;
+  clubCards(clubIds: number[], tracked: TrackedCompetitions): Promise<TeamCard[]>;
 };
 
 export function createFootballData({
@@ -138,28 +144,31 @@ export function createFootballData({
   }
 
   // A club can only be ruled out once every tracked competition's standings are in.
-  async function trackedClubs() {
+  async function trackedCompetitions(): Promise<TrackedCompetitions> {
     const all = await standings();
-    const ids = new Set(
-      clubSections(all).flatMap((section) => section.clubs.map((club) => club.id)),
-    );
-    return { ids, complete: all.length === Object.keys(COMPETITION_IDS).length };
+    return {
+      standings: all,
+      sections: clubSections(all),
+      complete: all.length === Object.keys(COMPETITION_IDS).length,
+    };
   }
 
   return {
-    standings,
+    trackedCompetitions,
     async clubCard(clubId) {
-      const tracked = await trackedClubs();
-      if (!tracked.ids.has(clubId)) {
+      const tracked = await trackedCompetitions();
+      if (!tracked.sections.some((section) => section.clubs.some((club) => club.id === clubId))) {
         return { status: tracked.complete ? 'not-tracked' : 'unavailable' };
       }
       return cardForTracked(clubId);
     },
-    async clubCards(clubIds) {
+    async clubCards(clubIds, tracked) {
       if (!clubIds.length) return [];
-      const tracked = (await trackedClubs()).ids;
+      const trackedIds = new Set(
+        tracked.sections.flatMap((section) => section.clubs.map((club) => club.id)),
+      );
       const results = await Promise.all(
-        clubIds.filter((id) => tracked.has(id)).map(cardForTracked),
+        clubIds.filter((id) => trackedIds.has(id)).map(cardForTracked),
       );
       return results.flatMap((result) => (result.status === 'ok' ? [result.card] : []));
     },

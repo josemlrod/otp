@@ -47,7 +47,7 @@ describe('football data', () => {
   it('uses fresh cache without fetching', async () => {
     const { data, cache, calls } = setup();
     await cacheStandings(cache);
-    assert.equal((await data.standings()).length, 6);
+    assert.equal((await data.trackedCompetitions()).standings.length, 6);
     assert.deepEqual(calls, []);
   });
 
@@ -55,7 +55,7 @@ describe('football data', () => {
     const { data, cache, calls, advance } = setup();
     await cacheStandings(cache);
     advance(HOUR);
-    assert.deepEqual(await data.standings(), [
+    assert.deepEqual((await data.trackedCompetitions()).standings, [
       standing,
       ...ids.slice(1).map((id) => buildStandings(String(id))),
     ]);
@@ -70,7 +70,7 @@ describe('football data', () => {
         return new Response('invalid', { status: failure === 'non-2xx' ? 503 : 200 });
       });
       await cache.write('standings-2021', standing, NOW - HOUR);
-      assert.deepEqual(await data.standings(), [standing]);
+      assert.deepEqual((await data.trackedCompetitions()).standings, [standing]);
       assert.equal((await cache.read('standings-2021'))?.fetchedAt, NOW - HOUR);
       assert.equal(await cache.read('standings-2002'), null);
     });
@@ -113,7 +113,9 @@ describe('football data', () => {
       return Response.json(buildMatches({ team: buildTeam({ id }) }));
     });
     assert.deepEqual(
-      (await data.clubCards([58, 999, 59, 57])).map((card) => card.teamId),
+      (await data.clubCards([58, 999, 59, 57], await data.trackedCompetitions())).map(
+        (card) => card.teamId,
+      ),
       [58, 57],
     );
   });
@@ -131,17 +133,17 @@ describe('football data', () => {
 describe('failure retry cooldown', () => {
   it('limits a cold outage to six calls across standings and club cards', async () => {
     const { data, calls, advance } = setup(async () => new Response(null, { status: 503 }));
-    assert.deepEqual(await data.standings(), []);
-    assert.deepEqual(await data.clubCards([57, 64]), []);
+    assert.deepEqual((await data.trackedCompetitions()).standings, []);
+    assert.deepEqual(await data.clubCards([57, 64], await data.trackedCompetitions()), []);
     assert.equal(calls.length, 6);
     calls.length = 0;
     assert.deepEqual(await data.clubCard(57), { status: 'unavailable' });
     assert.equal(calls.length, 0);
     advance(RETRY_AFTER_MS - 1);
-    await data.standings();
+    await data.trackedCompetitions();
     assert.equal(calls.length, 0);
     advance(1);
-    await data.standings();
+    await data.trackedCompetitions();
     assert.equal(calls.length, 6);
   });
 
@@ -179,8 +181,8 @@ describe('failure retry cooldown', () => {
     const fetcher = async () => new Response(null, { status: 503 });
     const first = setup(fetcher);
     const second = setup(fetcher);
-    await first.data.standings();
-    await second.data.standings();
+    await first.data.trackedCompetitions();
+    await second.data.trackedCompetitions();
     assert.equal(second.calls.length, 6);
   });
 });
