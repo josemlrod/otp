@@ -2,7 +2,7 @@ import * as assert from 'remix/assert';
 import { render } from 'remix/component/test';
 import { describe, it } from 'remix/test';
 
-import { buildTeam, buildStandings } from '../../fixtures/builders.ts';
+import { NOW, buildTeam, buildStandings } from '../../fixtures/builders.ts';
 import { clubSections } from '../../lib/clubs.ts';
 import { resolveYourClubs } from '../../lib/your-clubs.ts';
 import type { StandingsResponse } from '../../lib/types/api.ts';
@@ -25,6 +25,7 @@ function mountHome({
   const sections = clubSections(standings);
   return render(
     <HomeScreen
+      clock={{ now: NOW, timeZone: 'UTC', pinned: true }}
       standings={standings}
       sections={sections}
       yourClubs={resolveYourClubs(saved, sections, complete)}

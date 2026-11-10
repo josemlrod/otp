@@ -1,5 +1,6 @@
 import { css, on, ref, type Handle } from 'remix/component';
 
+import type { Clock } from '../../../lib/clock.ts';
 import type { Club } from '../../../lib/clubs.ts';
 import { soon } from '../../../lib/match-format.ts';
 import { hideScrollbar, space, v } from '../../../ui/theme.ts';
@@ -17,7 +18,7 @@ const HEIGHT_MS = 380;
 const EDGE_SLOP_PX = 4;
 const FOCUS_PAD_PX = 12;
 
-type Props = { clubs: Club[]; matches: MatchesModel };
+type Props = { clubs: Club[]; clock: Clock; matches: MatchesModel };
 
 export function ClubList(handle: Handle<Props>) {
   let openId: number | null = null;
@@ -122,7 +123,7 @@ export function ClubList(handle: Handle<Props>) {
 
   return () => {
     countRender('ClubList');
-    const { clubs, matches } = handle.props;
+    const { clubs, matches, clock } = handle.props;
     if (!clubs.some((club) => club.id === openId)) openId = clubs[0]?.id ?? null;
 
     handle.queueTask(() => {
@@ -154,6 +155,7 @@ export function ClubList(handle: Handle<Props>) {
               key={club.id}
               club={club}
               matches={matches}
+              clock={clock}
               open={club.id === openId}
               observe={(node, signal) => {
                 resizes?.observe(node);
@@ -172,6 +174,7 @@ export function ClubList(handle: Handle<Props>) {
 
 type ItemProps = {
   club: Club;
+  clock: Clock;
   matches: MatchesModel;
   open: boolean;
   observe: (node: HTMLElement, signal: AbortSignal) => void;
@@ -189,7 +192,7 @@ function ClubItem(handle: Handle<ItemProps>) {
 
   return () => {
     countRender('ClubItem');
-    const { club, matches, open, observe, onOpen } = handle.props;
+    const { club, matches, clock, open, observe, onOpen } = handle.props;
     const entry = matches.get(club.id);
     const card = entry && entry.status !== 'error' ? entry.card : undefined;
     const next = card?.fixtures[0];
@@ -212,7 +215,7 @@ function ClubItem(handle: Handle<ItemProps>) {
           <span mix={rowWhenStyles}>
             {next && (
               <>
-                <b>{soon(new Date(next.utcDate))}</b>
+                <b>{soon(new Date(next.utcDate), clock)}</b>
                 {next.venue === 'H' ? 'vs' : 'at'}{' '}
                 {next.opponent.tla || next.opponent.name.slice(0, 3).toUpperCase()}
               </>
@@ -221,7 +224,7 @@ function ClubItem(handle: Handle<ItemProps>) {
         </button>
         <div data-fc-full inert={!open} mix={[fullStyles, ref(observe)]}>
           {card ? (
-            <ClubCard key={card.fetchedAt} club={club} card={card} />
+            <ClubCard key={card.fetchedAt} club={club} card={card} clock={clock} />
           ) : (
             <PendingClubCard
               club={club}

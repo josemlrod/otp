@@ -59,3 +59,8 @@ Some metrics are Chromium-only (JS heap, long frames) and show `n/a` elsewhere. 
 Run without an API key using `OTP_SCENARIO=matchday bun run dev`. The same variable works with `bun run hmr`. `matchday` includes all six tracked competitions, varied form, and kickoff within a few hours. `api-down` simulates an outage; `league-down` is like `matchday`, with BL1 standings returning 503 and Bayern absent from CL standings; `no-fixtures` gives Arsenal no upcoming fixtures. Scenarios use an in-memory cache and dates relative to startup.
 
 Set the browser cookie `otp_follows=57.64.5` to show Arsenal, Liverpool and Bayern club cards on the home screen. Unknown names fail at startup and list the valid names. Scenarios are rejected with `NODE_ENV=production`, including `bun run start`; to run the server directly use `OTP_SCENARIO=matchday NODE_ENV=development node --import remix/node-tsx server.ts`.
+
+Pin a reproducible home render with `OTP_SCENARIO=matchday OTP_NOW=2026-11-08T14:55:00Z OTP_TZ=Europe/London bun run hmr`.
+`OTP_NOW` must be an ISO instant with `Z` or an explicit offset. It freezes scenario dates, cache timestamps, freshness, countdowns and the header date. `OTP_TZ` must be an IANA timezone and keeps that display timezone after hydration. Either override can be used independently, including without a scenario. Invalid values fail at startup; both are refused when `NODE_ENV=production`.
+
+Without overrides, the server uses the `otp_tz` cookie or UTC on a first visit. Hydration first uses the server's clock and timezone, then saves the browser's timezone and updates the display. The browser anchors its clock to the server timestamp so device clock skew does not affect freshness.

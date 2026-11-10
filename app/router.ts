@@ -16,7 +16,7 @@ declare module 'remix' {
   }
 }
 
-export function createAppRouter(dependencies: { footballData: FootballData }) {
+export function createAppRouter(dependencies: Parameters<typeof createAppController>[0]) {
   const router = createRouter<AppContext>({
     middleware: [staticFiles('./public', { index: false }), renderMiddleware],
   });
