@@ -1,13 +1,51 @@
-import { css, on, ref, type Dispatched, type Handle, type RemixNode } from 'remix/component';
+import {
+  css, on, ref, TypedEventTarget,
+  type Dispatched, type Handle, type RemixNode,
+} from 'remix/component';
 
 import { hideScrollbar, space, v } from '../../ui/theme.ts';
+import { clamp, rubber, tracker } from './motion.ts';
 import { countRender } from './perf/renders.ts';
 
-type Props = {
-  open: boolean;
+type SheetRequest = {
+  /** Called on every render, so the content can follow the caller's state while open. */
+  content: () => RemixNode;
+  opener: HTMLElement;
   labelledBy?: string;
-  onClose: () => void;
-  onDragOpenFraction?: (openFraction: number | null) => void;
+  onClose?: () => void;
+};
+
+/** One controller per Sheet host. Closing invokes the request's save hook exactly once. */
+export class SheetController extends TypedEventTarget<{ change: Event }> {
+  #request: SheetRequest | null = null;
+  #open = false;
+
+  get request() {
+    return this.#request;
+  }
+
+  get open() {
+    return this.#open;
+  }
+
+  show(request: SheetRequest) {
+    if (this.open) this.close();
+    this.#request = request;
+    this.#open = true;
+    this.dispatchEvent(new Event('change'));
+  }
+
+  close = () => {
+    if (!this.open) return;
+    this.#open = false;
+    this.request?.onClose?.();
+    this.dispatchEvent(new Event('change'));
+  };
+}
+
+type Props = {
+  controller: SheetController;
+  focusFallback?: (screen: HTMLElement) => HTMLElement | null | undefined;
   children?: RemixNode;
 };
 
@@ -16,9 +54,7 @@ type SheetPointerEvent = Dispatched<PointerEvent, HTMLElement>;
 type GrabPress = {
   pointerId: number;
   startY: number;
-  lastY: number;
   lastTimeStamp: number;
-  velocityPxPerMs: number;
   isDragging: boolean;
   openFraction: number;
 };
@@ -27,16 +63,7 @@ const MIN_DRAG_DISTANCE_PX = 6;
 const FLICK_PROJECTION_MS = 220;
 const STILL_FINGER_LOSES_FLICK_AFTER_MS = 100;
 const CLOSED_OVERSHOOT_PX = 30;
-const RUBBER_BAND_RESISTANCE = 0.2;
 const BACKDROP_OPEN_OPACITY = 0.45;
-
-function rubberBand(pullDownPx: number) {
-  return pullDownPx < 0 ? pullDownPx * RUBBER_BAND_RESISTANCE : pullDownPx;
-}
-
-function clamp01(value: number) {
-  return Math.min(1, Math.max(0, value));
-}
 
 function focusableControls(container: HTMLElement) {
   return Array.from(
@@ -54,6 +81,11 @@ function focusableControls(container: HTMLElement) {
 
 function trapTabFocus(event: Dispatched<KeyboardEvent, HTMLElement>) {
   const controls = focusableControls(event.currentTarget);
+  if (controls.length === 0) {
+    event.preventDefault();
+    event.currentTarget.focus({ preventScroll: true });
+    return;
+  }
   const first = controls[0];
   const last = controls.at(-1);
   const focused = document.activeElement;
@@ -78,18 +110,60 @@ export function Sheet(handle: Handle<Props>) {
   let sheet: HTMLElement | undefined;
   let press: GrabPress | null = null;
   let pullDownPx = 0;
+  let root: HTMLElement | undefined;
+  let screen: HTMLElement | undefined;
+  let frame = 0;
+  const velocity = tracker();
+  const controller = handle.props.controller;
+
+  function cancelPaint() {
+    cancelAnimationFrame(frame);
+    frame = 0;
+  }
+
+  function clearDrag() {
+    cancelPaint();
+    root?.style.removeProperty('--sheet-drag');
+    root?.style.removeProperty('--sheet-pull');
+  }
+
+  controller.addEventListener('change', async () => {
+    press = null;
+    cancelPaint();
+    const signal = await handle.update();
+    if (signal.aborted) return;
+    // Restore transition durations before removing the gesture's overrides.
+    clearDrag();
+    if (controller.open) {
+      (sheet?.querySelector<HTMLElement>('[data-sheet-autofocus]') ?? sheet)
+        ?.focus({ preventScroll: true });
+    } else {
+      const opener = controller.request?.opener;
+      (opener?.isConnected ? opener : (screen && handle.props.focusFallback?.(screen)))
+        ?.focus({ preventScroll: true });
+    }
+  }, { signal: handle.signal });
+  handle.signal.addEventListener('abort', clearDrag, { once: true });
+
+  function paintDrag() {
+    frame = 0;
+    if (!press?.isDragging) return;
+    root?.style.setProperty('--sheet-drag', String(press.openFraction));
+    const pull = pullDownPx < 0 ? rubber(pullDownPx, closedPullDownPx(), 0.2) : pullDownPx;
+    root?.style.setProperty('--sheet-pull', `${pull}px`);
+  }
 
   const closedPullDownPx = () => (sheet?.offsetHeight ?? 0) + CLOSED_OVERSHOOT_PX;
 
   function startPress(event: SheetPointerEvent) {
+    if (!controller.open) return;
     if (event.button > 0 || !event.isPrimary) return;
     if (!canStartDrag(event.target)) return;
+    velocity.reset(0, event.clientY, event.timeStamp);
     press = {
       pointerId: event.pointerId,
       startY: event.clientY,
-      lastY: event.clientY,
       lastTimeStamp: event.timeStamp,
-      velocityPxPerMs: 0,
       isDragging: false,
       openFraction: 1,
     };
@@ -102,25 +176,23 @@ export function Sheet(handle: Handle<Props>) {
       if (Math.abs(travelPx) < MIN_DRAG_DISTANCE_PX) return;
       press.isDragging = true;
       event.currentTarget.setPointerCapture(event.pointerId);
+      handle.update();
     }
-    press.velocityPxPerMs =
-      (event.clientY - press.lastY) /
-      Math.max(1, event.timeStamp - press.lastTimeStamp);
-    press.lastY = event.clientY;
+    velocity.add(0, event.clientY, event.timeStamp);
     press.lastTimeStamp = event.timeStamp;
     pullDownPx = travelPx;
-    press.openFraction = clamp01(1 - pullDownPx / closedPullDownPx());
-    handle.props.onDragOpenFraction?.(press.openFraction);
-    handle.update();
+    press.openFraction = clamp(1 - pullDownPx / closedPullDownPx(), 0, 1);
+    if (!frame) frame = requestAnimationFrame(paintDrag);
   }
 
   function endPress(event: SheetPointerEvent) {
     if (!press || event.pointerId !== press.pointerId) return;
-    const { isDragging, velocityPxPerMs, lastTimeStamp } = press;
+    const { isDragging, lastTimeStamp } = press;
+    const velocityPxPerMs = velocity.velocity(lastTimeStamp).y / 1000;
     press = null;
     if (!isDragging) return;
 
-    handle.props.onDragOpenFraction?.(null);
+    cancelPaint();
     const fingerWasStill =
       event.timeStamp - lastTimeStamp > STILL_FINGER_LOSES_FLICK_AFTER_MS;
     const flickVelocity = fingerWasStill ? 0 : velocityPxPerMs;
@@ -128,21 +200,37 @@ export function Sheet(handle: Handle<Props>) {
     pullDownPx = 0;
 
     if (projectedPullDownPx > closedPullDownPx() / 2) {
-      handle.props.onClose();
+      controller.close();
     } else {
-      handle.update();
+      handle.update().then((signal) => {
+        if (!signal.aborted && !press?.isDragging) clearDrag();
+      });
     }
   }
 
   return () => {
     countRender('Sheet');
-    const { open, labelledBy, onClose, children } = handle.props;
+    const { open, request } = controller;
+    const labelledBy = request?.labelledBy;
+    const children = request?.content();
+    const onClose = controller.close;
     const isDragging = open && !!press?.isDragging;
-    const openFraction = isDragging ? press!.openFraction : open ? 1 : 0;
+    const openFraction = open ? 1 : 0;
     const restingTransform = open ? 'translateY(0)' : 'translateY(110%)';
 
     return (
-      <>
+      <div
+        mix={[containerStyles, ref((node) => { root = node; })]}
+        style={{
+          '--sheet-open': openFraction,
+          '--sheet-duration': isDragging
+            ? '0ms'
+            : v(open ? '--duration-sheet-open' : '--duration-sheet-close'),
+        }}
+      >
+        <main mix={[screenStyles, ref((node) => { screen = node; })]} inert={open}>
+          {handle.props.children}
+        </main>
         <button
           type='button'
           aria-label='Close sheet'
@@ -150,7 +238,7 @@ export function Sheet(handle: Handle<Props>) {
           inert={!open}
           mix={[backdrop, on('click', onClose)]}
           style={{
-            opacity: openFraction * BACKDROP_OPEN_OPACITY,
+            opacity: `calc(var(--sheet-drag, var(--sheet-open)) * ${BACKDROP_OPEN_OPACITY})`,
             pointerEvents: open ? 'auto' : 'none',
           }}
         />
@@ -161,12 +249,12 @@ export function Sheet(handle: Handle<Props>) {
               sheet = node;
             }),
             on('keydown', (event) => {
-              if (!handle.props.open) return;
+              if (!controller.open) return;
 
               if (event.key === 'Escape') {
                 event.preventDefault();
                 event.stopPropagation();
-                handle.props.onClose();
+                controller.close();
               }
 
               if (event.key === 'Tab') trapTabFocus(event);
@@ -185,7 +273,7 @@ export function Sheet(handle: Handle<Props>) {
           data-dragging={isDragging ? 'true' : undefined}
           style={{
             transform: isDragging
-              ? `translateY(${rubberBand(pullDownPx)}px)`
+              ? 'translateY(var(--sheet-pull, 0px))'
               : restingTransform,
             transitionDuration: isDragging ? '0ms' : undefined,
           }}
@@ -193,7 +281,7 @@ export function Sheet(handle: Handle<Props>) {
           <span mix={sheetHandle} aria-hidden='true' />
           {children}
         </section>
-      </>
+      </div>
     );
   };
 }
@@ -266,4 +354,28 @@ const sheetHandle = css({
   background: v('--color-grabber'),
   transform: 'translateX(-50%)',
   pointerEvents: 'none',
+});
+
+const containerStyles = css({
+  position: 'fixed',
+  inset: 0,
+  isolation: 'isolate',
+  overflow: 'hidden',
+  background: v('--color-black'),
+});
+
+// The screen behind the sheet recedes to 93% scale and gains rounded corners as the sheet opens.
+const screenStyles = css({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: space(2.5),
+  height: '100%',
+  overflow: 'clip',
+  background: v('--color-bg'),
+  transformOrigin: '50% 0',
+  transform: 'scale(calc(1 - var(--sheet-drag, var(--sheet-open)) * 0.07))',
+  borderRadius: `calc(${v('--radius-lg')} * var(--sheet-drag, var(--sheet-open)))`,
+  transitionProperty: 'transform, border-radius',
+  transitionDuration: 'var(--sheet-duration)',
+  transitionTimingFunction: v('--ease-ios'),
 });

@@ -1,4 +1,4 @@
-import { clientEntry, css, on, ref, type Handle } from 'remix/component';
+import { clientEntry, css, on, type Handle } from 'remix/component';
 
 import { leagueLeaders, type ClubSection } from '../../lib/clubs.ts';
 import type { YourClubs } from '../../lib/your-clubs.ts';
@@ -11,12 +11,11 @@ import { ClubList } from './clubs/club-list.tsx';
 import { ClubPicker } from './clubs/club-picker.tsx';
 import { Standings } from './standings/index.tsx';
 import { StandingsSheet } from './standings/standings-sheet.tsx';
-import { Sheet } from './sheet.tsx';
+import { Sheet, SheetController } from './sheet.tsx';
 import { countRender } from './perf/renders.ts';
 import { space, v } from '../../ui/theme.ts';
 import { MatchesModel } from './clubs/matches.ts';
 
-const RECEDED_SCREEN_SCALE = 0.93;
 const STACK_PREVIEW_CLUBS = 3;
 
 type Props = {
@@ -26,19 +25,12 @@ type Props = {
   initialMatches?: TeamCard[];
 };
 
-type SheetContent =
-  { kind: 'standings'; standing: StandingsResponse } | { kind: 'clubs'; session: number };
-
 export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handle: Handle<Props>) {
   const sections = handle.props.sections;
   const stackPreview = leagueLeaders(handle.props.standings, STACK_PREVIEW_CLUBS);
   const titleId = `${handle.id}-sheet-title`;
   let pickerSessions = 0;
-  let content: SheetContent | null = null;
-  let open = false;
-  let dragOpenFraction: number | null = null;
-  let opener: HTMLButtonElement | undefined;
-  let root: HTMLElement | undefined;
+  const sheet = new SheetController();
 
   const matches = new MatchesModel(handle.props.initialMatches);
   const yourClubs = new YourClubsModel(handle.props.yourClubs, sections, {
@@ -47,155 +39,84 @@ export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handl
   yourClubs.addEventListener('change', () => handle.update(), { signal: handle.signal });
   handle.queueTask(() => yourClubs.current.clubs.forEach((club) => matches.load(club.id)));
 
-  async function show(next: SheetContent, button: HTMLButtonElement) {
-    opener = button;
-    content = next;
-    open = true;
-
-    const signal = await handle.update();
-    if (!signal.aborted && open) {
-      root
-        ?.querySelector<HTMLElement>('[role="dialog"] [data-sheet-autofocus]')
-        ?.focus({ preventScroll: true });
-    }
-  }
-
   function showStandings(standing: StandingsResponse, button: HTMLButtonElement) {
-    show({ kind: 'standings', standing }, button);
+    sheet.show({
+      opener: button,
+      labelledBy: titleId,
+      content: () => (
+        <StandingsSheet standing={standing} titleId={titleId} onClose={sheet.close} />
+      ),
+    });
   }
 
   function chooseClubs(button: HTMLButtonElement) {
     yourClubs.beginEdit();
-    show({ kind: 'clubs', session: ++pickerSessions }, button);
-  }
-
-  async function close() {
-    if (open && content?.kind === 'clubs') {
-      yourClubs.commit();
-    }
-    open = false;
-
-    const signal = await handle.update();
-    if (signal.aborted || open) return;
-    const returnTo = opener?.isConnected
-      ? opener
-      : root?.querySelector<HTMLElement>('main [data-clubs-opener]');
-    returnTo?.focus({ preventScroll: true });
+    const session = ++pickerSessions;
+    const initial = yourClubs.current.clubs.map((club) => club.id);
+    sheet.show({
+      opener: button,
+      labelledBy: titleId,
+      onClose: () => yourClubs.commit(),
+      content: () => (
+        <ClubPicker
+          key={session}
+          sections={sections}
+          initial={initial}
+          titleId={titleId}
+          onChange={(ids) => yourClubs.setDraft(ids)}
+          onDone={sheet.close}
+        />
+      ),
+    });
   }
 
   return () => {
     countRender('HomeScreen');
     const { clubs, unavailable } = yourClubs.current;
-    const openFraction = dragOpenFraction ?? (open ? 1 : 0);
-    const isDragging = dragOpenFraction !== null;
-
     return (
-      <div
-        mix={[
-          containerStyles,
-          ref((node) => {
-            root = node;
-          }),
-        ]}
-        style={{
-          '--sheet-duration': isDragging
-            ? '0ms'
-            : v(open ? '--duration-sheet-open' : '--duration-sheet-close'),
-        }}
+      <Sheet
+        controller={sheet}
+        focusFallback={(screen) => screen.querySelector('[data-clubs-opener]')}
       >
-        <main
-          mix={screenStyles}
-          inert={open}
-          style={{
-            transform: `scale(${1 - openFraction * (1 - RECEDED_SCREEN_SCALE)})`,
-            borderRadius: `calc(${v('--radius-lg')} * ${openFraction})`,
-          }}
-        >
-          <header mix={headerStyles}>
-            <p mix={subtitleStyles}>Saturday 10 October</p>
-            <div data-perf-toggle mix={brandStyles}>
-              <Logo size={space(7.5)} />
-              <h3 mix={titleStyles}>On the Pitch</h3>
-            </div>
-          </header>
+        <header mix={headerStyles}>
+          <p mix={subtitleStyles}>Saturday 10 October</p>
+          <div data-perf-toggle mix={brandStyles}>
+            <Logo size={space(7.5)} />
+            <h3 mix={titleStyles}>On the Pitch</h3>
+          </div>
+        </header>
 
-          <section mix={sectionStyles}>
-            <p mix={[subtitleStyles, insetStyles]}>Competitions</p>
-            <Standings standings={handle.props.standings} onSelect={showStandings} />
-          </section>
+        <section mix={sectionStyles}>
+          <p mix={[subtitleStyles, insetStyles]}>Competitions</p>
+          <Standings standings={handle.props.standings} onSelect={showStandings} />
+        </section>
 
-          <section mix={[clubsSectionStyles, clubs.length ? clubsListStyles : clubsEmptyStyles]}>
-            <p mix={[subtitleStyles, insetStyles, clubsLabelStyles]}>
-              {clubs.length ? `Your clubs · ${clubs.length}` : 'Your clubs'}
-              {clubs.length > 0 && (
-                <button
-                  type='button'
-                  data-clubs-opener
-                  mix={[editStyles, on('click', (event) => chooseClubs(event.currentTarget))]}
-                >
-                  Edit
-                </button>
-              )}
-            </p>
-            {clubs.length === 0 ? (
-              unavailable ? (
-                <p mix={[insetStyles, unavailableStyles]}>Couldn't load your clubs right now</p>
-              ) : (
-                <BuildYourStack preview={stackPreview} onChoose={chooseClubs} />
-              )
-            ) : (
-              <ClubList clubs={clubs} matches={matches} />
+        <section mix={[clubsSectionStyles, clubs.length ? clubsListStyles : clubsEmptyStyles]}>
+          <p mix={[subtitleStyles, insetStyles, clubsLabelStyles]}>
+            {clubs.length ? `Your clubs · ${clubs.length}` : 'Your clubs'}
+            {clubs.length > 0 && (
+              <button
+                type='button'
+                data-clubs-opener
+                mix={[editStyles, on('click', (event) => chooseClubs(event.currentTarget))]}
+              >
+                Edit
+              </button>
             )}
-          </section>
-        </main>
-
-        <Sheet
-          open={open}
-          labelledBy={content ? titleId : undefined}
-          onClose={close}
-          onDragOpenFraction={(fraction) => {
-            dragOpenFraction = fraction;
-            handle.update();
-          }}
-        >
-          {content?.kind === 'standings' && (
-            <StandingsSheet standing={content.standing} titleId={titleId} onClose={close} />
+          </p>
+          {clubs.length === 0 ? (
+            unavailable ? (
+              <p mix={[insetStyles, unavailableStyles]}>Couldn't load your clubs right now</p>
+            ) : (
+              <BuildYourStack preview={stackPreview} onChoose={chooseClubs} />
+            )
+          ) : (
+            <ClubList clubs={clubs} matches={matches} />
           )}
-          {content?.kind === 'clubs' && (
-            <ClubPicker
-              key={content.session}
-              sections={sections}
-              initial={clubs.map((club) => club.id)}
-              titleId={titleId}
-              onChange={(ids) => yourClubs.setDraft(ids)}
-              onDone={close}
-            />
-          )}
-        </Sheet>
-      </div>
+        </section>
+      </Sheet>
     );
   };
-});
-
-const containerStyles = css({
-  position: 'fixed',
-  inset: 0,
-  isolation: 'isolate',
-  overflow: 'hidden',
-  background: v('--color-black'),
-});
-
-const screenStyles = css({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: space(2.5),
-  height: '100%',
-  overflow: 'clip',
-  background: v('--color-bg'),
-  transformOrigin: '50% 0',
-  transitionProperty: 'transform, border-radius',
-  transitionDuration: 'var(--sheet-duration)',
-  transitionTimingFunction: v('--ease-ios'),
 });
 
 const headerStyles = css({
