@@ -1,0 +1,83 @@
+[
+  {
+    "name": "iphone-home",
+    "size": "390×844",
+    "same": true,
+    "before": "8ee8929d102a",
+    "after": "8ee8929d102a",
+    "wideAfter": false,
+    "errors": 0
+  },
+  {
+    "name": "iphone-empty",
+    "size": "390×844",
+    "same": true,
+    "before": "7c13ab4fe524",
+    "after": "7c13ab4fe524",
+    "wideAfter": false,
+    "errors": 0
+  },
+  {
+    "name": "iphone-second-club-open",
+    "size": "390×844",
+    "same": true,
+    "before": "3ccb11f0f389",
+    "after": "3ccb11f0f389",
+    "wideAfter": false,
+    "errors": 0
+  },
+  {
+    "name": "iphone-standings-sheet",
+    "size": "390×844",
+    "same": true,
+    "before": "cb8ca49f219d",
+    "after": "cb8ca49f219d",
+    "wideAfter": false,
+    "errors": 0
+  },
+  {
+    "name": "iphone-club-picker",
+    "size": "390×844",
+    "same": true,
+    "before": "fc6fbe4773a1",
+    "after": "fc6fbe4773a1",
+    "wideAfter": false,
+    "errors": 0
+  },
+  {
+    "name": "iphone-pro-max",
+    "size": "440×956",
+    "same": true,
+    "before": "314be2bf6aaf",
+    "after": "314be2bf6aaf",
+    "wideAfter": false,
+    "errors": 0
+  },
+  {
+    "name": "iphone-landscape",
+    "size": "852×393",
+    "same": true,
+    "before": "9dee56c7efa4",
+    "after": "9dee56c7efa4",
+    "wideAfter": false,
+    "errors": 0
+  },
+  {
+    "name": "duo-cover",
+    "size": "382×618",
+    "same": true,
+    "before": "95431f0e4d0e",
+    "after": "95431f0e4d0e",
+    "wideAfter": false,
+    "errors": 0
+  },
+  {
+    "name": "duo-split-view",
+    "size": "385×609",
+    "same": true,
+    "before": "13f3cb842462",
+    "after": "13f3cb842462",
+    "wideAfter": false,
+    "errors": 0
+  }
+]
