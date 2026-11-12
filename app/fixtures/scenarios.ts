@@ -1,4 +1,4 @@
-import { buildMatches, buildStandings, buildTeam } from './builders.ts';
+import { buildMatchDetail, buildMatches, buildStandings, buildTeam } from './builders.ts';
 import type { MatchOptions } from './builders.ts';
 import type { FootballDataFetcher } from '../lib/football-data.ts';
 
@@ -86,11 +86,11 @@ export function scenarioFetcher(name: string, now: number): FootballDataFetcher 
           opponent: opponents[index % opponents.length],
           venue: index % 2 === 0 ? 'H' : 'A',
           competition: code,
+          // Unique across clubs, so /v4/matches/{id} can answer for each result.
+          overrides: { id: club.id * 100 + index },
         };
       }
-      responses.set(
-        path,
-        buildMatches({
+      const matches = buildMatches({
           club,
           now,
           results: [...form].map((result, index) => ({
@@ -105,8 +105,17 @@ export function scenarioFetcher(name: string, now: number): FootballDataFetcher 
                   ...description(form.length + index),
                   days,
                 })),
-        }),
-      );
+      });
+      responses.set(path, matches);
+      // Match details as Deep Data with the statistics and odds add-ons, except Barcelona's,
+      // which come back as the base plan does (score and referee only).
+      for (const match of matches.matches.filter((m) => m.status === 'FINISHED')) {
+        const basePlan = club.id === 81;
+        responses.set(
+          `/v4/matches/${match.id}`,
+          buildMatchDetail(match, { events: !basePlan, stats: !basePlan, odds: !basePlan }),
+        );
+      }
     });
   });
   return async (path) => {

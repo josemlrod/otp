@@ -72,6 +72,13 @@ A club's soonest fixture.
 **Venue**:
 Whether the club plays at home (H) or away (A) in a match.
 
+**Match report**:
+The server projection of one finished match from `/v4/matches/{id}`: the score, plus whatever the API plan adds (minute-stamped goals, cards and substitutions; full-time statistics; pre-match odds).
+_Avoid_: match details, match data
+
+**Replay**:
+A match report's events laid out on the match clock, so the match sheet can show the score, time in front and moments at any minute.
+
 ### Home screen
 
 **Club card**:
@@ -91,6 +98,9 @@ The sheet where the user edits Your clubs.
 
 **Standings sheet**:
 The sheet that shows one competition's standings.
+
+**Match sheet**:
+The sheet that shows one result in full, opened from a picked result on the club card or a Last 5 row on the club page. Its strip scrubs the replay and docks under the top edge once scrolled past.
 
 **Sheet**:
 A panel that rises over the home screen while the screen behind it recedes.

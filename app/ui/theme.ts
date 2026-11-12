@@ -14,6 +14,8 @@ export const tokens = {
   '--color-grabber': 'oklch(100% 0 0 / 0.45)',
   '--color-accent': 'oklch(91.1% 0.197 124.6)',
   '--color-accent-ink': 'var(--color-bg)',
+  // The other side in a match, beside the accent that marks the club the user came from.
+  '--color-opponent': 'oklch(74% 0.075 238)',
   '--color-win': 'oklch(68.7% 0.18 150.1)',
   '--color-draw': 'oklch(71.4% 0.019 261.3)',
   '--color-loss': 'oklch(62.6% 0.193 23)',

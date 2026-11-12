@@ -17,17 +17,18 @@ import { space, v } from '../../../ui/theme.ts';
 import { countRender } from '../perf/renders.ts';
 import { ClubCrest } from './club-crest.tsx';
 import { wireTimeline } from './timeline.ts';
+import type { OpenMatch } from '../match/match-sheet.tsx';
 
 // The full club card: crest, name, form strip and the next-match block. The strip and the block
 // are one timeline (see timeline.ts). A card that hasn't loaded yet keeps its header and shows a
 // skeleton, or a retry if the request failed.
 
-type CardProps = { club: Club; matches: ClubMatches; clock: Clock };
+type CardProps = { club: Club; matches: ClubMatches; clock: Clock; onOpenMatch?: OpenMatch };
 
 export function ClubCard(handle: Handle<CardProps>) {
   return () => {
     countRender('ClubCard');
-    const { club, matches, clock } = handle.props;
+    const { club, matches, clock, onOpenMatch } = handle.props;
     const fixtures = matches.fixtures;
 
     return (
@@ -60,7 +61,12 @@ export function ClubCard(handle: Handle<CardProps>) {
               style={{ transform: `translateX(-${matches.form.length * 100}%)` }}
             >
               {matches.form.map((match, i) => (
-                <PastMatch key={i} match={match} clock={clock} />
+                <PastMatch
+                  key={i}
+                  match={match}
+                  clock={clock}
+                  onOpen={onOpenMatch && ((button) => onOpenMatch(club, match, button))}
+                />
               ))}
               {fixtures.length ? (
                 fixtures.map((fixture, i) => (
@@ -157,14 +163,21 @@ export function CompetitionMark(handle: Handle<{ code: string }>) {
   };
 }
 
-// Match details are a later pass; the button is here so a picked result already reads as tappable.
-function PastMatch(handle: Handle<{ match: PlayedMatch; clock: Clock }>) {
+// A picked result opens its match sheet.
+function PastMatch(
+  handle: Handle<{ match: PlayedMatch; clock: Clock; onOpen?: (button: HTMLButtonElement) => void }>,
+) {
   return () => {
-    const { match, clock } = handle.props;
+    const { match, clock, onOpen } = handle.props;
     const date = new Date(match.utcDate);
 
     return (
-      <button type='button' data-r={match.result} mix={pastMatchStyles}>
+      <button
+        type='button'
+        data-r={match.result}
+        data-match-opener={match.id}
+        mix={[pastMatchStyles, on('click', (event) => onOpen?.(event.currentTarget))]}
+      >
         <span data-r={match.result} mix={scoreStyles}>
           {match.gf}–{match.ga}
         </span>

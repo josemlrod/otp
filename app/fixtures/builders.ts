@@ -8,6 +8,10 @@ import { toClubMatches } from '../lib/club-matches.ts';
 import type { Outcome, ClubMatches, Venue } from '../lib/club-matches.ts';
 import type {
   Match,
+  MatchBooking,
+  MatchDetailResponse,
+  MatchGoal,
+  MatchSubstitution,
   MatchesResponse,
   StandingsResponse,
   StandingTableRow,
@@ -244,5 +248,91 @@ export function buildClub(overrides: Partial<Club> = {}): Club {
     competitionCode: 'PL',
     position: 1,
     ...overrides,
+  };
+}
+
+// ── /v4/matches/{id}
+
+export type MatchDetailOptions = {
+  /** Deep Data: goals, bookings and substitutions with minutes. */
+  events?: boolean;
+  /** The statistics add-on. */
+  stats?: boolean;
+  /** The odds add-on. */
+  odds?: boolean;
+};
+
+const FIRST = ['Marco', 'Jonas', 'Luca', 'Theo', 'Rúben', 'Kai', 'Noah', 'Mateo', 'Leon', 'Ilias', 'Sami'];
+const LAST = ['Silva', 'Keller', 'Okafor', 'Laurent', 'Novak', 'Romero', 'Fischer', 'Costa', 'Hughes', 'van Dijk', 'Moreno'];
+const player = (team: ApiTeam, n: number) => ({
+  id: team.id * 100 + n,
+  name: `${FIRST[(team.id + n) % FIRST.length]} ${LAST[(team.id * 3 + n) % LAST.length]}`,
+});
+
+// A finished match from /teams/{id}/matches, filled out the way /matches/{id} returns it. Goals
+// are spread through the match to agree with the full-time score; the rest is plausible filler.
+export function buildMatchDetail(match: Match, options: MatchDetailOptions = {}): MatchDetailResponse {
+  const { events = true, stats = true, odds = true } = options;
+  const home = match.score.fullTime.home ?? 0;
+  const away = match.score.fullTime.away ?? 0;
+  const total = home + away;
+  const ref = (team: ApiTeam) => ({ id: team.id, name: team.name });
+
+  // Interleave the sides so a 2–1 reads 1–0, 1–1, 2–1 rather than 2–0 then 2–1.
+  const order: ('home' | 'away')[] = [];
+  for (let h = home, a = away; h + a > 0; ) {
+    const homeNext = h > 0 && (a === 0 || (order.length + match.id) % 2 === 0);
+    order.push(homeNext ? 'home' : 'away');
+    if (homeNext) h--;
+    else a--;
+  }
+  let score = { home: 0, away: 0 };
+  const goals: MatchGoal[] = order.map((side, i) => {
+    const minute = Math.round(10 + ((i + 0.6) / total) * 76);
+    score = { ...score, [side]: score[side] + 1 };
+    const team = side === 'home' ? match.homeTeam : match.awayTeam;
+    return {
+      minute,
+      injuryTime: null,
+      type: 'REGULAR',
+      team: ref(team),
+      scorer: player(team, 9 + (i % 2)),
+      assist: i % 3 === 2 ? null : player(team, 7 + (i % 2)),
+      score: { ...score },
+    };
+  });
+  const halfTime = goals.filter((g) => g.minute <= 45).at(-1)?.score ?? { home: 0, away: 0 };
+  const bookings: MatchBooking[] = [
+    { minute: 34, team: ref(match.awayTeam), player: player(match.awayTeam, 6), card: 'YELLOW' },
+    { minute: 45, injuryTime: 2, team: ref(match.homeTeam), player: player(match.homeTeam, 4), card: 'YELLOW' },
+    { minute: 71, team: ref(match.homeTeam), player: player(match.homeTeam, 6), card: 'YELLOW' },
+  ];
+  const substitutions: MatchSubstitution[] = [62, 66, 75, 84].map((minute, i) => {
+    const team = i % 2 === 0 ? match.homeTeam : match.awayTeam;
+    return { minute, team: ref(team), playerOut: player(team, 11 - i), playerIn: player(team, 12 + i) };
+  });
+  const statistics = (shots: number, onGoal: number, corners: number, possession: number) => ({
+    corner_kicks: corners,
+    fouls: 11,
+    ball_possession: possession,
+    saves: 2,
+    shots,
+    shots_on_goal: onGoal,
+    shots_off_goal: shots - onGoal,
+    yellow_cards: 1,
+    red_cards: 0,
+  });
+  const lean = Math.sign(home - away);
+
+  return {
+    ...match,
+    status: 'FINISHED',
+    venue: match.venue ?? 'Home Ground',
+    score: { ...match.score, halfTime: events ? halfTime : match.score.halfTime },
+    homeTeam: { ...match.homeTeam, ...(stats ? { statistics: statistics(13 + lean * 3, 5 + home, 6, 52 + lean * 4) } : {}) },
+    awayTeam: { ...match.awayTeam, ...(stats ? { statistics: statistics(10 - lean * 2, 3 + away, 4, 48 - lean * 4) } : {}) },
+    ...(events ? { minute: 90, injuryTime: 4, attendance: 41_200, goals, penalties: [], bookings, substitutions } : {}),
+    odds: odds ? { homeWin: 2.1, draw: 3.6, awayWin: 3.3 } : { msg: 'Activate Odds-Package in User-Panel to retrieve odds.' },
+    referees: [{ id: 11605, name: 'Anthony Taylor', type: 'REFEREE', nationality: 'England' }],
   };
 }

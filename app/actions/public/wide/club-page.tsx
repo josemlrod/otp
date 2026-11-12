@@ -1,7 +1,7 @@
 import { css, on, type Handle } from 'remix/component';
 
 import type { Clock } from '../../../lib/clock.ts';
-import type { ClubMatches, Fixture, Opponent, Venue } from '../../../lib/club-matches.ts';
+import type { ClubMatches, Fixture, Opponent, PlayedMatch, Venue } from '../../../lib/club-matches.ts';
 import type { Club } from '../../../lib/clubs.ts';
 import { getCompetitionMetadata } from '../../../lib/competition-metadata.ts';
 import {
@@ -27,6 +27,7 @@ import { space, v } from '../../../ui/theme.ts';
 import { CompetitionMark } from '../clubs/club-card.tsx';
 import { ClubCrest } from '../clubs/club-crest.tsx';
 import type { MatchesEntry } from '../clubs/matches.ts';
+import type { OpenMatch } from '../match/match-sheet.tsx';
 import { countRender } from '../perf/renders.ts';
 import type { Plan } from './flow.ts';
 import { FlowGrid } from './flow-grid.tsx';
@@ -63,12 +64,13 @@ type Props = {
   clock: Clock;
   onSelect: (selection: Selection) => void;
   onRetry: () => void;
+  onOpenMatch?: OpenMatch;
 };
 
 export function ClubPage(handle: Handle<Props>) {
   return () => {
     countRender('ClubPage');
-    const { club, standings, entry, clock, onSelect, onRetry } = handle.props;
+    const { club, standings, entry, clock, onSelect, onRetry, onOpenMatch } = handle.props;
     const matches = entry && entry.status !== 'error' ? entry.matches : undefined;
     const league = findStanding(standings, club.competitionCode);
     const row = standingRow(standings, club.competitionCode, club.id);
@@ -105,7 +107,12 @@ export function ClubPage(handle: Handle<Props>) {
               <AfterThat fixtures={matches.fixtures.slice(1)} clock={clock} position={position} />
             ),
             results: matches && matches.form.length > 0 && (
-              <LastResults matches={matches} clock={clock} position={position} />
+              <LastResults
+                matches={matches}
+                clock={clock}
+                position={position}
+                onOpen={onOpenMatch && ((match, button) => onOpenMatch(club, match, button))}
+              />
             ),
             season: row && <Season code={club.competitionCode} row={row} />,
             league: league && <MiniTable standing={league} clubId={club.id} onSelect={onSelect} />,
@@ -262,62 +269,76 @@ function AfterThat(handle: Handle<{ fixtures: Fixture[]; clock: Clock; position:
             const date = new Date(fixture.utcDate);
             return (
               <li key={`${fixture.utcDate}-${i}`}>
-                <DateCell date={date} clock={clock} />
-                <ClubCrest crest={fixture.opponent.crest} size={space(8)} />
-                <span mix={infoStyles}>
-                  <span mix={whenStyles}>
-                    {time(date, clock)} · {VENUE[fixture.venue]} <CompetitionMark code={fixture.competition} />
+                  <DateCell date={date} clock={clock} />
+                  <ClubCrest crest={fixture.opponent.crest} size={space(8)} />
+                  <span mix={infoStyles}>
+                    <span mix={whenStyles}>
+                      {time(date, clock)} · {VENUE[fixture.venue]} <CompetitionMark code={fixture.competition} />
+                    </span>
+                    <b>{versus(fixture.venue, fixture.opponent.name)}</b>
                   </span>
-                  <b>{versus(fixture.venue, fixture.opponent.name)}</b>
-                </span>
-                <span mix={endStyles}>
-                  <b>{soon(date, clock)}</b>
-                  <small>{position(fixture.competition, fixture.opponent.id)}</small>
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-      </>
-    );
+                  <span mix={endStyles}>
+                    <b>{soon(date, clock)}</b>
+                    <small>{position(fixture.competition, fixture.opponent.id)}</small>
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </>
+      );
+    };
+  }
+
+  type LastResultsProps = {
+    matches: ClubMatches;
+    clock: Clock;
+    position: PositionOf;
+    onOpen?: (match: PlayedMatch, button: HTMLButtonElement) => void;
   };
-}
 
-function LastResults(handle: Handle<{ matches: ClubMatches; clock: Clock; position: PositionOf }>) {
-  return () => {
-    const { matches, clock, position } = handle.props;
-    const form = matches.form;
-    const tally = (outcome: string) => form.filter((match) => match.result === outcome).length;
-    const scored = form.reduce((sum, match) => sum + match.gf, 0);
-    const conceded = form.reduce((sum, match) => sum + match.ga, 0);
+  // Each result opens its match sheet.
+  function LastResults(handle: Handle<LastResultsProps>) {
+    return () => {
+      const { matches, clock, position, onOpen } = handle.props;
+      const form = matches.form;
+      const tally = (outcome: string) => form.filter((match) => match.result === outcome).length;
+      const scored = form.reduce((sum, match) => sum + match.gf, 0);
+      const conceded = form.reduce((sum, match) => sum + match.ga, 0);
 
-    return (
-      <>
-        <p mix={labelStyles}>
-          <span>Last {form.length}</span>
-          <span mix={tallyStyles}>
-            <b data-r='W'>{tally('W')}W</b> <b data-r='D'>{tally('D')}D</b> <b data-r='L'>{tally('L')}L</b> · {scored}–{conceded}
-          </span>
-        </p>
-        <ol mix={[cardStyles, listStyles]}>
-          {[...form].reverse().map((match, i) => {
-            const date = new Date(match.utcDate);
-            return (
-              <li key={`${match.utcDate}-${i}`}>
-                <DateCell date={date} clock={clock} />
-                <ClubCrest crest={match.opponent.crest} size={space(8)} />
-                <span mix={infoStyles}>
-                  <span mix={whenStyles}>
-                    {resultWord[match.result]} · {VENUE[match.venue]} <CompetitionMark code={match.competition} />
+      return (
+        <>
+          <p mix={labelStyles}>
+            <span>Last {form.length}</span>
+            <span mix={tallyStyles}>
+              <b data-r='W'>{tally('W')}W</b> <b data-r='D'>{tally('D')}D</b> <b data-r='L'>{tally('L')}L</b> · {scored}–{conceded}
+            </span>
+          </p>
+          <ol mix={[cardStyles, listStyles, resultListStyles]}>
+            {[...form].reverse().map((match, i) => {
+              const date = new Date(match.utcDate);
+              return (
+                <li key={`${match.utcDate}-${i}`}>
+                  <button
+                    type='button'
+                    data-match-opener={match.id}
+                    mix={[resultRowStyles, on('click', (event) => onOpen?.(match, event.currentTarget))]}
+                  >
+                  <DateCell date={date} clock={clock} />
+                  <ClubCrest crest={match.opponent.crest} size={space(8)} />
+                  <span mix={infoStyles}>
+                    <span mix={whenStyles}>
+                      {resultWord[match.result]} · {VENUE[match.venue]} <CompetitionMark code={match.competition} />
+                    </span>
+                    <b>{versus(match.venue, match.opponent.name)}</b>
                   </span>
-                  <b>{versus(match.venue, match.opponent.name)}</b>
-                </span>
-                <span mix={endStyles}>
-                  <b data-r={match.result} mix={scoreStyles}>
-                    {match.gf}–{match.ga}
-                  </b>
-                  <small>{position(match.competition, match.opponent.id)}</small>
-                </span>
+                  <span mix={endStyles}>
+                    <b data-r={match.result} mix={scoreStyles}>
+                      {match.gf}–{match.ga}
+                    </b>
+                    <small>{position(match.competition, match.opponent.id)}</small>
+                  </span>
+                </button>
               </li>
             );
           })}
@@ -624,6 +645,30 @@ const endStyles = css({
 });
 
 const scoreStyles = css(resultColors);
+
+// A result row is a button that fills its list row, so the whole row opens the match.
+const resultListStyles = css({
+  '& > li': { padding: 0 },
+});
+
+const resultRowStyles = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: space(3),
+  width: '100%',
+  height: '100%',
+  padding: `0 ${space(4)}`,
+  textAlign: 'left',
+  transition: `background-color 160ms ${v('--ease-out')}`,
+
+  '&:hover': { background: v('--color-press') },
+  '&:active': { background: v('--color-press') },
+  '&:focus-visible': { outline: `2px solid ${v('--color-accent')}`, outlineOffset: '-2px' },
+
+  '@container (max-width: 18rem)': {
+    '& > [data-club-crest]': { display: 'none' },
+  },
+});
 
 const tallyStyles = css({
   textTransform: 'none',

@@ -14,6 +14,8 @@ type SheetRequest = {
   opener: HTMLElement;
   labelledBy?: string;
   onClose?: () => void;
+  /** On a wide display a sheet keeps a phone's width; 'wide' lets its content use more. */
+  size?: 'wide';
 };
 
 /** One controller per Sheet host. Closing invokes the request's save hook exactly once. */
@@ -272,6 +274,7 @@ export function Sheet(handle: Handle<Props>) {
           aria-hidden={!open || !children ? 'true' : 'false'}
           inert={!open || !children}
           data-dragging={isDragging ? 'true' : undefined}
+          data-size={request?.size}
           style={{
             transform: isDragging
               ? 'translateY(var(--sheet-pull, 0px))'
@@ -347,6 +350,11 @@ const sheetContainer = css({
   [`@media ${WIDE_QUERY}`]: {
     left: 'max(0px, calc((100% - 40rem) / 2))',
     right: 'max(0px, calc((100% - 40rem) / 2))',
+
+    '&[data-size="wide"]': {
+      left: `max(${space(6)}, calc((100% - 64rem) / 2))`,
+      right: `max(${space(6)}, calc((100% - 64rem) / 2))`,
+    },
   },
 });
 

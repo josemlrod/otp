@@ -1,4 +1,5 @@
 import { css, ref, type Handle } from 'remix/component';
+import type { OpenMatch } from '../match/match-sheet.tsx';
 
 import type { Clock } from '../../../lib/clock.ts';
 import type { Club } from '../../../lib/clubs.ts';
@@ -51,6 +52,7 @@ type Props = {
   matches: MatchesModel;
   clock: Clock;
   onEdit: (button: HTMLButtonElement) => void;
+  onOpenMatch?: OpenMatch;
 };
 
 type Page = { id: number; key: string; selection: Selection; state: 'enter' | 'shown' | 'leave' };
@@ -315,7 +317,7 @@ export function WideHome(handle: Handle<Props>) {
 
   return () => {
     countRender('WideHome');
-    const { clubs, standings, matches, clock, onEdit } = handle.props;
+    const { clubs, standings, matches, clock, onEdit, onOpenMatch } = handle.props;
     const shown = current();
     syncPages(shown);
 
@@ -393,6 +395,7 @@ export function WideHome(handle: Handle<Props>) {
                 matches={matches}
                 clock={clock}
                 onSelect={select}
+                onOpenMatch={onOpenMatch}
               />
             </div>
           ))}
@@ -438,11 +441,12 @@ type PageProps = {
   matches: MatchesModel;
   clock: Clock;
   onSelect: (selection: Selection) => void;
+  onOpenMatch?: OpenMatch;
 };
 
 function PageContent(handle: Handle<PageProps>) {
   return () => {
-    const { selection, clubs, standings, matches, clock, onSelect } = handle.props;
+    const { selection, clubs, standings, matches, clock, onSelect, onOpenMatch } = handle.props;
     if (selection.kind === 'competition') {
       const standing = findStanding(standings, selection.code);
       return standing ? (
@@ -458,6 +462,7 @@ function PageContent(handle: Handle<PageProps>) {
         clock={clock}
         onSelect={onSelect}
         onRetry={() => matches.load(club.id)}
+        onOpenMatch={onOpenMatch}
       />
     ) : null;
   };

@@ -16,6 +16,8 @@ export type Opponent = {
 };
 
 export type PlayedMatch = {
+  /** football-data match id, to open the match. */
+  id: number;
   utcDate: string;
   result: Outcome;
   gf: number;
@@ -74,7 +76,7 @@ export function toClubMatches(
       const gf = side.venue === 'H' ? home : away;
       const ga = side.venue === 'H' ? away : home;
       const result: Outcome = gf > ga ? 'W' : gf < ga ? 'L' : 'D';
-      return [{ utcDate: match.utcDate, result, gf, ga, ...side }];
+      return [{ id: match.id, utcDate: match.utcDate, result, gf, ga, ...side }];
     });
 
   const fixtures = matches

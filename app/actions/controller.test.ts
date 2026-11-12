@@ -5,6 +5,7 @@ import {
   buildStandings,
   buildMatches,
   buildClubMatches,
+  buildMatchDetail,
   NOW,
 } from '../fixtures/builders.ts';
 import { createMemoryCache } from '../lib/api-cache.ts';
@@ -37,6 +38,9 @@ function setup(unavailable = false) {
     }
     if (path === '/v4/teams/57/matches' && !unavailable) {
       return Response.json(buildMatches({ form: 'WDL', fixtures: [2] }));
+    }
+    if (path === '/v4/matches/1' && !unavailable) {
+      return Response.json(buildMatchDetail(buildMatches({ form: 'WDL' }).matches[0]));
     }
     return new Response(null, { status: 503 });
   };
@@ -104,6 +108,27 @@ describe('root controller', () => {
   it('GET matches returns 502 for unavailable club data', async () => {
     const { router } = setup(true);
     assert.equal((await router.fetch('http://localhost/api/clubs/57/matches')).status, 502);
+  });
+
+  it('GET a match returns its report as JSON', async () => {
+    const { router } = setup();
+    const response = await router.fetch('http://localhost/api/clubs/57/matches/1');
+    assert.equal(response.status, 200);
+    const report = await response.json();
+    assert.equal(report.id, 1);
+    assert.deepEqual(report.fullTime, [2, 0]);
+  });
+
+  it('GET a match the club has not played is a 404 with no match request', async () => {
+    const { router, calls } = setup();
+    assert.equal((await router.fetch('http://localhost/api/clubs/57/matches/77')).status, 404);
+    assert.equal((await router.fetch('http://localhost/api/clubs/57/matches/x')).status, 404);
+    assert.ok(calls.every((path) => !path.startsWith('/v4/matches/')));
+  });
+
+  it('GET a match returns 502 when its data is unavailable', async () => {
+    const { router } = setup(true);
+    assert.equal((await router.fetch('http://localhost/api/clubs/57/matches/1')).status, 502);
   });
 
   it('GET matches returns club matches as JSON', async () => {
