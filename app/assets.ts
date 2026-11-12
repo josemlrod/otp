@@ -27,6 +27,7 @@ export const assets = createAssetServer({
     'app/lib/your-clubs.ts',
     'app/lib/match-format.ts',
     'app/lib/club-matches.ts',
+    'app/lib/standings.ts',
     'app/ui/logo.tsx',
     'app/ui/theme.ts',
   ],

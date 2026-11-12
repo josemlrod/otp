@@ -261,7 +261,7 @@ function Edge(handle: Handle<EdgeProps>) {
   };
 }
 
-// ───────── styles (ported 1:1 from public/prototypes/match-cards/focus.css) ─────────
+// ───────── styles ─────────
 
 const regionStyles = css({
   position: 'relative',

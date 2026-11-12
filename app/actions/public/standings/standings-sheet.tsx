@@ -14,7 +14,7 @@ type Props = {
   onClose: () => void;
 };
 
-function matchdayLabel(standing: StandingsResponse, leaguePhaseRounds?: number) {
+export function matchdayLabel(standing: StandingsResponse, leaguePhaseRounds?: number) {
   const phase = standing.competition.code === 'CL' ? 'League phase' : 'Matchday';
   const ofRounds = leaguePhaseRounds == null ? '' : ` of ${leaguePhaseRounds}`;
   return `${phase} ${standing.season.currentMatchday}${ofRounds}`;
@@ -72,7 +72,7 @@ export function StandingsSheet(handle: Handle<Props>) {
   };
 }
 
-const sheetBand = css({
+export const sheetBand = css({
   position: 'relative',
   flexShrink: 0,
   overflow: 'hidden',
@@ -89,7 +89,7 @@ const sheetBand = css({
   )`,
 });
 
-const competitionBadge = css({
+export const competitionBadge = css({
   display: 'grid',
   placeItems: 'center',
   flex: 'none',
@@ -97,7 +97,7 @@ const competitionBadge = css({
   height: space(12.5),
 });
 
-const sheetTitle = css({
+export const sheetTitle = css({
   flex: '1',
   minWidth: 0,
   display: 'flex',

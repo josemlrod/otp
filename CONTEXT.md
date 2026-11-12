@@ -96,6 +96,25 @@ The sheet that shows one competition's standings.
 A panel that rises over the home screen while the screen behind it recedes.
 _Avoid_: modal, drawer, dialog (except for its ARIA role)
 
+### Wide layout
+
+**Wide layout**:
+The home screen on a display at least 600px wide and 500px tall, such as an unfolded iPhone Duo or an iPad: a **Sidebar** beside a **Detail pane**. Phones (on their side too), the Duo's cover display and Split View keep the phone layout, as does any display before a club is followed.
+_Avoid_: tablet mode, desktop layout
+
+**Sidebar**:
+The wide layout's list of Your clubs and the tracked competitions. At rest it's the **Rail**, crests only; dragged out, it floats over the detail pane at whatever width it's left, showing names, a detail line and form as it widens.
+_Avoid_: drawer, menu
+
+**Detail pane**:
+The part of the wide layout that shows the **Club page** or **Competition page** picked in the sidebar. Its blocks flow into one, two or three columns with the width.
+
+**Club page**:
+A club in the detail pane: its next match with both clubs' standings side by side, the fixtures after it, the last five results, the season so far and its corner of each table. It replaces the club card's **Timeline**, which stays phone-only.
+
+**Competition page**:
+A competition in the detail pane: the full standings beside Your clubs in it.
+
 ## Relationships
 
 - A **Tracked competition** has one **Standings**, and the **Standings** list many **Clubs**

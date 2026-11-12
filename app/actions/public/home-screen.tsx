@@ -17,6 +17,8 @@ import { Sheet, SheetController } from './sheet.tsx';
 import { countRender } from './perf/renders.ts';
 import { space, v } from '../../ui/theme.ts';
 import { MatchesModel } from './clubs/matches.ts';
+import { WIDE_QUERY } from './wide/layout.ts';
+import { WideHome } from './wide/wide-home.tsx';
 
 const STACK_PREVIEW_CLUBS = 3;
 
@@ -26,7 +28,11 @@ type Props = {
   sections: ClubSection[];
   yourClubs: YourClubs;
   initialMatches?: ClubMatches[];
+  /** Media query for the wide layout. Tests pin a layout with it; the app uses WIDE_QUERY. */
+  wideQuery?: string;
 };
+
+type Layout = 'pending' | 'phone' | 'wide';
 
 export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handle: Handle<Props>) {
   const sections = handle.props.sections;
@@ -53,6 +59,24 @@ export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handl
   });
   yourClubs.addEventListener('change', () => handle.update(), { signal: handle.signal });
   handle.queueTask(() => yourClubs.current.clubs.forEach((club) => matches.load(club.id)));
+
+  // The server can't know the screen, so it always sends the phone layout ('pending'). Once
+  // hydrated, a wide display switches to the wide layout. A phone keeps what the server sent
+  // without re-rendering. Folding, unfolding or turning the device switches live.
+  let layout: Layout = 'pending';
+  handle.queueTask(() => {
+    const media = matchMedia(handle.props.wideQuery ?? WIDE_QUERY);
+    const apply = () => {
+      const next: Layout = media.matches ? 'wide' : 'phone';
+      if (next === layout) return;
+      const wasPending = layout === 'pending';
+      layout = next;
+      if (wasPending && next === 'phone') return;
+      handle.update();
+    };
+    apply();
+    media.addEventListener('change', apply, { signal: handle.signal });
+  });
 
   function showStandings(standing: StandingsResponse, button: HTMLButtonElement) {
     sheet.show({
@@ -88,50 +112,79 @@ export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handl
   return () => {
     countRender('HomeScreen');
     const { clubs, unavailable } = yourClubs.current;
+    // Wide displays use the wide layout once there's a club to show.
+    const wide = layout === 'wide' && clubs.length > 0;
+    const pending = layout === 'pending';
     return (
       <Sheet
         controller={sheet}
         focusFallback={(screen) => screen.querySelector('[data-clubs-opener]')}
       >
-        <header mix={headerStyles}>
-          <p mix={subtitleStyles}>{today(clock)}</p>
-          <div data-perf-toggle mix={brandStyles}>
-            <Logo size={space(7.5)} />
-            <h3 mix={titleStyles}>On the Pitch</h3>
-          </div>
-        </header>
+        {wide ? (
+          <WideHome
+            clubs={clubs}
+            standings={handle.props.standings}
+            matches={matches}
+            clock={clock}
+            onEdit={chooseClubs}
+          />
+        ) : (
+          <>
+            <header mix={pending ? [headerStyles, pendingStyles] : headerStyles}>
+              <p mix={subtitleStyles}>{today(clock)}</p>
+              <div data-perf-toggle mix={brandStyles}>
+                <Logo size={space(7.5)} />
+                <h3 mix={titleStyles}>On the Pitch</h3>
+              </div>
+            </header>
 
-        <section mix={sectionStyles}>
-          <p mix={[subtitleStyles, insetStyles]}>Competitions</p>
-          <Standings standings={handle.props.standings} onSelect={showStandings} />
-        </section>
+            <section mix={pending ? [sectionStyles, pendingStyles] : sectionStyles}>
+              <p mix={[subtitleStyles, insetStyles]}>Competitions</p>
+              <Standings standings={handle.props.standings} onSelect={showStandings} />
+            </section>
 
-        <section mix={[clubsSectionStyles, clubs.length ? clubsListStyles : clubsEmptyStyles]}>
-          <p mix={[subtitleStyles, insetStyles, clubsLabelStyles]}>
-            {clubs.length ? `Your clubs · ${clubs.length}` : 'Your clubs'}
-            {clubs.length > 0 && (
-              <button
-                type='button'
-                data-clubs-opener
-                mix={[editStyles, on('click', (event) => chooseClubs(event.currentTarget))]}
-              >
-                Edit
-              </button>
-            )}
-          </p>
-          {clubs.length === 0 ? (
-            unavailable ? (
-              <p mix={[insetStyles, unavailableStyles]}>Couldn't load your clubs right now</p>
-            ) : (
-              <BuildYourStack preview={stackPreview} onChoose={chooseClubs} />
-            )
-          ) : (
-            <ClubList clubs={clubs} matches={matches} clock={clock} />
-          )}
-        </section>
+            <section
+              mix={[
+                clubsSectionStyles,
+                clubs.length ? clubsListStyles : clubsEmptyStyles,
+                ...(pending ? [pendingStyles] : []),
+              ]}
+            >
+              <p mix={[subtitleStyles, insetStyles, clubsLabelStyles]}>
+                {clubs.length ? `Your clubs · ${clubs.length}` : 'Your clubs'}
+                {clubs.length > 0 && (
+                  <button
+                    type='button'
+                    data-clubs-opener
+                    mix={[editStyles, on('click', (event) => chooseClubs(event.currentTarget))]}
+                  >
+                    Edit
+                  </button>
+                )}
+              </p>
+              {clubs.length === 0 ? (
+                unavailable ? (
+                  <p mix={[insetStyles, unavailableStyles]}>Couldn't load your clubs right now</p>
+                ) : (
+                  <BuildYourStack preview={stackPreview} onChoose={chooseClubs} />
+                )
+              ) : (
+                <ClubList clubs={clubs} matches={matches} clock={clock} />
+              )}
+            </section>
+          </>
+        )}
       </Sheet>
     );
   };
+});
+
+// Until the client has picked a layout, a wide display shows nothing rather than flashing the
+// phone layout it's about to replace. Phones never match the query, so nothing changes there.
+const pendingStyles = css({
+  [`@media ${WIDE_QUERY} and (scripting: enabled)`]: {
+    visibility: 'hidden',
+  },
 });
 
 const headerStyles = css({
