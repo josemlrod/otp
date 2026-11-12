@@ -141,6 +141,7 @@ export function mountPerfHud({ onClose }: { onClose: () => void }): () => void {
       </button>
       <div class="details"></div>
       <div class="actions">
+        <button type="button" data-action="motion">motion</button>
         <button type="button" data-action="reset">reset</button>
         <button type="button" data-action="close">hide ⌥⇧P</button>
       </div>
@@ -168,6 +169,8 @@ export function mountPerfHud({ onClose }: { onClose: () => void }): () => void {
       compact = !compact;
       panel.classList.toggle('compact', compact);
       writeCompact(compact);
+    } else if (action === 'motion') {
+      window.dispatchEvent(new Event('otp:motion-lab-toggle'));
     } else if (action === 'reset') {
       reset();
     } else if (action === 'close') {

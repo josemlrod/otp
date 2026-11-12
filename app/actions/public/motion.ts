@@ -7,6 +7,49 @@ export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+type TimeState = { scale: number; anchorReal: number; anchorVirtual: number };
+const sharedAcrossHmr = globalThis as typeof globalThis & { __otpMotionTime?: TimeState };
+const time: TimeState = (sharedAcrossHmr.__otpMotionTime ??= { scale: 1, anchorReal: 0, anchorVirtual: 0 });
+
+/**
+ * Animation time in ms. Same as performance.now() unless the motion lab slowed or paused it.
+ * Pointer input, velocity and press delays stay in real time; only what animates is scaled.
+ */
+export const motionTime = {
+  now(real = performance.now()) {
+    return time.anchorVirtual + (real - time.anchorReal) * time.scale;
+  },
+  get scale() {
+    return time.scale;
+  },
+  /** 1 is real time, 0.25 is quarter speed, 0 pauses. */
+  setScale(scale: number) {
+    const real = performance.now();
+    time.anchorVirtual = motionTime.now(real);
+    time.anchorReal = real;
+    time.scale = scale;
+  },
+  /** Moves animation time forward without real time passing (one 60 Hz frame by default). */
+  step(ms = 1000 / 60) {
+    time.anchorVirtual += ms;
+  },
+  /** setTimeout in animation time. Returns a cancel function. */
+  after(ms: number, callback: () => void): () => void {
+    if (time.scale === 1) {
+      const id = setTimeout(callback, ms);
+      return () => clearTimeout(id);
+    }
+    const due = motionTime.now() + ms;
+    let frame = requestAnimationFrame(function wait(now) {
+      if (motionTime.now(now) >= due) return callback();
+      frame = requestAnimationFrame(wait);
+    });
+    return () => cancelAnimationFrame(frame);
+  },
+};
+
+export const prefersReducedMotion = reduced;
+
 // iOS-style resistance past an edge: moves less the further you pull.
 export function rubber(overshoot: number, dimension: number, constant = 0.55) {
   const distance = Math.abs(overshoot);
@@ -73,10 +116,11 @@ export class Value {
 
     return new Promise<boolean>((resolve) => {
       this.#resolve = resolve;
-      let last = performance.now();
+      let last = motionTime.now();
       const step = (now: number) => {
-        const elapsed = Math.min(0.05, (now - last) / 1000);
-        last = now;
+        const at = motionTime.now(now);
+        const elapsed = Math.min(0.05, (at - last) / 1000);
+        last = at;
         const steps = Math.max(1, Math.ceil(elapsed / 0.004));
         const h = elapsed / steps;
         for (let i = 0; i < steps; i++) {

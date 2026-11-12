@@ -4,3 +4,5 @@ db/*.sqlite-*
 tmp/
 .DS_Store
 .env
+
+motion-captures/

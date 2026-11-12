@@ -64,3 +64,34 @@ Pin a reproducible home render with `OTP_SCENARIO=matchday OTP_NOW=2026-11-08T14
 `OTP_NOW` must be an ISO instant with `Z` or an explicit offset. It freezes scenario dates, cache timestamps, freshness, countdowns and the header date. `OTP_TZ` must be an IANA timezone and keeps that display timezone after hydration. Either override can be used independently, including without a scenario. Invalid values fail at startup; both are refused when `NODE_ENV=production`.
 
 Without overrides, the server uses the `otp_tz` cookie or UTC on a first visit. Hydration first uses the server's clock and timezone, then saves the browser's timezone and updates the display. The browser anchors its clock to the server timestamp so device clock skew does not affect freshness.
+
+## Motion lab
+
+Press Option+Shift+M, open `?motion=0.25`, or tap the Performance HUD's `motion` button on a phone. The lab loads on demand. Its saved speed survives reloads; `?motion=0` or the shortcut hides it and restores normal speed. Tap the header to collapse it to a speed pill, which turns amber while slowed or paused.
+
+Choose 1×, ½×, ¼× or ⅒× to slow CSS transitions, WAAPI animations and release springs together. Pause with ⏸; ⇥ advances one 60 Hz animation frame while paused. Pointer tracking, release velocity and press delays stay in real time.
+
+Use `pick` and tap an element to select it, ↑ to pick its parent, or × to clear it. The green outline follows the target. `● rec` records every frame until motion settles; ■ stops early. The summary shows animation duration, frame count, peak velocity, overshoot and first-frame jump. Choose a channel under the plot: dots show sampled frames and a faint line shows velocity on its own scale. Scrub the slider to inspect a frame and its dashed position outline. `copy json` copies the trace (or logs it if clipboard access fails).
+
+CSS transitions are first discovered on the frame after they start, so their first frame runs at full speed (about 16ms). Native smooth scrolling (`scrollBy` / `scrollIntoView`) cannot be slowed.
+
+For scripts, `?motion=0.25&motionPanel=0` enables the lab without its panel. `window.__otpMotion` exposes `setScale(number)`, `step()`, `record({ name: selectorOrElement })` (returns `{ done, stop }`) and `summarize(samples, channel)`. Trace times and velocities use animation time.
+
+### Before and after
+
+Install browser binaries once with `bunx playwright install chromium webkit`. The BEFORE ref must already contain plan 000's lab. Serve both versions on the pinned scenario in separate terminals:
+
+```sh
+PORT=44101 OTP_SCENARIO=matchday OTP_NOW=2026-11-08T14:55:00Z OTP_TZ=Europe/London NODE_ENV=development node --import remix/node-tsx server.ts
+PORT=44102 OTP_SCENARIO=matchday OTP_NOW=2026-11-08T14:55:00Z OTP_TZ=Europe/London NODE_ENV=development node --import remix/node-tsx server.ts
+```
+
+Capture each side, then build the static report:
+
+```sh
+bun run motion:capture --url http://localhost:44101 --label before --interaction sheet-flick-close
+bun run motion:capture --url http://localhost:44102 --label after --interaction sheet-flick-close
+bun run motion:report --interaction sheet-flick-close
+```
+
+Open `motion-captures/sheet-flick-close/report.html` for videos, position and velocity curves, and stats. Captures are ignored by git. Use `--interaction all` for all six interactions, `--browser webkit`, `--scale 0.1`, `--reduced` or `--out <directory>` as needed. Reports accept `--before <label>`, `--after <label>` and `--out <directory>`. Signed deltas have no success colour because the desired direction depends on the fix.

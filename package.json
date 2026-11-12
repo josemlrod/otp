@@ -8,7 +8,9 @@
     "hmr:lan": "HOST=0.0.0.0 NODE_ENV=development node --env-file-if-exists=.env hmr.ts",
     "start": "NODE_ENV=production node --env-file-if-exists=.env --import remix/node-tsx server.ts",
     "test": "NODE_ENV=test remix test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "motion:capture": "node --import remix/node-tsx scripts/motion/capture.ts",
+    "motion:report": "node --import remix/node-tsx scripts/motion/report.ts"
   },
   "engines": {
     "node": ">=24.3.0"

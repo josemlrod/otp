@@ -1,6 +1,6 @@
 # 000 — Add a motion lab: slow motion, pause, frame step, and a per-element trace
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: b9c6ba9
 - **Severity**: Tooling (prerequisite for every other plan)
 - **Category**: Debug tooling
@@ -343,3 +343,20 @@ Wire it up:
   - Open the picker and tap a club at ⅒×. The crest ghost flies slowly and the chip pops in after it.
   - Set ¼× and reload. The lab comes back at ¼× and the collapsed pill is amber.
 - **Done when**: all three motion sources slow, pause and step together, a trace can be recorded and copied as JSON, and `window.__otpMotion` exists with `?motionPanel=0`.
+
+## Implementation notes
+
+- CSS transitions run their first frame at full speed before rate control discovers them.
+  Native smooth scrolling cannot be slowed.
+- `motionTime.after` scheduled at scale 1 uses `setTimeout` and does not adopt a later slowdown.
+  Hiding the lab restores scale 1 but keeps the animation-time offset to avoid jumping active motion.
+- The panel-less mount and persisted scripting API share the same lazy import. WAAPI tests wait for
+  `animation.ready` because playback-rate updates apply asynchronously. Capture helpers wait one
+  frame before input so existing targets resolve and have a baseline.
+- Scale and opacity use a 0.00001 stillness threshold; pixel channels retain 0.01.
+- Detached targets stop contributing samples and count as settled. Reports select explicit channels
+  per interaction; wide-page overlap linearly interpolates the 0.15 opacity crossings on shared `t`.
+  Report deltas remain signed and neutral because expected improvement depends on the later plan.
+- Sheet close uses a fast pull past 70% of travel, safely beyond the half-travel threshold even with
+  zero measured velocity. Short pull and catch hold 150ms to clear the 100ms release velocity window.
+  These choices preserve outcomes under today's release and plan 002's projected release decision.
