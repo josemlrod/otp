@@ -6,6 +6,7 @@ import {
 import { run } from 'remix/component'
 
 import { HYDRATED_MARK } from './perf/renders.ts'
+import { installMotionLabToggle } from './motion-lab/toggle.ts'
 import { installPerfToggle } from './perf/toggle.ts'
 
 const app = run({
@@ -27,6 +28,7 @@ const app = run({
 
 void app.ready().then(() => performance.mark(HYDRATED_MARK))
 installPerfToggle()
+installMotionLabToggle()
 
 if (import.meta.hot) {
   import.meta.hot.on('server:update', async () => {

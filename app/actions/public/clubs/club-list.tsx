@@ -4,6 +4,7 @@ import type { Clock } from '../../../lib/clock.ts';
 import type { Club } from '../../../lib/clubs.ts';
 import { soon } from '../../../lib/match-format.ts';
 import { hideScrollbar, space, v } from '../../../ui/theme.ts';
+import { motionTime } from '../motion.ts';
 import { countRender } from '../perf/renders.ts';
 import { ClubCard, PendingClubCard } from './club-card.tsx';
 import { ClubCrest } from './club-crest.tsx';
@@ -38,10 +39,10 @@ export function ClubList(handle: Handle<Props>) {
   };
   // Keep the edges live while heights animate after a focus change.
   const follow = (ms: number) => {
-    const until = performance.now() + ms;
+    const until = motionTime.now() + ms;
     const tick = () => {
       updateEdges();
-      if (performance.now() < until && !handle.signal.aborted) requestAnimationFrame(tick);
+      if (motionTime.now() < until && !handle.signal.aborted) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
   };
@@ -82,7 +83,7 @@ export function ClubList(handle: Handle<Props>) {
     if (!scrollAfterLayout) return;
     scrollAfterLayout = false;
     // Bring the opened card fully into view once it has grown, clear of the edge treatment.
-    setTimeout(() => {
+    motionTime.after(HEIGHT_MS * 0.5, () => {
       const item = all.find((el) => el.hasAttribute('data-open'));
       if (!item || !scroller) return;
       const y = item.offsetTop - scroller.scrollTop;
@@ -92,7 +93,7 @@ export function ClubList(handle: Handle<Props>) {
           top: y + item.offsetHeight - scroller.clientHeight + FOCUS_PAD_PX,
           behavior: 'smooth',
         });
-    }, HEIGHT_MS * 0.5);
+    });
   }
 
   // A card's height changes when its matches arrive; follow it if it's the open one.

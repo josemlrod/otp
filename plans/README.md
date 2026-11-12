@@ -4,8 +4,8 @@ From the motion audit at `b9c6ba9` (2026-11-12). Each plan stands alone and can 
 
 | # | Plan | Severity | Status | Depends on |
 |---|---|---|---|---|
-| 000 | [Motion lab: slow motion, pause, frame step, per-element trace](000-motion-lab.md) | Tooling | TODO | — |
-| 001 | [Before/after capture harness](001-before-after-capture.md) | Tooling | TODO | 000 |
+| 000 | [Motion lab: slow motion, pause, frame step, per-element trace](000-motion-lab.md) | Tooling | DONE | — |
+| 001 | [Before/after capture harness](001-before-after-capture.md) | Tooling | DONE | 000 |
 | 002 | [Sheet release on springs, catchable mid-rise](002-sheet-release-on-springs.md) | HIGH | TODO | 000, 001 (for proof) |
 | 003 | [Reduced motion: fade instead of move](003-reduced-motion-fades-not-nothing.md) | MEDIUM | TODO | 002 |
 | 004 | [Picker crest flies a smooth arc](004-picker-fly-true-arc.md) | LOW | TODO (gated) | 000, 001 |

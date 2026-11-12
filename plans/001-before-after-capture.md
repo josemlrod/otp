@@ -1,6 +1,6 @@
 # 001 — Add a before/after capture harness for animations
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: b9c6ba9
 - **Severity**: Tooling (prerequisite for proving 002–005)
 - **Category**: Debug tooling
@@ -163,3 +163,20 @@ Read both `trace.json` and `meta.json`, import `summarize`, `velocities` and `do
   - `bun run motion:report --interaction sheet-tap-open` produces a report where before and after overlap almost exactly, since it's the same build. Durations should be within 2 frames of each other.
 - **Feel check**: open the `sheet-catch` report. With today's code, the `sheet` chart's `y` shows a vertical cliff when the finger lands (the sheet jumping to fully open), and `first-frame jump` or `max frame delta` is tens to hundreds of px. That's the defect plan 002 removes, so the harness has to show it.
 - **Done when**: all six interactions capture on chromium, and `--browser webkit` works for at least `sheet-tap-open`.
+
+## Implementation notes
+
+- CSS transitions run their first frame at full speed before rate control discovers them.
+  Native smooth scrolling cannot be slowed.
+- `motionTime.after` scheduled at scale 1 uses `setTimeout` and does not adopt a later slowdown.
+  Hiding the lab restores scale 1 but keeps the animation-time offset to avoid jumping active motion.
+- The panel-less mount and persisted scripting API share the same lazy import. WAAPI tests wait for
+  `animation.ready` because playback-rate updates apply asynchronously. Capture helpers wait one
+  frame before input so existing targets resolve and have a baseline.
+- Scale and opacity use a 0.00001 stillness threshold; pixel channels retain 0.01.
+- Detached targets stop contributing samples and count as settled. Reports select explicit channels
+  per interaction; wide-page overlap linearly interpolates the 0.15 opacity crossings on shared `t`.
+  Report deltas remain signed and neutral because expected improvement depends on the later plan.
+- Sheet close uses a fast pull past 70% of travel, safely beyond the half-travel threshold even with
+  zero measured velocity. Short pull and catch hold 150ms to clear the 100ms release velocity window.
+  These choices preserve outcomes under today's release and plan 002's projected release decision.

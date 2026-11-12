@@ -6,7 +6,7 @@ import { findStanding } from '../../../lib/standings.ts';
 import type { StandingsResponse } from '../../../lib/types/api.ts';
 import { space, v } from '../../../ui/theme.ts';
 import type { MatchesModel } from '../clubs/matches.ts';
-import { SPRING, Value, blockScrollWhile, clamp, rubber, tracker, type Tracker } from '../motion.ts';
+import { motionTime, SPRING, Value, blockScrollWhile, clamp, rubber, tracker, type Tracker } from '../motion.ts';
 import { countRender } from '../perf/renders.ts';
 import { ClubPage } from './club-page.tsx';
 import { CompetitionPage } from './competition-page.tsx';
@@ -300,10 +300,10 @@ export function WideHome(handle: Handle<Props>) {
           handle.update();
         }),
       );
-      setTimeout(() => {
+      motionTime.after(PAGE_LEAVE_MS, () => {
         pages = pages.filter((page) => page.state !== 'leave');
         handle.update();
-      }, PAGE_LEAVE_MS);
+      });
     });
   }
 
