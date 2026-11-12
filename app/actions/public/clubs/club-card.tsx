@@ -146,7 +146,7 @@ function Strip(handle: Handle<{ club: Club; children?: RemixNode }>) {
   };
 }
 
-function CompetitionMark(handle: Handle<{ code: string }>) {
+export function CompetitionMark(handle: Handle<{ code: string }>) {
   return () => {
     const { color, mark } = getCompetitionMetadata(handle.props.code);
     return (
@@ -220,7 +220,7 @@ function NextMatch(handle: Handle<{ fixture: Fixture; label: string; clock: Cloc
   };
 }
 
-// ───────── styles (ported 1:1 from public/prototypes/match-cards) ─────────
+// ───────── styles ─────────
 
 const cardStyles = css({
   position: 'relative',

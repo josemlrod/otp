@@ -6,6 +6,7 @@ import {
 import { hideScrollbar, space, v } from '../../ui/theme.ts';
 import { clamp, rubber, tracker } from './motion.ts';
 import { countRender } from './perf/renders.ts';
+import { WIDE_QUERY } from './wide/layout.ts';
 
 type SheetRequest = {
   /** Called on every render, so the content can follow the caller's state while open. */
@@ -341,6 +342,12 @@ const sheetContainer = css({
   transitionTimingFunction: v('--ease-ios'),
   touchAction: 'auto',
   willChange: 'transform',
+
+  // On a wide display the sheet keeps a phone's width, centred over the screen.
+  [`@media ${WIDE_QUERY}`]: {
+    left: 'max(0px, calc((100% - 40rem) / 2))',
+    right: 'max(0px, calc((100% - 40rem) / 2))',
+  },
 });
 
 const sheetHandle = css({

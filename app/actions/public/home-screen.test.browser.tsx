@@ -17,10 +17,12 @@ function mountHome({
   standings,
   saved = [],
   complete = true,
+  wideQuery,
 }: {
   standings: StandingsResponse[];
   saved?: number[];
   complete?: boolean;
+  wideQuery?: string;
 }) {
   const sections = clubSections(standings);
   return render(
@@ -29,6 +31,7 @@ function mountHome({
       standings={standings}
       sections={sections}
       yourClubs={resolveYourClubs(saved, sections, complete)}
+      wideQuery={wideQuery}
     />,
   );
 }
@@ -269,5 +272,59 @@ describe('home screen sheet render cost', () => {
     await act(() => $('[aria-label="Close"]')!.click());
     await act(() => tile.click());
     assert.equal(sheet.style.transform, 'translateY(0px)', 'no gesture style sticks on reopen');
+  });
+});
+
+describe('home screen layout', () => {
+  const followed = buildStandings('PL', {
+    clubs: [
+      buildTeam({ id: 57, shortName: 'Arsenal' }),
+      buildTeam({ id: 64, shortName: 'Liverpool' }),
+    ],
+  });
+
+  it('keeps the phone layout on a phone, without re-rendering after hydration', async (t) => {
+    renderStats.enabled = true;
+    renderStats.counts.clear();
+    const sections = clubSections([followed]);
+    // A pinned timezone, so the only reason left to re-render would be the layout check.
+    const view = render(
+      <HomeScreen
+        clock={{ now: NOW, timeZone: 'UTC', pinned: true, timeZonePinned: true }}
+        standings={[followed]}
+        sections={sections}
+        yourClubs={resolveYourClubs([57, 64], sections, true)}
+        wideQuery='not all'
+      />,
+    );
+    t.after(() => {
+      renderStats.enabled = false;
+      renderStats.counts.clear();
+      view.cleanup();
+    });
+    await view.act(() => {});
+    assert.ok(view.$('main [data-fc][data-id="57"]'), 'the club cards');
+    assert.equal(view.$('aside'), null);
+    assert.equal(view.$('[data-detail]'), null);
+    assert.equal(renderStats.counts.get('HomeScreen'), 1);
+    assert.equal(renderStats.counts.get('WideHome') ?? 0, 0);
+  });
+
+  it('switches to the wide layout on a wide display', async (t) => {
+    const view = mountHome({ standings: [followed], saved: [57, 64], wideQuery: 'all' });
+    t.after(view.cleanup);
+    await view.act(() => {});
+    assert.equal(view.$('main [data-fc]'), null, 'no club cards');
+    assert.ok(view.$('main aside [data-item="club:57"]'));
+    assert.ok(view.$('main [data-detail] [data-page="club:57"]'));
+    assert.ok(view.$('main aside [data-clubs-opener]'), 'Edit lives in the sidebar');
+  });
+
+  it('keeps the phone layout on a wide display until there is a club to show', async (t) => {
+    const view = mountHome({ standings: [followed], wideQuery: 'all' });
+    t.after(view.cleanup);
+    await view.act(() => {});
+    assert.equal(view.$('aside'), null);
+    assert.match(view.$('main')!.textContent!, /Build your stack/);
   });
 });
