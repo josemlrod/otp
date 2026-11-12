@@ -9,6 +9,7 @@ import { countRender } from '../perf/renders.ts';
 import { ClubCard, PendingClubCard } from './club-card.tsx';
 import { ClubCrest } from './club-crest.tsx';
 import type { MatchesModel } from './matches.ts';
+import type { OpenMatch } from '../match/match-sheet.tsx';
 
 // One club open as a full card; every other club is a one-line row. Tap a row to open it.
 // When the list is taller than the space, content dissolves into the background at whichever
@@ -19,7 +20,7 @@ const HEIGHT_MS = 380;
 const EDGE_SLOP_PX = 4;
 const FOCUS_PAD_PX = 12;
 
-type Props = { clubs: Club[]; clock: Clock; matches: MatchesModel };
+type Props = { clubs: Club[]; clock: Clock; matches: MatchesModel; onOpenMatch?: OpenMatch };
 
 export function ClubList(handle: Handle<Props>) {
   let openId: number | null = null;
@@ -124,7 +125,7 @@ export function ClubList(handle: Handle<Props>) {
 
   return () => {
     countRender('ClubList');
-    const { clubs, matches, clock } = handle.props;
+    const { clubs, matches, clock, onOpenMatch } = handle.props;
     if (!clubs.some((club) => club.id === openId)) openId = clubs[0]?.id ?? null;
 
     handle.queueTask(() => {
@@ -163,6 +164,7 @@ export function ClubList(handle: Handle<Props>) {
                 signal.addEventListener('abort', () => resizes?.unobserve(node));
               }}
               onOpen={() => open(club.id)}
+              onOpenMatch={onOpenMatch}
             />
           ))}
         </div>
@@ -180,6 +182,7 @@ type ItemProps = {
   open: boolean;
   observe: (node: HTMLElement, signal: AbortSignal) => void;
   onOpen: () => void;
+  onOpenMatch?: OpenMatch;
 };
 
 function ClubItem(handle: Handle<ItemProps>) {
@@ -193,7 +196,7 @@ function ClubItem(handle: Handle<ItemProps>) {
 
   return () => {
     countRender('ClubItem');
-    const { club, matches, clock, open, observe, onOpen } = handle.props;
+    const { club, matches, clock, open, observe, onOpen, onOpenMatch } = handle.props;
     const entry = matches.get(club.id);
     const clubMatches = entry && entry.status !== 'error' ? entry.matches : undefined;
     const next = clubMatches?.fixtures[0];
@@ -225,7 +228,13 @@ function ClubItem(handle: Handle<ItemProps>) {
         </button>
         <div data-fc-full inert={!open} mix={[fullStyles, ref(observe)]}>
           {clubMatches ? (
-            <ClubCard key={clubMatches.fetchedAt} club={club} matches={clubMatches} clock={clock} />
+            <ClubCard
+              key={clubMatches.fetchedAt}
+              club={club}
+              matches={clubMatches}
+              clock={clock}
+              onOpenMatch={onOpenMatch}
+            />
           ) : (
             <PendingClubCard
               club={club}

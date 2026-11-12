@@ -1,6 +1,6 @@
 import * as assert from 'remix/assert';
 import { describe, it } from 'remix/test';
-import { buildMatches, buildStandings, buildTeam, NOW } from '../fixtures/builders.ts';
+import { buildMatchDetail, buildMatches, buildStandings, buildTeam, NOW } from '../fixtures/builders.ts';
 import { createMemoryCache } from './api-cache.ts';
 import { createFootballData, RETRY_AFTER_MS, type FootballDataFetcher } from './football-data.ts';
 
@@ -127,6 +127,51 @@ describe('football data', () => {
     const result = await data.clubMatches(57);
     assert.equal(result.status, 'ok');
     if (result.status === 'ok') assert.equal(result.matches.fetchedAt, NOW - HOUR);
+  });
+});
+
+describe('match report', () => {
+  // Club 57's matches are ids 1–3 (W, D, L); /matches/{id} answers with that match in full.
+  const recent = buildMatches({ club: clubs[0], form: 'WDL' });
+  function respond(path: string) {
+    if (path === '/v4/competitions/2021/standings') return Response.json(standing);
+    if (path === '/v4/teams/57/matches') return Response.json(recent);
+    const id = Number(path.match(/^\/v4\/matches\/(\d+)$/)?.[1]);
+    const match = recent.matches.find((m) => m.id === id);
+    return match ? Response.json(buildMatchDetail(match)) : new Response(null, { status: 404 });
+  }
+
+  it('fetches one of the club\'s recent results and projects it', async () => {
+    const { data, calls } = setup(async (path) => respond(path));
+    const result = await data.matchReport(57, 1);
+    assert.equal(result.status, 'ok');
+    if (result.status === 'ok') {
+      assert.equal(result.report.id, 1);
+      assert.equal(result.report.fetchedAt, NOW);
+      assert.ok(result.report.events);
+    }
+    assert.ok(calls.includes('/v4/matches/1'));
+  });
+
+  it('refuses a match that is not among the club\'s results, without fetching it', async () => {
+    const { data, calls } = setup(async (path) => respond(path));
+    assert.deepEqual(await data.matchReport(57, 999), { status: 'not-found' });
+    assert.deepEqual(await data.matchReport(999, 1), { status: 'unavailable' });
+    assert.ok(calls.every((path) => !path.startsWith('/v4/matches/')));
+  });
+
+  it('caches the match like any other request', async () => {
+    const { data, calls } = setup(async (path) => respond(path));
+    await data.matchReport(57, 2);
+    await data.matchReport(57, 2);
+    assert.equal(calls.filter((path) => path === '/v4/matches/2').length, 1);
+  });
+
+  it('reports unavailable when the match request fails without a copy', async () => {
+    const { data } = setup(async (path) =>
+      path.startsWith('/v4/matches/') ? new Response(null, { status: 503 }) : respond(path),
+    );
+    assert.deepEqual(await data.matchReport(57, 1), { status: 'unavailable' });
   });
 });
 

@@ -17,6 +17,10 @@ import { Sheet, SheetController } from './sheet.tsx';
 import { countRender } from './perf/renders.ts';
 import { space, v } from '../../ui/theme.ts';
 import { MatchesModel } from './clubs/matches.ts';
+import { MatchSheet } from './match/match-sheet.tsx';
+import { MatchReportsModel } from './match/reports.ts';
+import type { Club } from '../../lib/clubs.ts';
+import type { PlayedMatch } from '../../lib/club-matches.ts';
 import { WIDE_QUERY } from './wide/layout.ts';
 import { WideHome } from './wide/wide-home.tsx';
 
@@ -46,6 +50,7 @@ export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handl
   let clock = handle.props.clock;
   let now = () => clock.now;
   const matches = new MatchesModel(handle.props.initialMatches, { now: () => now() });
+  const reports = new MatchReportsModel({ now: () => now() });
   handle.queueTask(() => {
     now = alignedNow(handle.props.clock, Date.now);
     const localZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -84,6 +89,25 @@ export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handl
       labelledBy: titleId,
       content: () => (
         <StandingsSheet standing={standing} titleId={titleId} onClose={sheet.close} />
+      ),
+    });
+  }
+
+  function showMatch(club: Club, match: PlayedMatch, button: HTMLButtonElement) {
+    sheet.show({
+      opener: button,
+      labelledBy: titleId,
+      size: 'wide',
+      content: () => (
+        <MatchSheet
+          key={match.id}
+          club={club}
+          match={match}
+          reports={reports}
+          clock={clock}
+          titleId={titleId}
+          onClose={sheet.close}
+        />
       ),
     });
   }
@@ -127,6 +151,7 @@ export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handl
             matches={matches}
             clock={clock}
             onEdit={chooseClubs}
+            onOpenMatch={showMatch}
           />
         ) : (
           <>
@@ -169,7 +194,7 @@ export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handl
                   <BuildYourStack preview={stackPreview} onChoose={chooseClubs} />
                 )
               ) : (
-                <ClubList clubs={clubs} matches={matches} clock={clock} />
+                <ClubList clubs={clubs} matches={matches} clock={clock} onOpenMatch={showMatch} />
               )}
             </section>
           </>

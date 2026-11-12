@@ -14,7 +14,8 @@ import {
 } from '../lib/clock.ts';
 import { YOUR_CLUBS_COOKIE, parseYourClubsCookie } from '../lib/your-clubs-cookie.ts';
 
-function parseClubId(param: string): number | null {
+// A positive integer id from a URL segment: a club or a match.
+function parseId(param: string): number | null {
   const id = Number(param);
   return /^[0-9]+$/.test(param) && Number.isSafeInteger(id) && id > 0 ? id : null;
 }
@@ -35,7 +36,7 @@ export function createAppController({
       },
 
       async clubMatches(context) {
-        const clubId = parseClubId(context.params.clubId);
+        const clubId = parseId(context.params.clubId);
         if (clubId === null) {
           return new Response('Not Found', { status: 404 });
         }
@@ -43,6 +44,16 @@ export function createAppController({
         if (result.status === 'not-tracked') return new Response('Not Found', { status: 404 });
         if (result.status === 'unavailable') return new Response('Bad Gateway', { status: 502 });
         return Response.json(result.matches);
+      },
+
+      async matchReport(context) {
+        const clubId = parseId(context.params.clubId);
+        const matchId = parseId(context.params.matchId);
+        if (clubId === null || matchId === null) return new Response('Not Found', { status: 404 });
+        const result = await footballData.matchReport(clubId, matchId);
+        if (result.status === 'not-found') return new Response('Not Found', { status: 404 });
+        if (result.status === 'unavailable') return new Response('Bad Gateway', { status: 502 });
+        return Response.json(result.report);
       },
 
       async home(context) {
