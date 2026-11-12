@@ -5,7 +5,7 @@ import { today } from '../../lib/match-format.ts';
 import { leagueLeaders, type ClubSection } from '../../lib/clubs.ts';
 import type { YourClubs } from '../../lib/your-clubs.ts';
 import { YourClubsModel } from './clubs/your-clubs.ts';
-import type { TeamCard } from '../../lib/team-card.ts';
+import type { ClubMatches } from '../../lib/club-matches.ts';
 import type { StandingsResponse } from '../../lib/types/api.ts';
 import { Logo } from '../../ui/logo.tsx';
 import { BuildYourStack } from './clubs/build-your-stack.tsx';
@@ -25,7 +25,7 @@ type Props = {
   standings: StandingsResponse[];
   sections: ClubSection[];
   yourClubs: YourClubs;
-  initialMatches?: TeamCard[];
+  initialMatches?: ClubMatches[];
 };
 
 export const HomeScreen = clientEntry(import.meta.url, function HomeScreen(handle: Handle<Props>) {

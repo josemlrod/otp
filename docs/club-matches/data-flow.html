@@ -322,7 +322,7 @@
 
           <div class="phase"><span>Tap Done · one task, no awaits</span></div>
           <div class="msg" style="--a:1;--b:2;--c:var(--color-accent)"><i class="dot"></i><i class="line"></i><span class="label">onDone()</span></div>
-          <div class="msg self" style="--a:2"><i class="loop"></i><span class="label">added = draft − follows → [57]</span></div>
+          <div class="msg self" style="--a:2"><i class="loop"></i><span class="label">added = draft − savedIds → [57]</span></div>
           <div class="msg key" style="--a:2;--b:3;--c:var(--color-accent)"><i class="dot"></i><i class="line"></i><span class="label">matches.load(57) <span class="tag accent">not awaited</span></span></div>
           <div class="msg self" style="--a:3"><i class="loop"></i><span class="label">in flight, or fetchedAt &lt; 1h? → skip</span></div>
           <div class="msg async key" style="--a:3;--b:5;--c:var(--color-accent)"><i class="dot"></i><i class="line"></i><span class="label">fetch('/api/clubs/57/matches')</span></div>
@@ -332,7 +332,7 @@
           <div class="msg self" style="--a:4"><i class="loop"></i><span class="label">crest + name + skeleton</span></div>
 
           <div class="phase"><span>Network · sheet keeps closing</span></div>
-          <div class="msg" style="--a:5;--b:6;--c:var(--color-warning)"><i class="dot"></i><i class="line"></i><span class="label">fetchTeamMatches(57)</span></div>
+          <div class="msg" style="--a:5;--b:6;--c:var(--color-warning)"><i class="dot"></i><i class="line"></i><span class="label">fetchClubMatches(57)</span></div>
           <div class="msg self left" style="--a:6;--c:var(--color-warning)"><i class="loop"></i><span class="label">fresh ? cache : upstream</span></div>
           <div class="msg back" style="--a:5;--b:6;--c:var(--color-warning)"><i class="dot"></i><i class="line"></i><span class="label">{ data, fetchedAt }</span></div>
           <div class="msg self" style="--a:5;--c:var(--color-warning)"><i class="loop"></i><span class="label">toClubCard() trims it</span></div>
@@ -374,14 +374,14 @@
       </div>
 
       <div class="panel">
-        <h3>The response is cut down to what the card draws <small>app/lib/club-card.ts · new</small></h3>
+        <h3>The response is cut down to what the card draws <small>app/lib/club-matches.ts · new</small></h3>
         <div class="sizes">
           <div class="bar"><span>MatchesResponse</span><i></i></div>
-          <div class="bar"><span>ClubCard</span><i class="small"></i></div>
+          <div class="bar"><span>ClubMatches</span><i class="small"></i></div>
         </div>
-        <p class="note" style="font-size:0.75rem;color:var(--color-text-tertiary);line-height:1.55;margin-top:-0.25rem">Bars show shape, not measured bytes. Raw is every match this season, each with referees, odds, area, season and both full teams.</p>
-<pre><span class="k">type</span> ClubCard = {
-  teamId: number
+        <p class="note" style="font-size:0.75rem;color:var(--color-text-tertiary);line-height:1.55;margin-top:-0.25rem">Bars show shape, not measured bytes. Raw is every match this season, each with referees, odds, area, season and both full clubs.</p>
+<pre><span class="k">type</span> ClubMatches = {
+  clubId: number
   fetchedAt: number
   form: Array&lt;{             <span class="c">// last 5 FINISHED</span>
     result: <span class="s">'W'</span> | <span class="s">'D'</span> | <span class="s">'L'</span>
@@ -397,7 +397,7 @@
     competition: string
   }&gt;
 }</pre>
-        <p class="note" style="font-size:0.75rem;color:var(--color-text-tertiary);line-height:1.55">The action rejects ids that aren't known clubs, so random ids can't burn upstream quota. The repository shares one in-flight promise per team id.</p>
+        <p class="note" style="font-size:0.75rem;color:var(--color-text-tertiary);line-height:1.55">The action rejects ids that aren't tracked clubs, so random ids can't burn upstream quota. The repository shares one in-flight promise per club id.</p>
       </div>
     </div>
   </section>
@@ -418,7 +418,7 @@
       </div>
       <div class="q">
         <b>3. Upstream rate limit</b>
-        <p>Adding six cold clubs at once means six upstream calls. The known-club check and the in-flight dedupe keep that number from growing. I wouldn't add a client concurrency cap yet.</p>
+        <p>Adding six cold clubs at once means six upstream calls. The tracked-club check and the in-flight dedupe keep that number from growing. I wouldn't add a client concurrency cap yet.</p>
         <span class="lean">I lean: no cap for now</span>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { TypedEventTarget } from 'remix/component';
 
 import type { ClubSection } from '../../../lib/clubs.ts';
-import { followsCookie } from '../../../lib/follows.ts';
+import { yourClubsCookie } from '../../../lib/your-clubs-cookie.ts';
 import { resolveYourClubs, type YourClubs } from '../../../lib/your-clubs.ts';
 
 type Options = {
@@ -24,7 +24,7 @@ export class YourClubsModel extends TypedEventTarget<{ change: Event }> {
     this.#save =
       options.save ??
       ((ids) => {
-        document.cookie = followsCookie(ids);
+        document.cookie = yourClubsCookie(ids);
       });
     this.#load = options.load;
   }

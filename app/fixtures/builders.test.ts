@@ -1,11 +1,11 @@
 import * as assert from 'remix/assert';
 import { describe, it } from 'remix/test';
 
-import { toTeamCard } from '../lib/team-card.ts';
+import { toClubMatches } from '../lib/club-matches.ts';
 import {
   NOW,
   buildTeam,
-  buildClubCard,
+  buildClubMatches,
   buildClub,
   buildMatches,
   buildStandings,
@@ -82,7 +82,7 @@ describe('scenario builders', () => {
   it('sorts fixtures relative to the supplied clock and round-trips through the projection', () => {
     const options = {
       now: NOW + 1000,
-      team: buildTeam({ id: 5 }),
+      club: buildTeam({ id: 5 }),
       form: 'WDLWW',
       fixtures: [
         9,
@@ -90,16 +90,16 @@ describe('scenario builders', () => {
       ],
     };
     const response = buildMatches(options);
-    const card = buildClubCard(options);
-    assert.deepEqual(card, toTeamCard(response, 5, options.now));
+    const matches = buildClubMatches(options);
+    assert.deepEqual(matches, toClubMatches(response, 5, options.now));
     assert.deepEqual(
-      card.fixtures.map((fixture) => (Date.parse(fixture.utcDate) - options.now) / 86_400_000),
+      matches.fixtures.map((fixture) => (Date.parse(fixture.utcDate) - options.now) / 86_400_000),
       [2, 9],
     );
-    assert.equal(card.fixtures[0]!.competition, 'CL');
-    assert.equal(card.fixtures[0]!.opponent.id, 7);
-    assert.equal(card.fixtures[0]!.venue, 'A');
-    assert.equal(buildClubCard().fetchedAt, NOW);
+    assert.equal(matches.fixtures[0]!.competition, 'CL');
+    assert.equal(matches.fixtures[0]!.opponent.id, 7);
+    assert.equal(matches.fixtures[0]!.venue, 'A');
+    assert.equal(buildClubMatches().fetchedAt, NOW);
     assert.equal(buildClub({ id: 5, name: 'Bayern' }).fullName, 'Bayern FC');
   });
 });

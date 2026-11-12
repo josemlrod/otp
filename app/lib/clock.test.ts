@@ -1,7 +1,7 @@
 import * as assert from 'remix/assert';
 import { it } from 'remix/test';
 import { execFileSync } from 'node:child_process';
-import { NOW, buildClubCard } from '../fixtures/builders.ts';
+import { NOW, buildClubMatches } from '../fixtures/builders.ts';
 import { alignedNow, timeZoneFromCookie, timeZoneCookie } from './clock.ts';
 import { MAX_AGE_MS } from './freshness.ts';
 import { MatchesModel } from '../actions/public/clubs/matches.ts';
@@ -34,7 +34,7 @@ it('anchors freshness to the server despite device clock skew in either directio
     let deviceNow = NOW + skew;
     const now = alignedNow({ now: NOW, timeZone: 'UTC' }, () => deviceNow);
     let requests = 0;
-    const model = new MatchesModel([buildClubCard()], {
+    const model = new MatchesModel([buildClubMatches()], {
       now,
       fetch: () => { requests++; return new Promise<Response>(() => {}); },
     });

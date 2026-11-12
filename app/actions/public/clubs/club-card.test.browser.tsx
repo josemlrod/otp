@@ -2,7 +2,7 @@ import * as assert from 'remix/assert';
 import { render } from 'remix/component/test';
 import { describe, it } from 'remix/test';
 
-import { NOW, buildClub, buildClubCard } from '../../../fixtures/builders.ts';
+import { NOW, buildClub, buildClubMatches } from '../../../fixtures/builders.ts';
 import { tokens } from '../../../ui/theme.ts';
 import { ClubCard } from './club-card.tsx';
 
@@ -15,7 +15,7 @@ function mount(fixtures: number[] = [2, 9]) {
   const view = render(
     <ClubCard
       club={buildClub({ name: 'Arsenal' })}
-      card={buildClubCard({ now: NOW, form: 'WDLWW', fixtures })}
+      matches={buildClubMatches({ now: NOW, form: 'WDLWW', fixtures })}
       clock={{ now: NOW, timeZone: 'UTC' }}
     />,
     { container },

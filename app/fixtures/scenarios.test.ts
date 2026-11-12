@@ -41,7 +41,7 @@ describe('dev scenarios', () => {
       now: () => NOW,
     });
     assert.equal((await data.trackedCompetitions()).standings.length, 6);
-    const cards = await data.clubCards([57, 64], await data.trackedCompetitions());
+    const cards = await data.matchesForClubs([57, 64], await data.trackedCompetitions());
     assert.equal(cards.length, 2);
     assert.notDeepEqual(
       cards[0].form.map((match) => match.result),
@@ -57,9 +57,9 @@ describe('dev scenarios', () => {
       cache: createMemoryCache(),
       now: () => NOW,
     });
-    const result = await data.clubCard(57);
+    const result = await data.clubMatches(57);
     assert.equal(result.status, 'ok');
-    if (result.status === 'ok') assert.deepEqual(result.card.fixtures, []);
+    if (result.status === 'ok') assert.deepEqual(result.matches.fixtures, []);
   });
 
   it('unknown API paths return 404', async () => {

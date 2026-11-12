@@ -9,15 +9,15 @@ type CompetitionTileProps = {
   code: string;
   emblem: string;
   name: string;
-  selectedTeams: number[];
+  selectedClubs: number[];
   onPress: (button: HTMLButtonElement) => void;
 };
 
 export function CompetitionTile(handle: Handle<CompetitionTileProps>) {
   return () => {
     countRender('CompetitionTile');
-    const { id, code, emblem, name, selectedTeams, onPress } = handle.props;
-    const noSelectedTeams = !selectedTeams.length;
+    const { id, code, emblem, name, selectedClubs, onPress } = handle.props;
+    const noSelectedClubs = !selectedClubs.length;
     const metadata = getCompetitionMetadata(code);
 
     return (
@@ -35,8 +35,8 @@ export function CompetitionTile(handle: Handle<CompetitionTileProps>) {
           <p mix={nameStyles}>{name}</p>
         </div>
 
-        {noSelectedTeams ? (
-          <p mix={emptyStyles}>No selected teams</p>
+        {noSelectedClubs ? (
+          <p mix={emptyStyles}>No selected clubs</p>
         ) : (
           <div mix={rowStyles}>
             <img alt={`${name}'s crest`} src={emblem} mix={crestStyles} />

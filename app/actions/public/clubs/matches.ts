@@ -1,11 +1,11 @@
 import { TypedEventTarget } from 'remix/component';
 import { isFresh } from '../../../lib/freshness.ts';
-import type { TeamCard } from '../../../lib/team-card.ts';
+import type { ClubMatches } from '../../../lib/club-matches.ts';
 import { routes } from '../../../routes.ts';
 
 export type MatchesEntry =
-  | { status: 'loading'; card?: TeamCard }
-  | { status: 'ready'; card: TeamCard }
+  | { status: 'loading'; matches?: ClubMatches }
+  | { status: 'ready'; matches: ClubMatches }
   | { status: 'error' };
 
 type Options = {
@@ -14,7 +14,7 @@ type Options = {
 };
 
 export class MatchesChange extends Event {
-  constructor(readonly teamId: number) {
+  constructor(readonly clubId: number) {
     super('change');
   }
 }
@@ -24,51 +24,51 @@ export class MatchesModel extends TypedEventTarget<{ change: MatchesChange }> {
   #fetch: typeof fetch;
   #now: () => number;
 
-  constructor(seed: TeamCard[] = [], options: Options = {}) {
+  constructor(seed: ClubMatches[] = [], options: Options = {}) {
     super();
     this.#fetch = options?.fetch ?? globalThis.fetch.bind(globalThis);
     this.#now = options?.now ?? Date.now;
-    for (const card of seed)
-      this.#entries.set(card.teamId, { status: 'ready', card });
+    for (const matches of seed)
+      this.#entries.set(matches.clubId, { status: 'ready', matches });
   }
 
-  get(teamId: number) {
-    return this.#entries.get(teamId);
+  get(clubId: number) {
+    return this.#entries.get(clubId);
   }
 
-  load(teamId: number) {
-    const entry = this.#entries.get(teamId);
+  load(clubId: number) {
+    const entry = this.#entries.get(clubId);
 
     if (entry) {
       if (entry?.status === 'loading') return;
 
       const isNotStale =
         entry?.status === 'ready' &&
-        isFresh(entry.card.fetchedAt, this.#now());
+        isFresh(entry.matches.fetchedAt, this.#now());
       if (isNotStale) return;
     }
 
-    const previous = entry?.status === 'ready' ? entry.card : undefined;
-    this.#set(teamId, { status: 'loading', card: previous });
+    const previous = entry?.status === 'ready' ? entry.matches : undefined;
+    this.#set(clubId, { status: 'loading', matches: previous });
 
-    this.#request(teamId).then(
-      (card) => this.#set(teamId, { status: 'ready', card }),
+    this.#request(clubId).then(
+      (matches) => this.#set(clubId, { status: 'ready', matches }),
       () =>
         this.#set(
-          teamId,
-          previous ? { status: 'ready', card: previous } : { status: 'error' },
+          clubId,
+          previous ? { status: 'ready', matches: previous } : { status: 'error' },
         ),
     );
   }
 
-  async #request(teamId: number): Promise<TeamCard> {
-    const res = await this.#fetch(routes.teamMatches.href({ teamId }));
-    if (!res.ok) throw new Error(`Matches for ${teamId} failed: ${res.status}`);
+  async #request(clubId: number): Promise<ClubMatches> {
+    const res = await this.#fetch(routes.clubMatches.href({ clubId }));
+    if (!res.ok) throw new Error(`Matches for ${clubId} failed: ${res.status}`);
     return res.json();
   }
 
-  #set(teamId: number, entry: MatchesEntry) {
-    this.#entries.set(teamId, entry);
-    this.dispatchEvent(new MatchesChange(teamId));
+  #set(clubId: number, entry: MatchesEntry) {
+    this.#entries.set(clubId, entry);
+    this.dispatchEvent(new MatchesChange(clubId));
   }
 }

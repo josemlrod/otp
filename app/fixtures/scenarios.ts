@@ -74,14 +74,14 @@ export function scenarioFetcher(name: string, now: number): FootballDataFetcher 
     const clubs = available.map(([id, shortName]) => buildTeam({ id, shortName }));
     const standings = buildStandings(code, { clubs });
     responses.set(`/v4/competitions/${standings.competition.id}/standings`, standings);
-    clubs.forEach((team, i) => {
-      const path = `/v4/teams/${team.id}/matches`;
+    clubs.forEach((club, i) => {
+      const path = `/v4/teams/${club.id}/matches`;
       if (responses.has(path)) {
         return;
       }
       const form = ['WWDLW', 'LDWWD', 'DLLWL'][i % 3];
       function description(index: number): MatchOptions {
-        const opponents = clubs.filter((club) => club.id !== team.id);
+        const opponents = clubs.filter((opponent) => opponent.id !== club.id);
         return {
           opponent: opponents[index % opponents.length],
           venue: index % 2 === 0 ? 'H' : 'A',
@@ -91,7 +91,7 @@ export function scenarioFetcher(name: string, now: number): FootballDataFetcher 
       responses.set(
         path,
         buildMatches({
-          team,
+          club,
           now,
           results: [...form].map((result, index) => ({
             ...description(index),
@@ -99,7 +99,7 @@ export function scenarioFetcher(name: string, now: number): FootballDataFetcher 
             days: -(form.length - index) * 7,
           })),
           fixtures:
-            name === 'no-fixtures' && team.id === 57
+            name === 'no-fixtures' && club.id === 57
               ? []
               : [i === 0 ? 0.1 : 2, 7, 14].map((days, index) => ({
                   ...description(form.length + index),

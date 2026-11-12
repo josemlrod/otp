@@ -2,7 +2,6 @@ import { css, on, ref, type Dispatched, type Handle } from 'remix/component';
 
 import type { Club, ClubSection } from '../../../lib/clubs.ts';
 import { getCompetitionMetadata } from '../../../lib/competition-metadata.ts';
-import { FAVOURITES } from '../../../lib/follows.ts';
 import { hideScrollbar, space, v } from '../../../ui/theme.ts';
 import { countRender } from '../perf/renders.ts';
 import { sheetGrab, sheetScroll } from '../sheet.tsx';
@@ -24,7 +23,7 @@ const CHIP_EXIT_MS = 240;
 const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
 const EASE_IOS = 'cubic-bezier(0.32, 0.72, 0, 1)';
 
-const fold = (text: string) =>
+const normalizeSearch = (text: string) =>
   text
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
@@ -36,7 +35,6 @@ const tick = () => navigator.vibrate?.(8);
 
 function countText(count: number) {
   if (!count) return 'Pick as many as you like';
-  if (count > FAVOURITES + 1) return `${count} clubs · first ${FAVOURITES} stay on top`;
   return `${count} club${count === 1 ? '' : 's'}`;
 }
 
@@ -218,7 +216,7 @@ export function ClubPicker(handle: Handle<Props>) {
   }
 
   function search(value: string) {
-    query = fold(value.trim());
+    query = normalizeSearch(value.trim());
     if (scrollEl) scrollEl.scrollTop = 0;
     handle.update();
   }
@@ -227,16 +225,16 @@ export function ClubPicker(handle: Handle<Props>) {
     countRender('ClubPicker');
     const { sections, titleId, onDone } = handle.props;
     const selected = picked();
-    const folding = selected.length > FAVOURITES + 1;
     const visible = sections
       .map((section) => ({
         ...section,
         clubs: query
-          ? section.clubs.filter((club) => fold(`${club.name} ${club.fullName}`).includes(query))
+          ? section.clubs.filter((club) =>
+              normalizeSearch(`${club.name} ${club.fullName}`).includes(query),
+            )
           : section.clubs,
       }))
       .filter((section) => section.clubs.length > 0);
-    let shownChips = 0;
 
     return (
       <>
@@ -269,8 +267,6 @@ export function ClubPicker(handle: Handle<Props>) {
             {tray.map((id) => {
               const club = clubs.get(id)!;
               const isLeaving = leaving.has(id);
-              const startsFold = !isLeaving && folding && shownChips === FAVOURITES;
-              if (!isLeaving) shownChips++;
               return (
                 <button
                   key={id}
@@ -280,7 +276,6 @@ export function ClubPicker(handle: Handle<Props>) {
                   inert={isLeaving}
                   mix={[
                     chipStyles,
-                    startsFold && foldStyles,
                     on('click', () => removeFromTray(id)),
                   ]}
                 >
@@ -498,7 +493,6 @@ const chipStyles = css({
   width: space(10),
   height: space(10),
   marginRight: space(1.5),
-  transition: `margin-left 320ms ${v('--ease-ios')}`,
 
   '& [data-club-crest]': {
     transition: `transform ${v('--duration-press')} ${v('--ease-out')}`,
@@ -506,21 +500,6 @@ const chipStyles = css({
 
   '&:active [data-club-crest]': {
     transform: 'scale(0.9)',
-  },
-});
-
-const foldStyles = css({
-  position: 'relative',
-  marginLeft: space(3.25),
-
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    left: space(-2.5),
-    top: space(2),
-    bottom: space(2),
-    width: '1px',
-    background: v('--color-separator'),
   },
 });
 

@@ -185,7 +185,7 @@ function ClubItem(handle: Handle<ItemProps>) {
   handle.props.matches.addEventListener(
     'change',
     (event) => {
-      if (event.teamId === handle.props.club.id) handle.update();
+      if (event.clubId === handle.props.club.id) handle.update();
     },
     { signal: handle.signal },
   );
@@ -194,8 +194,8 @@ function ClubItem(handle: Handle<ItemProps>) {
     countRender('ClubItem');
     const { club, matches, clock, open, observe, onOpen } = handle.props;
     const entry = matches.get(club.id);
-    const card = entry && entry.status !== 'error' ? entry.card : undefined;
-    const next = card?.fixtures[0];
+    const clubMatches = entry && entry.status !== 'error' ? entry.matches : undefined;
+    const next = clubMatches?.fixtures[0];
 
     return (
       <div data-fc data-id={club.id} data-open={open ? '' : undefined} mix={itemStyles}>
@@ -208,8 +208,8 @@ function ClubItem(handle: Handle<ItemProps>) {
           <ClubCrest crest={club.crest} size={space(7)} />
           <span mix={rowNameStyles}>{club.name}</span>
           <span mix={rowDotsStyles} aria-label='Last five'>
-            {card
-              ? card.form.map((match, i) => <i key={i} data-r={match.result} />)
+            {clubMatches
+              ? clubMatches.form.map((match, i) => <i key={i} data-r={match.result} />)
               : [0, 1, 2, 3, 4].map((i) => <i key={i} data-r='' />)}
           </span>
           <span mix={rowWhenStyles}>
@@ -223,8 +223,8 @@ function ClubItem(handle: Handle<ItemProps>) {
           </span>
         </button>
         <div data-fc-full inert={!open} mix={[fullStyles, ref(observe)]}>
-          {card ? (
-            <ClubCard key={card.fetchedAt} club={club} card={card} clock={clock} />
+          {clubMatches ? (
+            <ClubCard key={clubMatches.fetchedAt} club={club} matches={clubMatches} clock={clock} />
           ) : (
             <PendingClubCard
               club={club}

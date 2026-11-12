@@ -1,8 +1,9 @@
+import { Cookie } from 'remix/headers';
 import * as assert from 'remix/assert';
 import { describe, it } from 'remix/test';
 
 import { clubSections, leagueLeaders } from './clubs.ts';
-import { parseFollows } from './follows.ts';
+import { parseYourClubsCookie } from './your-clubs-cookie.ts';
 import { buildTeam, buildStandings } from '../fixtures/builders.ts';
 
 const standing = (code: string, type: string, clubs: [number, string][]) => buildStandings(code, {
@@ -33,10 +34,11 @@ describe('club sections', () => {
   });
 });
 
-describe('follows cookie', () => {
+describe('Your clubs cookie', () => {
   it('keeps unique positive ids in order and drops junk', () => {
-    assert.deepEqual(parseFollows('57.86.x.-3.0.57.5'), [57, 86, 5]);
-    assert.deepEqual(parseFollows(''), []);
-    assert.deepEqual(parseFollows(undefined), []);
+    assert.deepEqual(parseYourClubsCookie('57.86.x.-3.0.57.5'), [57, 86, 5]);
+    assert.deepEqual(parseYourClubsCookie(Cookie.from('otp_follows=57.64.5').get('otp_follows')), [57, 64, 5]);
+    assert.deepEqual(parseYourClubsCookie(''), []);
+    assert.deepEqual(parseYourClubsCookie(undefined), []);
   });
 });

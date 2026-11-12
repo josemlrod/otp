@@ -12,7 +12,7 @@ import {
   type Clock,
   type ClockSource,
 } from '../lib/clock.ts';
-import { FOLLOWS_COOKIE, parseFollows } from '../lib/follows.ts';
+import { YOUR_CLUBS_COOKIE, parseYourClubsCookie } from '../lib/your-clubs-cookie.ts';
 
 function parseClubId(param: string): number | null {
   const id = Number(param);
@@ -34,24 +34,24 @@ export function createAppController({
         return (await assets.fetch(context.request)) ?? new Response('Not Found', { status: 404 });
       },
 
-      async teamMatches(context) {
-        const teamId = parseClubId(context.params.teamId);
-        if (teamId === null) {
+      async clubMatches(context) {
+        const clubId = parseClubId(context.params.clubId);
+        if (clubId === null) {
           return new Response('Not Found', { status: 404 });
         }
-        const result = await footballData.clubCard(teamId);
+        const result = await footballData.clubMatches(clubId);
         if (result.status === 'not-tracked') return new Response('Not Found', { status: 404 });
         if (result.status === 'unavailable') return new Response('Bad Gateway', { status: 502 });
-        return Response.json(result.card);
+        return Response.json(result.matches);
       },
 
       async home(context) {
         const cookie = Cookie.from(context.request.headers.get('Cookie'));
-        const follows = parseFollows(cookie.get(FOLLOWS_COOKIE));
+        const savedIds = parseYourClubsCookie(cookie.get(YOUR_CLUBS_COOKIE));
 
         const tracked = await footballData.trackedCompetitions();
-        const yourClubs = resolveYourClubs(follows, tracked.sections, tracked.complete);
-        const initialMatches = await footballData.clubCards(
+        const yourClubs = resolveYourClubs(savedIds, tracked.sections, tracked.complete);
+        const initialMatches = await footballData.matchesForClubs(
           yourClubs.clubs.map((club) => club.id),
           tracked,
         );
