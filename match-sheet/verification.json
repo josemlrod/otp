@@ -1,0 +1,614 @@
+[
+  {
+    "engine": "chromium",
+    "name": "tapping a picked result requests its report",
+    "ok": true,
+    "detail": "GET /api/clubs/57/matches/5704 → 200"
+  },
+  {
+    "engine": "chromium",
+    "name": "sheet opens on the right match",
+    "ok": true,
+    "detail": "Arsenal 2–0 Liverpool"
+  },
+  {
+    "engine": "chromium",
+    "name": "header starts at full time",
+    "ok": true,
+    "detail": "2–0"
+  },
+  {
+    "engine": "chromium",
+    "name": "strip starts at full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "every stat value sits inside its card",
+    "ok": true,
+    "detail": "all inside"
+  },
+  {
+    "engine": "chromium",
+    "name": "dragging the strip rewinds the score",
+    "ok": true,
+    "detail": "at 45+2': 1–0"
+  },
+  {
+    "engine": "chromium",
+    "name": "the clock chip goes live with the minute",
+    "ok": true,
+    "detail": "45+2'"
+  },
+  {
+    "engine": "chromium",
+    "name": "the caption describes the state of the game",
+    "ok": true,
+    "detail": "Arsenal ahead since Novak’s 33'"
+  },
+  {
+    "engine": "chromium",
+    "name": "time in front rewinds with it",
+    "ok": true,
+    "detail": "14′"
+  },
+  {
+    "engine": "chromium",
+    "name": "full-time-only totals are flagged FT while rewound",
+    "ok": true,
+    "detail": "4 FT chips"
+  },
+  {
+    "engine": "chromium",
+    "name": "later key moments dim",
+    "ok": true,
+    "detail": "8 dimmed"
+  },
+  {
+    "engine": "chromium",
+    "name": "tapping a key moment jumps to it",
+    "ok": true,
+    "detail": "71'RomeroAssist Laurent · ARS2–0"
+  },
+  {
+    "engine": "chromium",
+    "name": "scrolling past the strip docks it",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "docked strip is interactive",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "scrubbing the docked strip rewinds the score",
+    "ok": true,
+    "detail": "20': 0–0"
+  },
+  {
+    "engine": "chromium",
+    "name": "the docked mini score follows",
+    "ok": true,
+    "detail": "0–0"
+  },
+  {
+    "engine": "chromium",
+    "name": "FT in the dock returns to full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "scrolling back up undocks",
+    "ok": true,
+    "detail": "scrollTop 0"
+  },
+  {
+    "engine": "chromium",
+    "name": "Home on the strip goes to kick-off",
+    "ok": true,
+    "detail": "1' 0–0"
+  },
+  {
+    "engine": "chromium",
+    "name": "End returns to full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Escape closes the sheet and returns focus to the result",
+    "ok": true,
+    "detail": "aria-hidden=true, focus=5704"
+  },
+  {
+    "engine": "chromium",
+    "name": "base-plan match keeps to the score with a note",
+    "ok": true,
+    "detail": "Barcelona 2–0 Real Madrid"
+  },
+  {
+    "engine": "chromium",
+    "name": "no console errors on the phone flow",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Duo cover keeps the phone layout",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Duo cover opens the sheet",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "no console errors on the cover display",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-landscape: Last 5 rows are buttons",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-landscape: a Last 5 row opens the match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-landscape: the sheet uses the width",
+    "ok": true,
+    "detail": "903px of 951px"
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-landscape: stats and key moments sit side by side",
+    "ok": true,
+    "detail": "526,526"
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-landscape: scrubbing works",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-landscape: every stat value sits inside its card",
+    "ok": true,
+    "detail": "all inside"
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-landscape: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-portrait: Last 5 rows are buttons",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-portrait: a Last 5 row opens the match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-portrait: the sheet uses the width",
+    "ok": true,
+    "detail": "621px of 669px"
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-portrait: stats and key moments sit side by side",
+    "ok": true,
+    "detail": "526,526"
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-portrait: scrubbing works",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-portrait: every stat value sits inside its card",
+    "ok": true,
+    "detail": "all inside"
+  },
+  {
+    "engine": "chromium",
+    "name": "duo-portrait: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "reduced motion: scrubbing still works",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "reduced motion: no CSS animations run",
+    "ok": true,
+    "detail": "0 running"
+  },
+  {
+    "engine": "chromium",
+    "name": "reduced motion: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "real API: report arrives for Arsenal v Hull",
+    "ok": true,
+    "detail": "events=null, stats=null, halfTime=0,0"
+  },
+  {
+    "engine": "chromium",
+    "name": "real API: free tier shows score, half time and referee, no strip",
+    "ok": true,
+    "detail": "Arsenal 1–0 Hull City"
+  },
+  {
+    "engine": "chromium",
+    "name": "real API: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "parity with main: phone home",
+    "ok": true,
+    "detail": "9c5ba16830c1 vs 9c5ba16830c1"
+  },
+  {
+    "engine": "chromium",
+    "name": "parity with main: phone picked result",
+    "ok": true,
+    "detail": "4304cb8d6c38 vs 4304cb8d6c38"
+  },
+  {
+    "engine": "chromium",
+    "name": "parity with main: phone standings sheet",
+    "ok": true,
+    "detail": "b69e766d217d vs b69e766d217d"
+  },
+  {
+    "engine": "chromium",
+    "name": "parity with main: duo landscape club page",
+    "ok": true,
+    "detail": "6731f8e3086a vs 6731f8e3086a"
+  },
+  {
+    "engine": "chromium",
+    "name": "parity with main: duo portrait club page",
+    "ok": true,
+    "detail": "d9f7d4363b42 vs d9f7d4363b42"
+  },
+  {
+    "engine": "webkit",
+    "name": "tapping a picked result requests its report",
+    "ok": true,
+    "detail": "GET /api/clubs/57/matches/5704 → 200"
+  },
+  {
+    "engine": "webkit",
+    "name": "sheet opens on the right match",
+    "ok": true,
+    "detail": "Arsenal 2–0 Liverpool"
+  },
+  {
+    "engine": "webkit",
+    "name": "header starts at full time",
+    "ok": true,
+    "detail": "2–0"
+  },
+  {
+    "engine": "webkit",
+    "name": "strip starts at full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "every stat value sits inside its card",
+    "ok": true,
+    "detail": "all inside"
+  },
+  {
+    "engine": "webkit",
+    "name": "dragging the strip rewinds the score",
+    "ok": true,
+    "detail": "at 45+2': 1–0"
+  },
+  {
+    "engine": "webkit",
+    "name": "the clock chip goes live with the minute",
+    "ok": true,
+    "detail": "45+2'"
+  },
+  {
+    "engine": "webkit",
+    "name": "the caption describes the state of the game",
+    "ok": true,
+    "detail": "Arsenal ahead since Novak’s 33'"
+  },
+  {
+    "engine": "webkit",
+    "name": "time in front rewinds with it",
+    "ok": true,
+    "detail": "14′"
+  },
+  {
+    "engine": "webkit",
+    "name": "full-time-only totals are flagged FT while rewound",
+    "ok": true,
+    "detail": "4 FT chips"
+  },
+  {
+    "engine": "webkit",
+    "name": "later key moments dim",
+    "ok": true,
+    "detail": "8 dimmed"
+  },
+  {
+    "engine": "webkit",
+    "name": "tapping a key moment jumps to it",
+    "ok": true,
+    "detail": "71'RomeroAssist Laurent · ARS2–0"
+  },
+  {
+    "engine": "webkit",
+    "name": "scrolling past the strip docks it",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "docked strip is interactive",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "scrubbing the docked strip rewinds the score",
+    "ok": true,
+    "detail": "19': 0–0"
+  },
+  {
+    "engine": "webkit",
+    "name": "the docked mini score follows",
+    "ok": true,
+    "detail": "0–0"
+  },
+  {
+    "engine": "webkit",
+    "name": "FT in the dock returns to full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "scrolling back up undocks",
+    "ok": true,
+    "detail": "scrollTop 0"
+  },
+  {
+    "engine": "webkit",
+    "name": "Home on the strip goes to kick-off",
+    "ok": true,
+    "detail": "1' 0–0"
+  },
+  {
+    "engine": "webkit",
+    "name": "End returns to full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Escape closes the sheet and returns focus to the result",
+    "ok": true,
+    "detail": "aria-hidden=true, focus=5704"
+  },
+  {
+    "engine": "webkit",
+    "name": "base-plan match keeps to the score with a note",
+    "ok": true,
+    "detail": "Barcelona 2–0 Real Madrid"
+  },
+  {
+    "engine": "webkit",
+    "name": "no console errors on the phone flow",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Duo cover keeps the phone layout",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Duo cover opens the sheet",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "no console errors on the cover display",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-landscape: Last 5 rows are buttons",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-landscape: a Last 5 row opens the match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-landscape: the sheet uses the width",
+    "ok": true,
+    "detail": "903px of 951px"
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-landscape: stats and key moments sit side by side",
+    "ok": true,
+    "detail": "527,527"
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-landscape: scrubbing works",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-landscape: every stat value sits inside its card",
+    "ok": true,
+    "detail": "all inside"
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-landscape: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-portrait: Last 5 rows are buttons",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-portrait: a Last 5 row opens the match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-portrait: the sheet uses the width",
+    "ok": true,
+    "detail": "621px of 669px"
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-portrait: stats and key moments sit side by side",
+    "ok": true,
+    "detail": "527,527"
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-portrait: scrubbing works",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-portrait: every stat value sits inside its card",
+    "ok": true,
+    "detail": "all inside"
+  },
+  {
+    "engine": "webkit",
+    "name": "duo-portrait: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "reduced motion: scrubbing still works",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "reduced motion: no CSS animations run",
+    "ok": true,
+    "detail": "0 running"
+  },
+  {
+    "engine": "webkit",
+    "name": "reduced motion: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "real API: report arrives for Arsenal v Hull",
+    "ok": true,
+    "detail": "events=null, stats=null, halfTime=0,0"
+  },
+  {
+    "engine": "webkit",
+    "name": "real API: free tier shows score, half time and referee, no strip",
+    "ok": true,
+    "detail": "Arsenal 1–0 Hull City"
+  },
+  {
+    "engine": "webkit",
+    "name": "real API: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "parity with main: phone home",
+    "ok": true,
+    "detail": "e6748148e013 vs e6748148e013"
+  },
+  {
+    "engine": "webkit",
+    "name": "parity with main: phone picked result",
+    "ok": true,
+    "detail": "11bb4784f145 vs 11bb4784f145"
+  },
+  {
+    "engine": "webkit",
+    "name": "parity with main: phone standings sheet",
+    "ok": true,
+    "detail": "54915e72d8b7 vs 54915e72d8b7"
+  },
+  {
+    "engine": "webkit",
+    "name": "parity with main: duo landscape club page",
+    "ok": true,
+    "detail": "d740f8f7342a vs d740f8f7342a"
+  },
+  {
+    "engine": "webkit",
+    "name": "parity with main: duo portrait club page",
+    "ok": true,
+    "detail": "c989e6ac3409 vs c989e6ac3409"
+  }
+]

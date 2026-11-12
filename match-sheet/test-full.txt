@@ -1,0 +1,1069 @@
+$ NODE_ENV=test remix test
+Found 31 test file(s) (23 server, 8 browser, 0 e2e)
+[remix:test] Test server running on http://localhost:56264
+
+Running server tests:
+(node:11301) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ competition metadata (0.43ms) [server]
+  ✓ falls back to neutral colors marked with the code for unknown competitions (0.43ms)
+▶ freshness (0.27ms) [server]
+  ✓ uses a one-hour max age (0.22ms)
+  ✓ keeps data fresh until the millisecond before one hour (0.03ms)
+  ✓ marks data stale at one hour and afterwards (0.02ms)
+(node:11304) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:11299) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ club matches (1.13ms) [server]
+  ✓ keeps the last five results, oldest first, from the club’s side (0.94ms)
+  ✓ lists the next four scheduled fixtures, soonest first, skipping postponed ones (0.19ms)
+(node:11297) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ match format (1.50ms) [server]
+  ✓ counts down in days and hours, or hours and minutes on the day (1.27ms)
+  ✓ leads a row with days, or hours on the day (0.16ms)
+  ✓ writes league positions as ordinals (0.06ms)
+▶ Global (18.22ms) [server]
+  ✓ formats midnight boundaries and today in an explicit timezone (18.22ms)
+(node:11305) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ club sections (9.00ms) [server]
+  ✓ lists leagues first, sorted by name, and leaves only unseen cup clubs in Rest of Europe (8.92ms)
+  ✓ previews each league leader in order (0.08ms)
+▶ Your clubs cookie (0.25ms) [server]
+  ✓ keeps unique positive ids in order and drops junk (0.25ms)
+(node:11300) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ Global (14.95ms) [server]
+  ✓ SQLite cache round-trips data and timestamp through the migrated database (14.95ms)
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache hit standings-2021
+[football-data] cache hit standings-2002
+[football-data] cache hit standings-2019
+[football-data] cache hit standings-2014
+[football-data] cache hit standings-2015
+[football-data] cache hit standings-2001
+[football-data] cache stale standings-2021
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+(node:11302) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ football data startup selection (33.82ms) [server]
+  ✓ rejects scenarios in production (0.38ms)
+  ✓ rejects unknown scenarios with the available names (0.11ms)
+  ✓ uses scenario responses and an independent memory cache without migrations (33.12ms)
+  ✓ selects the HTTP fetcher and SQLite cache with migrations by default (0.17ms)
+  ✓ defaults the HTTP API key to an empty string (0.03ms)
+▶ Global (7.92ms) [server]
+  ✓ pins render, scenario dates and cache timestamps to OTP_NOW (7.58ms)
+  ✓ rejects time overrides in production independently of scenarios (0.10ms)
+  ✓ rejects invalid time overrides at startup (0.23ms)
+[football-data] cache stale standings-2002
+[football-data] cache stale standings-2019
+[football-data] cache stale standings-2014
+[football-data] cache stale standings-2015
+[football-data] cache stale standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 404 0ms
+[football-data] GET /v4/competitions/2019/standings 404 0ms
+[football-data] GET /v4/competitions/2014/standings 404 0ms
+[football-data] GET /v4/competitions/2015/standings 404 0ms
+[football-data] GET /v4/competitions/2001/standings 404 0ms
+[football-data] serving stale standings-2002
+[football-data] serving stale standings-2019
+[football-data] serving stale standings-2014
+[football-data] serving stale standings-2015
+[football-data] serving stale standings-2001
+▶ match report (1.30ms) [server]
+  ✓ keeps only what the base plan sends: score, half time and referee (0.80ms)
+  ✓ turns Deep Data into events in match order, goal first at a shared minute (0.27ms)
+  ✓ maps statistics to pairs and odds to fair percentages (0.09ms)
+  ✓ treats an empty goals list as a match with events and no goals (0.10ms)
+(node:11307) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+  ✓ has no report for a match that is not finished (0.05ms)
+[football-data] cache stale standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings failed after 0ms Error: offline
+    at <anonymous> (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:69:42)
+    at fetcher (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:29:14)
+    at fetchFootballData (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:67:44)
+    at readThrough (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:108:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Promise.all (index 0)
+    at async standings (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:130:21)
+    at async Object.trackedCompetitions (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:155:17)
+    at async Object.fn (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:73:25)
+    at async runRunnable (file:///Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/node_modules/@remix-run/test/dist/lib/executor.js:243:9)
+[football-data] GET /v4/competitions/2002/standings failed after 0ms Error: offline
+    at <anonymous> (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:69:42)
+    at fetcher (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:29:14)
+    at fetchFootballData (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:67:44)
+    at readThrough (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:108:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Promise.all (index 1)
+    at async standings (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:130:21)
+    at async Object.trackedCompetitions (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:155:17)
+    at async Object.fn (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:73:25)
+    at async runRunnable (file:///Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/node_modules/@remix-run/test/dist/lib/executor.js:243:9)
+[football-data] GET /v4/competitions/2019/standings failed after 0ms Error: offline
+    at <anonymous> (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:69:42)
+    at fetcher (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:29:14)
+    at fetchFootballData (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:67:44)
+    at readThrough (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:108:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Promise.all (index 2)
+    at async standings (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:130:21)
+    at async Object.trackedCompetitions (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:155:17)
+    at async Object.fn (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:73:25)
+    at async runRunnable (file:///Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/node_modules/@remix-run/test/dist/lib/executor.js:243:9)
+[football-data] GET /v4/competitions/2014/standings failed after 0ms Error: offline
+    at <anonymous> (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:69:42)
+    at fetcher (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:29:14)
+    at fetchFootballData (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:67:44)
+    at readThrough (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:108:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Promise.all (index 3)
+    at async standings (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:130:21)
+    at async Object.trackedCompetitions (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:155:17)
+    at async Object.fn (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:73:25)
+    at async runRunnable (file:///Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/node_modules/@remix-run/test/dist/lib/executor.js:243:9)
+[football-data] GET /v4/competitions/2015/standings failed after 0ms Error: offline
+    at <anonymous> (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:69:42)
+    at fetcher (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:29:14)
+    at fetchFootballData (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:67:44)
+    at readThrough (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:108:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Promise.all (index 4)
+    at async standings (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:130:21)
+    at async Object.trackedCompetitions (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:155:17)
+    at async Object.fn (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:73:25)
+    at async runRunnable (file:///Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/node_modules/@remix-run/test/dist/lib/executor.js:243:9)
+[football-data] GET /v4/competitions/2001/standings failed after 0ms Error: offline
+    at <anonymous> (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:69:42)
+    at fetcher (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:29:14)
+    at fetchFootballData (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:67:44)
+    at readThrough (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:108:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Promise.all (index 5)
+    at async standings (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:130:21)
+    at async Object.trackedCompetitions (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.ts:155:17)
+    at async Object.fn (/Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/app/lib/football-data.test.ts:73:25)
+    at async runRunnable (file:///Users/joserodriguez/.t3/worktrees/otp/t3-260b3c51-9125a0d6ef6130cb/node_modules/@remix-run/test/dist/lib/executor.js:243:9)
+[football-data] serving stale standings-2021
+[football-data] cache stale standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] GET /v4/competitions/2021/standings returned invalid JSON SyntaxError: Unexpected token 'i', "invalid" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parseJSONFromBytes (node:internal/deps/undici/undici:4349:19)
+    at successSteps (node:internal/deps/undici/undici:6987:27)
+    at readAllBytes (node:internal/deps/undici/undici:5811:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[football-data] GET /v4/competitions/2002/standings returned invalid JSON SyntaxError: Unexpected token 'i', "invalid" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parseJSONFromBytes (node:internal/deps/undici/undici:4349:19)
+    at successSteps (node:internal/deps/undici/undici:6987:27)
+    at readAllBytes (node:internal/deps/undici/undici:5811:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[football-data] GET /v4/competitions/2019/standings returned invalid JSON SyntaxError: Unexpected token 'i', "invalid" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parseJSONFromBytes (node:internal/deps/undici/undici:4349:19)
+    at successSteps (node:internal/deps/undici/undici:6987:27)
+    at readAllBytes (node:internal/deps/undici/undici:5811:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[football-data] GET /v4/competitions/2014/standings returned invalid JSON SyntaxError: Unexpected token 'i', "invalid" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parseJSONFromBytes (node:internal/deps/undici/undici:4349:19)
+    at successSteps (node:internal/deps/undici/undici:6987:27)
+    at readAllBytes (node:internal/deps/undici/undici:5811:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[football-data] GET /v4/competitions/2015/standings returned invalid JSON SyntaxError: Unexpected token 'i', "invalid" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parseJSONFromBytes (node:internal/deps/undici/undici:4349:19)
+    at successSteps (node:internal/deps/undici/undici:6987:27)
+    at readAllBytes (node:internal/deps/undici/undici:5811:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[football-data] GET /v4/competitions/2001/standings returned invalid JSON SyntaxError: Unexpected token 'i', "invalid" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parseJSONFromBytes (node:internal/deps/undici/undici:4349:19)
+    at successSteps (node:internal/deps/undici/undici:6987:27)
+    at readAllBytes (node:internal/deps/undici/undici:5811:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[football-data] serving stale standings-2021
+[football-data] cache stale standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 503 0ms
+[football-data] GET /v4/competitions/2002/standings 503 0ms
+[football-data] GET /v4/competitions/2019/standings 503 0ms
+[football-data] GET /v4/competitions/2014/standings 503 0ms
+[football-data] GET /v4/competitions/2015/standings 503 0ms
+[football-data] GET /v4/competitions/2001/standings 503 0ms
+[football-data] serving stale standings-2021
+(node:11306) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[football-data] cache hit standings-2021
+[football-data] cache hit standings-2002
+[football-data] cache hit standings-2019
+[football-data] cache hit standings-2014
+[football-data] cache hit standings-2015
+[football-data] cache hit standings-2001
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 404 0ms
+[football-data] GET /v4/competitions/2019/standings 404 0ms
+[football-data] GET /v4/competitions/2014/standings 404 0ms
+[football-data] GET /v4/competitions/2015/standings 404 0ms
+[football-data] GET /v4/competitions/2001/standings 404 0ms
+[football-data] cache hit standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2002/standings 503 0ms
+[football-data] GET /v4/competitions/2019/standings 503 0ms
+[football-data] GET /v4/competitions/2014/standings 503 0ms
+[football-data] GET /v4/competitions/2015/standings 503 0ms
+[football-data] GET /v4/competitions/2001/standings 503 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 503 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 404 0ms
+[football-data] GET /v4/competitions/2019/standings 404 0ms
+[football-data] GET /v4/competitions/2014/standings 404 0ms
+[football-data] GET /v4/competitions/2015/standings 404 0ms
+[football-data] GET /v4/competitions/2001/standings 404 0ms
+▶ match replay (1.27ms) [server]
+[football-data] cache miss matches-57
+  ✓ has nothing to replay without events (0.43ms)
+  ✓ lays added time out in place on the clock (0.14ms)
+  ✓ reads the score and time in front at any minute (0.29ms)
+  ✓ captions the moment, then the state of the game (0.25ms)
+  ✓ says goalless at the whistle when no one scored (0.04ms)
+  ✓ snaps a loose scrub to the nearest goal or card, never a substitution (0.07ms)
+[football-data] GET /v4/teams/57/matches 200 0ms
+  ✓ runs on into extra time (0.04ms)
+  ✓ shortens names to the surname (0.02ms)
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-58
+[football-data] cache miss matches-59
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/58/matches 200 0ms
+[football-data] GET /v4/teams/59/matches 503 0ms
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache hit standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2002/standings 503 0ms
+[football-data] GET /v4/competitions/2019/standings 503 0ms
+[football-data] GET /v4/competitions/2014/standings 503 0ms
+[football-data] GET /v4/competitions/2015/standings 503 0ms
+[football-data] GET /v4/competitions/2001/standings 503 0ms
+[football-data] cache stale matches-57
+[football-data] GET /v4/teams/57/matches 503 0ms
+[football-data] serving stale matches-57
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 404 0ms
+[football-data] GET /v4/competitions/2019/standings 404 0ms
+[football-data] GET /v4/competitions/2014/standings 404 0ms
+[football-data] GET /v4/competitions/2015/standings 404 0ms
+[football-data] GET /v4/competitions/2001/standings 404 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache miss match-1
+[football-data] GET /v4/matches/1 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 404 0ms
+[football-data] GET /v4/competitions/2019/standings 404 0ms
+[football-data] GET /v4/competitions/2014/standings 404 0ms
+[football-data] GET /v4/competitions/2015/standings 404 0ms
+[football-data] GET /v4/competitions/2001/standings 404 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache hit standings-2021
+[football-data] cache miss standings-2002
+[football-data] retry cooldown standings-2002
+[football-data] cache miss standings-2019
+[football-data] retry cooldown standings-2019
+[football-data] cache miss standings-2014
+[football-data] retry cooldown standings-2014
+[football-data] cache miss standings-2015
+[football-data] retry cooldown standings-2015
+[football-data] cache miss standings-2001
+[football-data] retry cooldown standings-2001
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 404 0ms
+[football-data] GET /v4/competitions/2019/standings 404 0ms
+[football-data] GET /v4/competitions/2014/standings 404 0ms
+[football-data] GET /v4/competitions/2015/standings 404 0ms
+[football-data] GET /v4/competitions/2001/standings 404 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache miss match-2
+[football-data] GET /v4/matches/2 200 0ms
+[football-data] cache hit standings-2021
+[football-data] cache miss standings-2002
+[football-data] retry cooldown standings-2002
+[football-data] cache miss standings-2019
+[football-data] retry cooldown standings-2019
+[football-data] cache miss standings-2014
+[football-data] retry cooldown standings-2014
+[football-data] cache miss standings-2015
+[football-data] retry cooldown standings-2015
+[football-data] cache miss standings-2001
+[football-data] retry cooldown standings-2001
+[football-data] cache hit matches-57
+[football-data] cache hit match-2
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 404 0ms
+[football-data] GET /v4/competitions/2019/standings 404 0ms
+[football-data] GET /v4/competitions/2014/standings 404 0ms
+[football-data] GET /v4/competitions/2015/standings 404 0ms
+[football-data] GET /v4/competitions/2001/standings 404 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache miss match-1
+[football-data] GET /v4/matches/1 503 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 503 0ms
+[football-data] GET /v4/competitions/2002/standings 503 0ms
+[football-data] GET /v4/competitions/2019/standings 503 0ms
+[football-data] GET /v4/competitions/2014/standings 503 0ms
+[football-data] GET /v4/competitions/2015/standings 503 0ms
+[football-data] GET /v4/competitions/2001/standings 503 0ms
+[football-data] cache miss standings-2021
+[football-data] retry cooldown standings-2021
+[football-data] cache miss standings-2002
+[football-data] retry cooldown standings-2002
+[football-data] cache miss standings-2019
+[football-data] retry cooldown standings-2019
+[football-data] cache miss standings-2014
+[football-data] retry cooldown standings-2014
+[football-data] cache miss standings-2015
+[football-data] retry cooldown standings-2015
+[football-data] cache miss standings-2001
+[football-data] retry cooldown standings-2001
+[football-data] cache miss standings-2021
+[football-data] retry cooldown standings-2021
+[football-data] cache miss standings-2002
+[football-data] retry cooldown standings-2002
+[football-data] cache miss standings-2019
+[football-data] retry cooldown standings-2019
+[football-data] cache miss standings-2014
+[football-data] retry cooldown standings-2014
+[football-data] cache miss standings-2015
+[football-data] retry cooldown standings-2015
+[football-data] cache miss standings-2001
+[football-data] retry cooldown standings-2001
+[football-data] cache miss standings-2021
+[football-data] retry cooldown standings-2021
+[football-data] cache miss standings-2002
+[football-data] retry cooldown standings-2002
+[football-data] cache miss standings-2019
+[football-data] retry cooldown standings-2019
+[football-data] cache miss standings-2014
+[football-data] retry cooldown standings-2014
+[football-data] cache miss standings-2015
+[football-data] retry cooldown standings-2015
+[football-data] cache miss standings-2001
+[football-data] retry cooldown standings-2001
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 503 0ms
+[football-data] GET /v4/competitions/2002/standings 503 0ms
+[football-data] GET /v4/competitions/2019/standings 503 0ms
+[football-data] GET /v4/competitions/2014/standings 503 0ms
+[football-data] GET /v4/competitions/2015/standings 503 0ms
+[football-data] GET /v4/competitions/2001/standings 503 0ms
+[football-data] cache hit standings-2021
+[football-data] cache hit standings-2002
+[football-data] cache hit standings-2019
+[football-data] cache hit standings-2014
+[football-data] cache hit standings-2015
+[football-data] cache hit standings-2001
+[football-data] cache stale matches-57
+[football-data] GET /v4/teams/57/matches 503 0ms
+[football-data] serving stale matches-57
+[football-data] cache hit standings-2021
+[football-data] cache hit standings-2002
+[football-data] cache hit standings-2019
+[football-data] cache hit standings-2014
+[football-data] cache hit standings-2015
+[football-data] cache hit standings-2001
+[football-data] cache stale matches-57
+[football-data] retry cooldown matches-57
+[football-data] serving stale matches-57
+[football-data] cache hit standings-2021
+[football-data] cache hit standings-2002
+[football-data] cache hit standings-2019
+[football-data] cache hit standings-2014
+[football-data] cache hit standings-2015
+[football-data] cache hit standings-2001
+[football-data] cache stale matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache hit standings-2021
+[football-data] cache hit standings-2002
+[football-data] cache hit standings-2019
+[football-data] cache hit standings-2014
+[football-data] cache hit standings-2015
+[football-data] cache hit standings-2001
+[football-data] cache stale matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 503 0ms
+[football-data] GET /v4/competitions/2002/standings 503 0ms
+[football-data] GET /v4/competitions/2019/standings 503 0ms
+[football-data] GET /v4/competitions/2014/standings 503 0ms
+[football-data] GET /v4/competitions/2015/standings 503 0ms
+[football-data] GET /v4/competitions/2001/standings 503 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 503 0ms
+[football-data] GET /v4/competitions/2002/standings 503 0ms
+[football-data] GET /v4/competitions/2019/standings 503 0ms
+[football-data] GET /v4/competitions/2014/standings 503 0ms
+[football-data] GET /v4/competitions/2015/standings 503 0ms
+[football-data] GET /v4/competitions/2001/standings 503 0ms
+(node:11303) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ football data (32.99ms) [server]
+  ✓ uses fresh cache without fetching (1.32ms)
+  ✓ refetches at one hour and writes the new data and timestamp (23.99ms)
+  ✓ serves stale data and skips missing copies on network (2.55ms)
+  ✓ serves stale data and skips missing copies on invalid JSON (1.92ms)
+  ✓ serves stale data and skips missing copies on non-2xx (0.45ms)
+  ✓ rejects an untracked club without requesting matches (0.26ms)
+  ✓ reports an untracked club as unavailable while some standings are missing (0.30ms)
+  ✓ reports unavailable when tracked matches fail without a copy (0.24ms)
+  ✓ returns a projected matches for a tracked club (0.85ms)
+  ✓ keeps requested order and drops untracked and unavailable clubs (0.78ms)
+  ✓ serves stale matches on failure with their original fetchedAt (0.33ms)
+▶ match report (3.54ms) [server]
+  ✓ fetches one of the club's recent results and projects it (1.14ms)
+  ✓ refuses a match that is not among the club's results, without fetching it (0.51ms)
+  ✓ caches the match like any other request (1.43ms)
+  ✓ reports unavailable when the match request fails without a copy (0.47ms)
+▶ failure retry cooldown (1.87ms) [server]
+  ✓ limits a cold outage to six calls across standings and club cards (0.63ms)
+  ✓ serves stale matches during cooldown and retries successfully at the boundary (0.83ms)
+  ✓ keeps cooldown state local to each module instance (0.41ms)
+(node:11308) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ standings lookups (0.73ms) [server]
+  ✓ reads only the overall table (0.49ms)
+  ✓ finds a club's row in a competition, or nothing (0.07ms)
+  ✓ centres a window on the club and clamps it to the table (0.11ms)
+  ✓ formats points per game and signed differences (0.05ms)
+(node:11310) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ scenario builders (4.98ms) [server]
+  ✓ assigns positions from club order and supports separate and empty groups (0.63ms)
+  ✓ uses tracked competition identities and allows arbitrary competitions (0.12ms)
+  ✓ turns form into finished scores from the club side, oldest first (3.77ms)
+  ✓ sorts fixtures relative to the supplied clock and round-trips through the projection (0.46ms)
+(node:11309) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ resolve Your clubs (0.65ms) [server]
+  ✓ keeps resolved clubs in the user order (0.47ms)
+  ✓ drops unresolved ids only when standings are complete (0.05ms)
+  ✓ keeps unresolved ids in their order after resolved clubs during an outage (0.05ms)
+  ✓ distinguishes clubs that cannot be shown from no clubs (0.03ms)
+  ✓ resolves an empty list even during an outage (0.04ms)
+(node:11313) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ column plans (0.36ms) [server]
+  ✓ picks by exact width the first time (0.30ms)
+  ✓ steps up only once clearly past a threshold (0.03ms)
+  ✓ steps down only once clearly below a threshold (0.03ms)
+▶ Global (0.57ms) [server]
+  ✓ monotonic easing has no overshoot (0.44ms)
+  ✓ spring overshoot measures only travel past rest (0.05ms)
+  ✓ a pull returning to rest excludes the outward distance from overshoot (0.03ms)
+  ✓ scale summaries retain small per-frame changes (0.06ms)
+(node:11315) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:11296) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ standings table (18.22ms) [server]
+  ✓ signs positive goal differences only (16.93ms)
+  ✓ falls back to the full club name and omits a missing crest (0.54ms)
+  ✓ renders one captioned table per TOTAL group and ignores HOME and AWAY (0.60ms)
+  ✓ shows an empty state when there is no TOTAL group (0.16ms)
+▶ standings sheet (3.00ms) [server]
+  ✓ labels PL progress as "Matchday 7 of 38" (1.16ms)
+  ✓ labels CL progress as "League phase 7 of 8" (1.24ms)
+(node:11314) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+  ✓ labels FL1 progress as "Matchday 7" (0.60ms)
+▶ Global (195.36ms) [server]
+  ✓ keeps server formatting across runtime timezone changes (179.36ms)
+  ✓ validates timezone cookies and uses the Your clubs cookie attributes (15.19ms)
+  ✓ anchors freshness to the server despite device clock skew in either direction (0.76ms)
+  ✓ keeps a dev clock pinned as the device clock advances (0.05ms)
+(node:11298) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ matches model (19.67ms) [server]
+  ✓ keeps a fresh seeded matches without fetching or dispatching change (1.77ms)
+  ✓ refetches at exactly one hour, retaining the old matches until ready (16.59ms)
+  ✓ keeps the previous matches ready after a non-OK response (0.24ms)
+  ✓ retries after a non-OK response without a previous matches (0.36ms)
+  ✓ keeps the previous matches ready after a rejected fetch (0.11ms)
+  ✓ retries after a rejected fetch without a previous matches (0.16ms)
+  ✓ makes one request and one loading event for concurrent loads (0.14ms)
+  ✓ changes only the requested club and identifies it in every event (0.31ms)
+(node:11316) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ Your clubs model (1.13ms) [server]
+  ✓ saves edits, loads only newly followed clubs and emits the new list (0.68ms)
+  ✓ does nothing when an edit has no change, including a repeated close (0.06ms)
+  ✓ removes a club without loading matches (0.07ms)
+  ✓ keeps the selected order when reordering clubs (0.15ms)
+  ✓ preserves Bayern after adding Arsenal during a partial outage (0.13ms)
+  ✓ beginEdit resets a stale draft to the current clubs (0.04ms)
+(node:11329) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ Global (19.60ms) [server]
+  ✓ counts every picked club without favourite treatment (19.60ms)
+(node:11339) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▶ asset access (133.01ms) [server]
+  ✓ serves every module app/actions/public/entry.ts imports (34.84ms)
+  ✓ serves every module app/actions/public/home-screen.tsx imports (98.18ms)
+(node:11311) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:11312) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] cache miss standings-2014
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache miss matches-57
+[football-data] cache miss matches-64
+[football-data] cache miss matches-1903
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] GET /v4/teams/64/matches 200 0ms
+[football-data] GET /v4/teams/1903/matches 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 503 0ms
+[football-data] GET /v4/competitions/2002/standings 503 0ms
+[football-data] GET /v4/competitions/2019/standings 503 0ms
+[football-data] GET /v4/competitions/2014/standings 503 0ms
+[football-data] GET /v4/competitions/2015/standings 503 0ms
+[football-data] GET /v4/competitions/2001/standings 503 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] cache miss matches-64
+[football-data] cache miss matches-1903
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] GET /v4/teams/64/matches 200 0ms
+[football-data] GET /v4/teams/1903/matches 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 503 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache miss match-1
+[football-data] GET /v4/matches/1 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 503 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss matches-57
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 503 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] cache miss matches-64
+[football-data] cache miss matches-1903
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] GET /v4/teams/64/matches 200 0ms
+[football-data] GET /v4/teams/1903/matches 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 503 0ms
+[football-data] GET /v4/competitions/2002/standings 503 0ms
+[football-data] GET /v4/competitions/2019/standings 503 0ms
+[football-data] GET /v4/competitions/2014/standings 503 0ms
+[football-data] GET /v4/competitions/2015/standings 503 0ms
+[football-data] GET /v4/competitions/2001/standings 503 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 503 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache hit standings-2021
+[football-data] cache hit standings-2002
+[football-data] cache hit standings-2019
+[football-data] cache hit standings-2014
+[football-data] cache hit standings-2015
+[football-data] cache hit standings-2001
+[football-data] cache miss matches-57
+[football-data] cache miss matches-64
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] GET /v4/teams/64/matches 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+▶ dev scenarios (158.97ms) [server]
+  ✓ matchday renders GET / successfully (107.58ms)
+  ✓ api-down renders GET / successfully (14.30ms)
+  ✓ no-fixtures renders GET / successfully (17.77ms)
+  ✓ league-down renders GET / successfully (14.84ms)
+  ✓ matchday provides all competitions, varied form and a kickoff within hours (2.42ms)
+  ✓ no-fixtures leaves a tracked club without upcoming fixtures (1.35ms)
+  ✓ unknown API paths return 404 (0.55ms)
+  ✓ unknown scenario names list the valid choices (0.16ms)
+▶ Global (4.66ms) [server]
+  ✓ uses real club ids and puts only CL-only clubs in Rest of Europe (0.92ms)
+  ✓ uses opponents from each clubs competition and alternates venue (3.73ms)
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] cache miss matches-5
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] GET /v4/teams/5/matches 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+[football-data] cache miss standings-2021
+[football-data] cache miss standings-2002
+[football-data] cache miss standings-2019
+[football-data] cache miss standings-2014
+[football-data] cache miss standings-2015
+[football-data] cache miss standings-2001
+[football-data] GET /v4/competitions/2021/standings 200 0ms
+[football-data] GET /v4/competitions/2002/standings 200 0ms
+[football-data] GET /v4/competitions/2019/standings 200 0ms
+[football-data] GET /v4/competitions/2014/standings 200 0ms
+[football-data] GET /v4/competitions/2015/standings 200 0ms
+[football-data] GET /v4/competitions/2001/standings 200 0ms
+[football-data] cache miss matches-57
+[football-data] GET /v4/teams/57/matches 200 0ms
+▶ root controller (137.56ms) [server]
+  ✓ GET / fetches each tracked competition once on a cold cache (101.88ms)
+  ✓ GET / renders standings for multiple competitions (15.40ms)
+  ✓ GET / swaps the empty state for a count when the Your clubs cookie names tracked clubs (11.70ms)
+  ✓ GET matches rejects invalid id abc before any fetch (0.89ms)
+  ✓ GET matches rejects invalid id 0 before any fetch (0.57ms)
+  ✓ GET matches rejects invalid id -3 before any fetch (0.40ms)
+  ✓ GET matches rejects invalid id 1.5 before any fetch (0.37ms)
+  ✓ GET matches rejects invalid id 1e2 before any fetch (0.33ms)
+  ✓ GET matches rejects untracked clubs without a matches request (0.85ms)
+  ✓ GET matches returns 502 for unavailable club data (0.78ms)
+  ✓ GET a match returns its report as JSON (1.65ms)
+  ✓ GET a match the club has not played is a 404 with no match request (1.13ms)
+  ✓ GET a match returns 502 when its data is unavailable (0.60ms)
+  ✓ GET matches returns club matches as JSON (1.00ms)
+▶ Global (57.41ms) [server]
+  ✓ api-down renders saved Your clubs without setting a cookie (8.71ms)
+  ✓ league-down renders saved Your clubs without setting a cookie (13.79ms)
+  ✓ matchday renders saved Your clubs without setting a cookie (14.17ms)
+  ✓ renders and serializes one fixed clock using a validated timezone cookie (20.73ms)
+
+Running tests for project `chromium`:
+▶ home screen standings sheet (27.20ms) [browser:chromium]
+  ✓ restores focus to the latest opener when a different competition is opened (27.20ms)
+▶ home screen club picker (224.90ms) [browser:chromium]
+  ✓ saves picked clubs on Done and returns focus to Edit (18.20ms)
+  ✓ saves picked clubs when Escape closes the picker (9.20ms)
+  ✓ saves picked clubs when overlay closes the picker (8.20ms)
+  ✓ saves picked clubs when drag closes the picker (166.50ms)
+  ✓ matches full names ignoring accents and reports misses (9.70ms)
+  ✓ preserves Bayern when adding Arsenal during a partial standings outage (13.10ms)
+▶ home screen sheet render cost (190.80ms) [browser:chromium]
+  ✓ does not render HomeScreen or Sheet on repeated drag moves (190.80ms)
+▶ home screen layout (21.20ms) [browser:chromium]
+  ✓ keeps the phone layout on a phone, without re-rendering after hydration (7.30ms)
+  ✓ switches to the wide layout on a wide display (11.40ms)
+  ✓ keeps the phone layout on a wide display until there is a club to show (2.50ms)
+▶ sheet (9.70ms) [browser:chromium]
+  ✓ opens separate layers and focuses the named dialog (4.30ms)
+  ✓ closes using close button and returns focus without clearing content (1.50ms)
+  ✓ closes using overlay and returns focus without clearing content (1.10ms)
+  ✓ closes using Escape and returns focus without clearing content (1.00ms)
+  ✓ wraps Tab and Shift+Tab while leaving content keyboard-scrollable (1.00ms)
+  ✓ keeps focus in the sheet when close and reopen updates happen together (0.80ms)
+▶ sheet drag (327.00ms) [browser:chromium]
+  ✓ moves the sheet and the layers behind it, resisting pulls above the top (18.90ms)
+  ✓ ignores movement under the threshold and presses on the close button (1.00ms)
+  ✓ snaps back open before halfway and closes past it (305.20ms)
+  ✓ closes on a quick downward flick even when it is short (1.90ms)
+▶ sheet lifecycle (2.10ms) [browser:chromium]
+  ✓ uses the caller fallback when the opener is disconnected (1.00ms)
+  ✓ calls the close hook once and preserves content for the closing transition (1.10ms)
+▶ wide home: club page (151.20ms) [browser:chromium]
+  ✓ lays out the next match, the fixtures after it and the last five instead of the timeline (50.20ms)
+  ✓ flows blocks into three columns in landscape and two in portrait (101.00ms)
+▶ wide home: sidebar (3049.70ms) [browser:chromium]
+  ✓ opens a competition page with the full table, and a club from it (46.80ms)
+  ✓ slides out over the content from the keyboard and puts itself away on a pick (1429.10ms)
+  ✓ follows a drag on the grip, stays where it is released, and closes on Escape (1556.70ms)
+  ✓ hands Edit to the club picker (17.10ms)
+▶ Global (891.40ms) [browser:chromium]
+  ✓ animation time runs at the chosen scale (152.60ms)
+  ✓ a paused spring holds still and steps one frame at a time (54.30ms)
+  ✓ WAAPI animations start at the lab's rate (15.90ms)
+  ✓ the recorder samples every frame and summarises the motion (551.10ms)
+  ✓ the recorder stops sampling a target removed during motion (117.50ms)
+▶ match sheet (879.60ms) [browser:chromium]
+  ✓ shows the result straight away, then the replay once the report arrives (16.40ms)
+  ✓ rewinds the score, clock and moments when the strip is scrubbed, and returns at full time (631.10ms)
+  ✓ jumps to a key moment when it is tapped (165.10ms)
+  ✓ docks a compact strip once the replay scrolls under the top edge (49.70ms)
+  ✓ keeps to the score when the plan has no events (17.30ms)
+▶ Global (8.00ms) [browser:chromium]
+  ✓ hydrates a server club card with unchanged kickoff and countdown, then changes timezone (8.00ms)
+▶ club card Timeline (4156.10ms) [browser:chromium]
+  ✓ renders the required hooks and starts on Next with the next match visible (7.00ms)
+  ✓ scrubs to a result and keeps its pill, lens and page picked after release (667.00ms)
+  ✓ activates a held pointer and scrubs back to the Next match (134.80ms)
+  ✓ swipes to a result and back to Next with strip, lens and pager agreeing (797.40ms)
+  ✓ shows No upcoming matches on Next when there are no fixtures (1299.90ms)
+  ✓ rests the lens on Next, and a Picked result is a lit result slot (1250.00ms)
+▶ club list (128.00ms) [browser:chromium]
+  ✓ opens the first club as a full card and lists the rest as rows (28.30ms)
+  ✓ opens a row when tapped and folds the previous card back into a row (66.80ms)
+  ✓ shows how many clubs are past the bottom edge when the list overflows (32.90ms)
+
+ℹ files 31
+ℹ suites 34
+ℹ tests 178
+ℹ pass 178
+ℹ fail 0
+ℹ duration_ms 12809.58458
+

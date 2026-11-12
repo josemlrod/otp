@@ -1,0 +1,12 @@
+GET /api/clubs/57/matches/560640
+{"id":560640,"fetchedAt":1794524872596,"utcDate":"2026-11-07T15:00:00Z","competition":"PL","competitionName":"Premier League","matchday":10,"venue":null,"attendance":null,"referee":"Farai Hallam","home":{"id":57,"name":"Arsenal","tla":"ARS","crest":"https://crests.football-data.org/57.png"},"away":{"id":322,"name":"Hull City","tla":"HUL","crest":"https://crests.football-data.org/322.png"},"duration":"REGULAR","fullTime":[1,0],"halfTime":[0,0],"injuryTime":null,"events":null,"stats":null,"odds":null}
+HTTP 200
+
+GET /api/clubs/57/matches/575372
+{"id":575372,"fetchedAt":1794524872725,"utcDate":"2026-10-21T19:00:00Z","competition":"CL","competitionName":"UEFA Champions League","matchday":3,"venue":null,"attendance":null,"referee":"Davide Massa","home":{"id":5,"name":"Bayern","tla":"FCB","crest":"https://crests.football-data.org/5.png"},"away":{"id":57,"name":"Arsenal","tla":"ARS","crest":"https://crests.football-data.org/57.png"},"duration":"REGULAR","fullTime":[2,2],"halfTime":[1,1],"injuryTime":null,"events":null,"stats":null,"odds":null}
+HTTP 200
+
+GET /api/clubs/57/matches/560639 (not in Arsenal's last five)
+HTTP 404
+GET /api/clubs/57/matches/abc
+HTTP 404

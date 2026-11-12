@@ -1,0 +1,104 @@
+✓ [chromium] tapping a picked result requests its report — GET /api/clubs/57/matches/5704 → 200
+✓ [chromium] sheet opens on the right match — Arsenal 2–0 Liverpool
+✓ [chromium] header starts at full time — 2–0
+✓ [chromium] strip starts at full time
+✓ [chromium] every stat value sits inside its card — all inside
+✓ [chromium] dragging the strip rewinds the score — at 45+2': 1–0
+✓ [chromium] the clock chip goes live with the minute — 45+2'
+✓ [chromium] the caption describes the state of the game — Arsenal ahead since Novak’s 33'
+✓ [chromium] time in front rewinds with it — 14′
+✓ [chromium] full-time-only totals are flagged FT while rewound — 4 FT chips
+✓ [chromium] later key moments dim — 8 dimmed
+✓ [chromium] tapping a key moment jumps to it — 71'RomeroAssist Laurent · ARS2–0
+✓ [chromium] scrolling past the strip docks it
+✓ [chromium] docked strip is interactive
+✓ [chromium] scrubbing the docked strip rewinds the score — 20': 0–0
+✓ [chromium] the docked mini score follows — 0–0
+✓ [chromium] FT in the dock returns to full time
+✓ [chromium] scrolling back up undocks — scrollTop 0
+✓ [chromium] Home on the strip goes to kick-off — 1' 0–0
+✓ [chromium] End returns to full time
+✓ [chromium] Escape closes the sheet and returns focus to the result — aria-hidden=true, focus=5704
+✓ [chromium] base-plan match keeps to the score with a note — Barcelona 2–0 Real Madrid
+✓ [chromium] no console errors on the phone flow
+✓ [chromium] Duo cover keeps the phone layout
+✓ [chromium] Duo cover opens the sheet
+✓ [chromium] no console errors on the cover display
+✓ [chromium] duo-landscape: Last 5 rows are buttons
+✓ [chromium] duo-landscape: a Last 5 row opens the match
+✓ [chromium] duo-landscape: the sheet uses the width — 903px of 951px
+✓ [chromium] duo-landscape: stats and key moments sit side by side — 526,526
+✓ [chromium] duo-landscape: scrubbing works
+✓ [chromium] duo-landscape: every stat value sits inside its card — all inside
+✓ [chromium] duo-landscape: no console errors
+✓ [chromium] duo-portrait: Last 5 rows are buttons
+✓ [chromium] duo-portrait: a Last 5 row opens the match
+✓ [chromium] duo-portrait: the sheet uses the width — 621px of 669px
+✓ [chromium] duo-portrait: stats and key moments sit side by side — 526,526
+✓ [chromium] duo-portrait: scrubbing works
+✓ [chromium] duo-portrait: every stat value sits inside its card — all inside
+✓ [chromium] duo-portrait: no console errors
+✓ [chromium] reduced motion: scrubbing still works
+✓ [chromium] reduced motion: no CSS animations run — 0 running
+✓ [chromium] reduced motion: no console errors
+✓ [chromium] real API: report arrives for Arsenal v Hull — events=null, stats=null, halfTime=0,0
+✓ [chromium] real API: free tier shows score, half time and referee, no strip — Arsenal 1–0 Hull City
+✓ [chromium] real API: no console errors
+✓ [chromium] parity with main: phone home — 9c5ba16830c1 vs 9c5ba16830c1
+✓ [chromium] parity with main: phone picked result — 4304cb8d6c38 vs 4304cb8d6c38
+✓ [chromium] parity with main: phone standings sheet — b69e766d217d vs b69e766d217d
+✓ [chromium] parity with main: duo landscape club page — 6731f8e3086a vs 6731f8e3086a
+✓ [chromium] parity with main: duo portrait club page — d9f7d4363b42 vs d9f7d4363b42
+✓ [webkit] tapping a picked result requests its report — GET /api/clubs/57/matches/5704 → 200
+✓ [webkit] sheet opens on the right match — Arsenal 2–0 Liverpool
+✓ [webkit] header starts at full time — 2–0
+✓ [webkit] strip starts at full time
+✓ [webkit] every stat value sits inside its card — all inside
+✓ [webkit] dragging the strip rewinds the score — at 45+2': 1–0
+✓ [webkit] the clock chip goes live with the minute — 45+2'
+✓ [webkit] the caption describes the state of the game — Arsenal ahead since Novak’s 33'
+✓ [webkit] time in front rewinds with it — 14′
+✓ [webkit] full-time-only totals are flagged FT while rewound — 4 FT chips
+✓ [webkit] later key moments dim — 8 dimmed
+✓ [webkit] tapping a key moment jumps to it — 71'RomeroAssist Laurent · ARS2–0
+✓ [webkit] scrolling past the strip docks it
+✓ [webkit] docked strip is interactive
+✓ [webkit] scrubbing the docked strip rewinds the score — 19': 0–0
+✓ [webkit] the docked mini score follows — 0–0
+✓ [webkit] FT in the dock returns to full time
+✓ [webkit] scrolling back up undocks — scrollTop 0
+✓ [webkit] Home on the strip goes to kick-off — 1' 0–0
+✓ [webkit] End returns to full time
+✓ [webkit] Escape closes the sheet and returns focus to the result — aria-hidden=true, focus=5704
+✓ [webkit] base-plan match keeps to the score with a note — Barcelona 2–0 Real Madrid
+✓ [webkit] no console errors on the phone flow
+✓ [webkit] Duo cover keeps the phone layout
+✓ [webkit] Duo cover opens the sheet
+✓ [webkit] no console errors on the cover display
+✓ [webkit] duo-landscape: Last 5 rows are buttons
+✓ [webkit] duo-landscape: a Last 5 row opens the match
+✓ [webkit] duo-landscape: the sheet uses the width — 903px of 951px
+✓ [webkit] duo-landscape: stats and key moments sit side by side — 527,527
+✓ [webkit] duo-landscape: scrubbing works
+✓ [webkit] duo-landscape: every stat value sits inside its card — all inside
+✓ [webkit] duo-landscape: no console errors
+✓ [webkit] duo-portrait: Last 5 rows are buttons
+✓ [webkit] duo-portrait: a Last 5 row opens the match
+✓ [webkit] duo-portrait: the sheet uses the width — 621px of 669px
+✓ [webkit] duo-portrait: stats and key moments sit side by side — 527,527
+✓ [webkit] duo-portrait: scrubbing works
+✓ [webkit] duo-portrait: every stat value sits inside its card — all inside
+✓ [webkit] duo-portrait: no console errors
+✓ [webkit] reduced motion: scrubbing still works
+✓ [webkit] reduced motion: no CSS animations run — 0 running
+✓ [webkit] reduced motion: no console errors
+✓ [webkit] real API: report arrives for Arsenal v Hull — events=null, stats=null, halfTime=0,0
+✓ [webkit] real API: free tier shows score, half time and referee, no strip — Arsenal 1–0 Hull City
+✓ [webkit] real API: no console errors
+✓ [webkit] parity with main: phone home — e6748148e013 vs e6748148e013
+✓ [webkit] parity with main: phone picked result — 11bb4784f145 vs 11bb4784f145
+✓ [webkit] parity with main: phone standings sheet — 54915e72d8b7 vs 54915e72d8b7
+✓ [webkit] parity with main: duo landscape club page — d740f8f7342a vs d740f8f7342a
+✓ [webkit] parity with main: duo portrait club page — c989e6ac3409 vs c989e6ac3409
+
+102/102 checks passed
