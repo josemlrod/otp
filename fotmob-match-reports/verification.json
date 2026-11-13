@@ -1,0 +1,410 @@
+[
+  {
+    "engine": "chromium",
+    "name": "Barça 1–2 Real Madrid: the report is served",
+    "ok": true,
+    "detail": "GET /api/clubs/86/matches/564723 → 200"
+  },
+  {
+    "engine": "chromium",
+    "name": "Barça 1–2 Real Madrid: the sheet opens on the match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Barça 1–2 Real Madrid: the replay strip is there (events came from FotMob)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Barça 1–2 Real Madrid: one goal per goal in the score",
+    "ok": true,
+    "detail": "3 goals"
+  },
+  {
+    "engine": "chromium",
+    "name": "Barça 1–2 Real Madrid: the header lists every scorer with the minute",
+    "ok": true,
+    "detail": "Raphinha 61' · Mbappé 41' · Mbappé 87'"
+  },
+  {
+    "engine": "chromium",
+    "name": "Barça 1–2 Real Madrid: every goal, card and sub is a key moment",
+    "ok": true,
+    "detail": "17 moments, 17 events"
+  },
+  {
+    "engine": "chromium",
+    "name": "Barça 1–2 Real Madrid: assists show on goals",
+    "ok": true,
+    "detail": "Assist Pedri, Assist Camavinga"
+  },
+  {
+    "engine": "chromium",
+    "name": "Barça 1–2 Real Madrid: the stats card shows xG",
+    "ok": true,
+    "detail": "1.19 – 1.94"
+  },
+  {
+    "engine": "chromium",
+    "name": "Barça 1–2 Real Madrid: possession comes through",
+    "ok": true,
+    "detail": "62% – 38%"
+  },
+  {
+    "engine": "chromium",
+    "name": "Barça 1–2 Real Madrid: scrubbing rewinds the score to match the goals",
+    "ok": true,
+    "detail": "at 52': 0–1 (expected 0–1)"
+  },
+  {
+    "engine": "chromium",
+    "name": "Barça 1–2 Real Madrid: Home goes to kick-off at 0–0",
+    "ok": true,
+    "detail": "1'"
+  },
+  {
+    "engine": "chromium",
+    "name": "Barça 1–2 Real Madrid: End returns to full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Barça 1–2 Real Madrid: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: the report is served",
+    "ok": true,
+    "detail": "GET /api/clubs/64/matches/575363 → 200"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: the sheet opens on the match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: the replay strip is there (events came from FotMob)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: one goal per goal in the score",
+    "ok": true,
+    "detail": "7 goals"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: the header lists every scorer with the minute",
+    "ok": true,
+    "detail": "Mac Allister 36' · Araujo 45+2' · Mac Allister 65' · Wirtz 69' · Mikautadze 4' · Cardona 29' · Oluwaseyi 87'"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: every goal, card and sub is a key moment",
+    "ok": true,
+    "detail": "19 moments, 19 events"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: assists show on goals",
+    "ok": true,
+    "detail": "Assist Saliba, Assist Tsimikas, Assist Ngumoha, Assist Ngumoha, Assist Gakpo, Assist Pérez"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: the stats card shows xG",
+    "ok": true,
+    "detail": "2.37 – 1.61"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: possession comes through",
+    "ok": true,
+    "detail": "53% – 47%"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: scrubbing rewinds the score to match the goals",
+    "ok": true,
+    "detail": "at 51': 2–2 (expected 2–2)"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: Home goes to kick-off at 0–0",
+    "ok": true,
+    "detail": "1'"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: End returns to full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "main, same match: free tier keeps to the score, no strip",
+    "ok": true,
+    "detail": "Barça 1–2 Real Madrid"
+  },
+  {
+    "engine": "chromium",
+    "name": "main: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Duo landscape: a Last 5 row opens the FotMob-filled match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Duo landscape: the replay strip is there",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Duo landscape: stats and key moments sit side by side",
+    "ok": true,
+    "detail": "526,526"
+  },
+  {
+    "engine": "chromium",
+    "name": "Duo landscape: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "scenario Deep Data match: sheet is pixel-identical to main",
+    "ok": true,
+    "detail": "b07c3e63e0ffb066 vs b07c3e63e0ffb066"
+  },
+  {
+    "engine": "chromium",
+    "name": "scenario free-tier match: sheet is pixel-identical to main",
+    "ok": true,
+    "detail": "3a52e885c6939bec vs 3a52e885c6939bec"
+  },
+  {
+    "engine": "webkit",
+    "name": "Barça 1–2 Real Madrid: the report is served",
+    "ok": true,
+    "detail": "GET /api/clubs/86/matches/564723 → 200"
+  },
+  {
+    "engine": "webkit",
+    "name": "Barça 1–2 Real Madrid: the sheet opens on the match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Barça 1–2 Real Madrid: the replay strip is there (events came from FotMob)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Barça 1–2 Real Madrid: one goal per goal in the score",
+    "ok": true,
+    "detail": "3 goals"
+  },
+  {
+    "engine": "webkit",
+    "name": "Barça 1–2 Real Madrid: the header lists every scorer with the minute",
+    "ok": true,
+    "detail": "Raphinha 61' · Mbappé 41' · Mbappé 87'"
+  },
+  {
+    "engine": "webkit",
+    "name": "Barça 1–2 Real Madrid: every goal, card and sub is a key moment",
+    "ok": true,
+    "detail": "17 moments, 17 events"
+  },
+  {
+    "engine": "webkit",
+    "name": "Barça 1–2 Real Madrid: assists show on goals",
+    "ok": true,
+    "detail": "Assist Pedri, Assist Camavinga"
+  },
+  {
+    "engine": "webkit",
+    "name": "Barça 1–2 Real Madrid: the stats card shows xG",
+    "ok": true,
+    "detail": "1.19 – 1.94"
+  },
+  {
+    "engine": "webkit",
+    "name": "Barça 1–2 Real Madrid: possession comes through",
+    "ok": true,
+    "detail": "62% – 38%"
+  },
+  {
+    "engine": "webkit",
+    "name": "Barça 1–2 Real Madrid: scrubbing rewinds the score to match the goals",
+    "ok": true,
+    "detail": "at 52': 0–1 (expected 0–1)"
+  },
+  {
+    "engine": "webkit",
+    "name": "Barça 1–2 Real Madrid: Home goes to kick-off at 0–0",
+    "ok": true,
+    "detail": "1'"
+  },
+  {
+    "engine": "webkit",
+    "name": "Barça 1–2 Real Madrid: End returns to full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Barça 1–2 Real Madrid: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: the report is served",
+    "ok": true,
+    "detail": "GET /api/clubs/64/matches/575363 → 200"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: the sheet opens on the match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: the replay strip is there (events came from FotMob)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: one goal per goal in the score",
+    "ok": true,
+    "detail": "7 goals"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: the header lists every scorer with the minute",
+    "ok": true,
+    "detail": "Mac Allister 36' · Araujo 45+2' · Mac Allister 65' · Wirtz 69' · Mikautadze 4' · Cardona 29' · Oluwaseyi 87'"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: every goal, card and sub is a key moment",
+    "ok": true,
+    "detail": "19 moments, 19 events"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: assists show on goals",
+    "ok": true,
+    "detail": "Assist Saliba, Assist Tsimikas, Assist Ngumoha, Assist Ngumoha, Assist Gakpo, Assist Pérez"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: the stats card shows xG",
+    "ok": true,
+    "detail": "2.37 – 1.61"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: possession comes through",
+    "ok": true,
+    "detail": "53% – 47%"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: scrubbing rewinds the score to match the goals",
+    "ok": true,
+    "detail": "at 51': 2–2 (expected 2–2)"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: Home goes to kick-off at 0–0",
+    "ok": true,
+    "detail": "1'"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: End returns to full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "main, same match: free tier keeps to the score, no strip",
+    "ok": true,
+    "detail": "Barça 1–2 Real Madrid"
+  },
+  {
+    "engine": "webkit",
+    "name": "main: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Duo landscape: a Last 5 row opens the FotMob-filled match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Duo landscape: the replay strip is there",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Duo landscape: stats and key moments sit side by side",
+    "ok": true,
+    "detail": "527,527"
+  },
+  {
+    "engine": "webkit",
+    "name": "Duo landscape: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "scenario Deep Data match: sheet is pixel-identical to main",
+    "ok": true,
+    "detail": "0a10ab76e364aa3b vs 0a10ab76e364aa3b"
+  },
+  {
+    "engine": "webkit",
+    "name": "scenario free-tier match: sheet is pixel-identical to main",
+    "ok": true,
+    "detail": "7355bfdf07f0ef26 vs 7355bfdf07f0ef26"
+  }
+]

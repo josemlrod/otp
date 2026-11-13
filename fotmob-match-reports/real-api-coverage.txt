@@ -1,0 +1,34 @@
+PL  Sunderland      0-2 Brighton Hove   goals 2/2  assists 2  cards  2  subs  9  xG 0.72-1.41  momentum 94  lineups 4-2-3-1 v 4-2-3-1  added +2/+7
+PL  Brighton Hove   5-0 Crystal Palace  goals 5/5  assists 2  cards  3  subs 10  xG 2.00-0.77  momentum 94  lineups 4-2-3-1 v 3-4-2-1  added +2/+4
+PL  Liverpool       2-0 Brighton Hove   goals 2/2  assists 1  cards  2  subs  8  xG 1.20-1.32  momentum 94  lineups 4-2-3-1 v 4-2-3-1  added +3/+4
+PL  Man City        0-1 Brighton Hove   goals 1/1  assists 1  cards  3  subs  9  xG 1.64-1.00  momentum 94  lineups 4-2-3-1 v 4-2-3-1  added +1/+4
+PL  Brighton Hove   2-0 Brentford       goals 2/2  assists 0  cards  7  subs 10  xG 2.11-0.59  momentum 94  lineups 4-2-3-1 v 4-2-3-1  added +4/+5
+CL  Liverpool       4-3 Villarreal      goals 7/7  assists 6  cards  2  subs 10  xG 2.37-1.61  momentum 94  lineups 4-2-3-1 v 4-2-3-1  added +1/+3
+PL  Liverpool       0-1 Arsenal         goals 1/1  assists 1  cards  8  subs  9  xG 1.05-0.98  momentum 94  lineups 4-2-3-1 v 4-2-3-1  added +2/+6
+CL  Fenerbahçe      3-2 Liverpool       goals 5/5  assists 2  cards  3  subs  9  xG 1.78-1.82  momentum 94  lineups 4-2-3-1 v 4-2-3-1  added +1/+3
+PL  Crystal Palace  1-3 Liverpool       goals 4/4  assists 3  cards  6  subs  9  xG 2.60-2.65  momentum 94  lineups 3-4-2-1 v 4-2-3-1  added +3/+4
+CL  Bayern          2-2 Arsenal         goals 4/4  assists 3  cards  2  subs  9  xG 2.33-1.69  momentum 94  lineups 4-2-3-1 v 4-2-3-1  added +2/+3
+BL1 Freiburg        1-3 Bayern          goals 4/4  assists 2  cards  4  subs  9  xG 1.01-2.91  momentum 94  lineups 4-2-3-1 v 4-2-3-1  added +4/+5
+BL1 Bayern          2-2 Dortmund        goals 4/4  assists 3  cards  3  subs  8  xG 4.48-0.74  momentum 94  lineups 4-2-3-1 v 4-3-3  added +6/+4
+CL  Atleti          0-2 Bayern          goals 2/2  assists 1  cards  3  subs  8  xG 1.02-1.91  momentum 94  lineups 4-4-2 v 4-2-3-1  added +None/+3
+BL1 Mainz           1-2 Bayern          goals 3/3  assists 3  cards  1  subs 10  xG 0.54-2.78  momentum 94  lineups 3-5-2 v 4-2-3-1  added +6/+3
+SA  Inter           2-1 Fiorentina      goals 3/3  assists 2  cards  3  subs 10  xG 3.14-0.24  momentum 94  lineups 3-5-2 v 4-3-3  added +None/+6
+SA  Venezia FC      0-2 Inter           goals 2/2  assists 0  cards  2  subs  9  xG 1.59-2.33  momentum 94  lineups 3-5-2 v 3-5-2  added +1/+4
+SA  Milan           3-1 Inter           goals 4/4  assists 3  cards  3  subs 10  xG 0.62-1.68  momentum 94  lineups 3-4-2-1 v 3-4-2-1  added +1/+None
+CL  Feyenoord       0-3 Inter           goals 3/3  assists 3  cards  3  subs 10  xG 0.73-1.19  momentum 94  lineups 4-3-3 v 3-5-2  added +2/+4
+SA  Inter           2-0 Como 1907       goals 2/2  assists 1  cards  1  subs 10  xG 1.81-0.21  momentum 94  lineups 3-5-2 v 4-2-3-1  added +1/+3
+CL  Real Madrid     4-1 RB Leipzig      goals 5/5  assists 5  cards  2  subs 10  xG 3.09-1.49  momentum 94  lineups 4-2-3-1 v 4-2-3-1  added +1/+3
+PD  Barça           1-2 Real Madrid     goals 3/3  assists 2  cards  6  subs  8  xG 1.19-1.94  momentum 94  lineups 4-2-3-1 v 4-2-3-1  added +2/+5
+PD  Santander       0-3 Real Madrid     goals 3/3  assists 1  cards  2  subs  8  xG 0.97-3.36  momentum 94  lineups 4-2-3-1 v 4-2-3-1  added +4/+6
+CL  PAE AEK         2-3 Real Madrid     goals 5/5  assists 5  cards  3  subs  9  xG 0.78-3.39  momentum 94  lineups 4-4-2 v 4-2-3-1  added +1/+4
+PD  Valencia        0-3 Real Madrid     goals 3/3  assists 1  cards  9  subs 10  xG 0.18-2.34  momentum 94  lineups 5-3-2 v 4-2-3-1  added +3/+4
+CL  PSG             4-2 Barça           goals 6/6  assists 4  cards  1  subs 10  xG 3.70-2.23  momentum 94  lineups 4-3-3 v 4-2-3-1  added +3/+3
+FL1 PSG             2-0 Olympique Lyon  goals 2/2  assists 2  cards  3  subs  9  xG 0.96-0.65  momentum 93  lineups 4-3-3 v 4-3-3  added +None/+5
+FL1 Le Havre        1-5 PSG             goals 6/6  assists 4  cards  0  subs  8  xG 2.01-3.97  momentum 94  lineups 3-4-2-1 v 4-3-3  added +3/+4
+CL  Villarreal      0-6 PSG             goals 6/6  assists 6  cards  4  subs 10  xG 0.70-2.37  momentum 94  lineups 4-4-2 v 4-3-3  added +2/+None
+FL1 PSG             1-0 Troyes          goals 1/1  assists 1  cards  3  subs  9  xG 2.06-0.65  momentum 94  lineups 4-3-3 v 4-5-1  added +1/+3
+PD  Barça           6-1 Alavés          goals 7/7  assists 6  cards  5  subs 10  xG 3.26-0.76  momentum 94  lineups 4-2-3-1 v 4-5-1  added +3/+2
+CL  Barça           3-0 Aston Villa     goals 3/3  assists 2  cards  4  subs 10  xG 1.86-0.71  momentum 94  lineups 4-2-3-1 v 4-2-3-1  added +None/+3
+PD  Atleti          1-2 Barça           goals 3/3  assists 2  cards  5  subs  9  xG 1.67-1.61  momentum 94  lineups 4-4-2 v 4-1-2-3  added +3/+4
+
+32/32 matches found on FotMob with every goal, stats, lineups and momentum

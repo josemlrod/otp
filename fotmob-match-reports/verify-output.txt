@@ -1,0 +1,70 @@
+✓ [chromium] Barça 1–2 Real Madrid: the report is served — GET /api/clubs/86/matches/564723 → 200
+✓ [chromium] Barça 1–2 Real Madrid: the sheet opens on the match
+✓ [chromium] Barça 1–2 Real Madrid: the replay strip is there (events came from FotMob)
+✓ [chromium] Barça 1–2 Real Madrid: one goal per goal in the score — 3 goals
+✓ [chromium] Barça 1–2 Real Madrid: the header lists every scorer with the minute — Raphinha 61' · Mbappé 41' · Mbappé 87'
+✓ [chromium] Barça 1–2 Real Madrid: every goal, card and sub is a key moment — 17 moments, 17 events
+✓ [chromium] Barça 1–2 Real Madrid: assists show on goals — Assist Pedri, Assist Camavinga
+✓ [chromium] Barça 1–2 Real Madrid: the stats card shows xG — 1.19 – 1.94
+✓ [chromium] Barça 1–2 Real Madrid: possession comes through — 62% – 38%
+✓ [chromium] Barça 1–2 Real Madrid: scrubbing rewinds the score to match the goals — at 52': 0–1 (expected 0–1)
+✓ [chromium] Barça 1–2 Real Madrid: Home goes to kick-off at 0–0 — 1'
+✓ [chromium] Barça 1–2 Real Madrid: End returns to full time
+✓ [chromium] Barça 1–2 Real Madrid: no console errors
+✓ [chromium] Liverpool 4–3 Villarreal: the report is served — GET /api/clubs/64/matches/575363 → 200
+✓ [chromium] Liverpool 4–3 Villarreal: the sheet opens on the match
+✓ [chromium] Liverpool 4–3 Villarreal: the replay strip is there (events came from FotMob)
+✓ [chromium] Liverpool 4–3 Villarreal: one goal per goal in the score — 7 goals
+✓ [chromium] Liverpool 4–3 Villarreal: the header lists every scorer with the minute — Mac Allister 36' · Araujo 45+2' · Mac Allister 65' · Wirtz 69' · Mikautadze 4' · Cardona 29' · Oluwaseyi 87'
+✓ [chromium] Liverpool 4–3 Villarreal: every goal, card and sub is a key moment — 19 moments, 19 events
+✓ [chromium] Liverpool 4–3 Villarreal: assists show on goals — Assist Saliba, Assist Tsimikas, Assist Ngumoha, Assist Ngumoha, Assist Gakpo, Assist Pérez
+✓ [chromium] Liverpool 4–3 Villarreal: the stats card shows xG — 2.37 – 1.61
+✓ [chromium] Liverpool 4–3 Villarreal: possession comes through — 53% – 47%
+✓ [chromium] Liverpool 4–3 Villarreal: scrubbing rewinds the score to match the goals — at 51': 2–2 (expected 2–2)
+✓ [chromium] Liverpool 4–3 Villarreal: Home goes to kick-off at 0–0 — 1'
+✓ [chromium] Liverpool 4–3 Villarreal: End returns to full time
+✓ [chromium] Liverpool 4–3 Villarreal: no console errors
+✓ [chromium] main, same match: free tier keeps to the score, no strip — Barça 1–2 Real Madrid
+✓ [chromium] main: no console errors
+✓ [chromium] Duo landscape: a Last 5 row opens the FotMob-filled match
+✓ [chromium] Duo landscape: the replay strip is there
+✓ [chromium] Duo landscape: stats and key moments sit side by side — 526,526
+✓ [chromium] Duo landscape: no console errors
+✓ [chromium] scenario Deep Data match: sheet is pixel-identical to main — b07c3e63e0ffb066 vs b07c3e63e0ffb066
+✓ [chromium] scenario free-tier match: sheet is pixel-identical to main — 3a52e885c6939bec vs 3a52e885c6939bec
+✓ [webkit] Barça 1–2 Real Madrid: the report is served — GET /api/clubs/86/matches/564723 → 200
+✓ [webkit] Barça 1–2 Real Madrid: the sheet opens on the match
+✓ [webkit] Barça 1–2 Real Madrid: the replay strip is there (events came from FotMob)
+✓ [webkit] Barça 1–2 Real Madrid: one goal per goal in the score — 3 goals
+✓ [webkit] Barça 1–2 Real Madrid: the header lists every scorer with the minute — Raphinha 61' · Mbappé 41' · Mbappé 87'
+✓ [webkit] Barça 1–2 Real Madrid: every goal, card and sub is a key moment — 17 moments, 17 events
+✓ [webkit] Barça 1–2 Real Madrid: assists show on goals — Assist Pedri, Assist Camavinga
+✓ [webkit] Barça 1–2 Real Madrid: the stats card shows xG — 1.19 – 1.94
+✓ [webkit] Barça 1–2 Real Madrid: possession comes through — 62% – 38%
+✓ [webkit] Barça 1–2 Real Madrid: scrubbing rewinds the score to match the goals — at 52': 0–1 (expected 0–1)
+✓ [webkit] Barça 1–2 Real Madrid: Home goes to kick-off at 0–0 — 1'
+✓ [webkit] Barça 1–2 Real Madrid: End returns to full time
+✓ [webkit] Barça 1–2 Real Madrid: no console errors
+✓ [webkit] Liverpool 4–3 Villarreal: the report is served — GET /api/clubs/64/matches/575363 → 200
+✓ [webkit] Liverpool 4–3 Villarreal: the sheet opens on the match
+✓ [webkit] Liverpool 4–3 Villarreal: the replay strip is there (events came from FotMob)
+✓ [webkit] Liverpool 4–3 Villarreal: one goal per goal in the score — 7 goals
+✓ [webkit] Liverpool 4–3 Villarreal: the header lists every scorer with the minute — Mac Allister 36' · Araujo 45+2' · Mac Allister 65' · Wirtz 69' · Mikautadze 4' · Cardona 29' · Oluwaseyi 87'
+✓ [webkit] Liverpool 4–3 Villarreal: every goal, card and sub is a key moment — 19 moments, 19 events
+✓ [webkit] Liverpool 4–3 Villarreal: assists show on goals — Assist Saliba, Assist Tsimikas, Assist Ngumoha, Assist Ngumoha, Assist Gakpo, Assist Pérez
+✓ [webkit] Liverpool 4–3 Villarreal: the stats card shows xG — 2.37 – 1.61
+✓ [webkit] Liverpool 4–3 Villarreal: possession comes through — 53% – 47%
+✓ [webkit] Liverpool 4–3 Villarreal: scrubbing rewinds the score to match the goals — at 51': 2–2 (expected 2–2)
+✓ [webkit] Liverpool 4–3 Villarreal: Home goes to kick-off at 0–0 — 1'
+✓ [webkit] Liverpool 4–3 Villarreal: End returns to full time
+✓ [webkit] Liverpool 4–3 Villarreal: no console errors
+✓ [webkit] main, same match: free tier keeps to the score, no strip — Barça 1–2 Real Madrid
+✓ [webkit] main: no console errors
+✓ [webkit] Duo landscape: a Last 5 row opens the FotMob-filled match
+✓ [webkit] Duo landscape: the replay strip is there
+✓ [webkit] Duo landscape: stats and key moments sit side by side — 527,527
+✓ [webkit] Duo landscape: no console errors
+✓ [webkit] scenario Deep Data match: sheet is pixel-identical to main — 0a10ab76e364aa3b vs 0a10ab76e364aa3b
+✓ [webkit] scenario free-tier match: sheet is pixel-identical to main — 7355bfdf07f0ef26 vs 7355bfdf07f0ef26
+
+68/68 pass
