@@ -16,7 +16,13 @@ const recent = buildMatches({
   results: [{ result: 'W', score: [2, 1], opponent: liverpool, overrides: { id: 9000 } }],
 });
 
-function mount({ events = true } = {}) {
+// A first half Arsenal had on top, then a spell for Liverpool after the break.
+const momentum = Array.from({ length: 91 }, (_, minute) => ({
+  minute,
+  value: minute === 0 ? 0 : minute <= 45 ? 50 : minute <= 70 ? -40 : 20,
+}));
+
+function mount({ events = true, withMomentum = false } = {}) {
   const container = document.createElement('div');
   Object.assign(container.style, {
     position: 'relative', display: 'flex', flexDirection: 'column', width: '390px', height: '640px',
@@ -25,7 +31,8 @@ function mount({ events = true } = {}) {
   document.body.append(container);
 
   const requests: string[] = [];
-  const report = toMatchReport(buildMatchDetail(recent.matches[0]!, { events, stats: events, odds: events }), NOW)!;
+  const base = toMatchReport(buildMatchDetail(recent.matches[0]!, { events, stats: events, odds: events }), NOW)!;
+  const report = withMomentum ? { ...base, momentum } : base;
   const reports = new MatchReportsModel({
     now: () => NOW,
     fetch: async (url) => {
@@ -117,6 +124,43 @@ describe('match sheet', () => {
     scroller.scrollTop = scroller.scrollHeight;
     await until(() => root.hasAttribute('data-docked'), 'the strip docks');
     assert.equal(container.querySelector<HTMLElement>('[data-dock]')!.inert, false);
+  });
+
+  it('shades who was ahead when there is no momentum', async () => {
+    const { container } = mount();
+    await until(() => !!container.querySelector('[role="slider"]'), 'the replay strip appears');
+    const strip = container.querySelector('[role="slider"]:not([data-compact])')!;
+    assert.equal(strip.hasAttribute('data-momentum'), false);
+    assert.ok(strip.querySelector('rect[data-side]'), 'lead bands are drawn');
+    assert.equal(strip.querySelector('path[data-side]'), null);
+    assert.ok(!container.textContent!.includes('Time on top'));
+  });
+
+  it('draws momentum on both strips and rewinds the time on top', async () => {
+    const { container } = mount({ withMomentum: true });
+    await until(() => !!container.querySelector('[role="slider"]'), 'the replay strip appears');
+    for (const strip of container.querySelectorAll('[role="slider"]')) {
+      assert.ok(strip.hasAttribute('data-momentum'));
+      assert.equal(strip.querySelector('rect[data-side]'), null, 'no lead bands under momentum');
+      // Played and unplayed copies, each split into a home half and an away half.
+      assert.equal(strip.querySelectorAll('path[data-side="home"]').length, 2);
+      assert.equal(strip.querySelectorAll('path[data-side="away"]').length, 2);
+    }
+    assert.match(container.querySelector('section[aria-label="Replay"]')!.textContent!, /Momentum, minute by minute/);
+
+    const onTop = () =>
+      [...container.querySelectorAll('dl > div')]
+        .find((row) => row.textContent!.includes('Time on top'))
+        ?.querySelectorAll('dd');
+    await until(() => !!onTop(), 'the time on top row appears');
+    // The clock runs 0–47 then 47–96: Arsenal 0–45 and 72–92; Liverpool from 45 (the momentum
+    // has no added-time points, so the stoppage goes to the next minute's value) to 72.
+    assert.deepEqual([...onTop()!].map((dd) => dd.textContent), ['65′', '27′']);
+    const end = Number(container.querySelector('[role="slider"]')!.getAttribute('aria-valuemax'));
+
+    const strip = container.querySelector<HTMLElement>('[role="slider"]:not([data-compact])')!;
+    tap(strip, 30 / end);
+    await until(() => onTop()![1]!.textContent === '0′' && onTop()![0]!.textContent === '30′', 'time on top rewinds to 30′');
   });
 
   it('keeps to the score when the plan has no events', async () => {

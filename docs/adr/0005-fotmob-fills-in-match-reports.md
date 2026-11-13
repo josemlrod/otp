@@ -11,5 +11,5 @@ We chose FotMob over ESPN's open API, which has events, lineups and stats but no
 - **FotMob's terms forbid scraping and reuse without written consent.** That's acceptable while OTP is a personal app. Before OTP is offered to anyone else, this needs a licence or a paid provider.
 - The API is undocumented and can change or start refusing requests without warning. Every field is optional in our types, a failure anywhere leaves the football-data report as it was, and the sheet degrades the same way it does on the free tier.
 - Scenarios (`OTP_SCENARIO`) never call FotMob. They keep exercising the Deep Data fixtures.
-- Momentum minutes squeeze added time into fractions (45.5, 90.75), not real minutes. Drawing momentum on the replay strip needs a mapping onto `replayOf`'s clock.
+- Momentum minutes squeeze added time into fractions (45.5, 90.75), not real minutes. `swingsOf` in `match-replay.ts` spreads them evenly across the added time `replayOf` lays out, the last one landing on the whistle. When a report has momentum, the replay strip draws it instead of the lead bands, and the stats card adds a "Time on top" row that rewinds with the strip.
 - The few text fields FotMob sends (e.g. "assist by …") are requested in English. The assist name is read from the lineup by player id where possible.

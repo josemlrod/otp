@@ -80,6 +80,9 @@ _Avoid_: match details, match data
 FotMob's minute-by-minute measure of which side was on top: above zero the home side, below zero the away side.
 _Avoid_: pressure, attack momentum
 
+**Time on top**:
+The minutes a side had momentum in its favour, up to a point in the match. Compare **time in front**, the minutes a side led on the score.
+
 **Lineup**:
 One side's formation, coach, starters and substitutes for a match, each player with a shirt number, rating and what they did (goals, assists, a card, coming on or going off).
 

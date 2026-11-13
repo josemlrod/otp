@@ -80,6 +80,60 @@ describe('match replay', () => {
     assert.equal(replay.label(replay.moments[0].t), "105'");
   });
 
+  it('lays momentum onto the clock, spreading added-time points across the added time', () => {
+    // FotMob squeezes 2' of first-half and 5' of second-half added time into fractions.
+    const momentum = [
+      { minute: 0, value: 0 },
+      { minute: 30, value: 60 },
+      { minute: 45, value: 20 },
+      { minute: 45.5, value: -40 },
+      { minute: 46, value: -10 },
+      { minute: 90, value: 30 },
+      { minute: 90.5, value: 50 },
+      { minute: 90.75, value: -150 },
+    ];
+    const replay = replayOf(report(events, { momentum, firstHalfInjuryTime: 2 }))!;
+    assert.equal(replay.half, 47);
+    assert.deepEqual(replay.momentum, [
+      { t: 0, value: 0 },
+      { t: 30, value: 60 },
+      { t: 45, value: 20 },
+      { t: 47, value: -40 },
+      { t: 48, value: -10 },
+      { t: 92, value: 30 },
+      { t: 94.5, value: 50 },
+      { t: 97, value: -100 },
+    ]);
+    assert.equal(replay.momentum!.at(-1)!.t, replay.end, 'the last point lands on the whistle');
+  });
+
+  it('folds added-time points onto the minute when there was no added time to spread them over', () => {
+    const momentum = [{ minute: 44, value: 10 }, { minute: 45, value: 20 }, { minute: 45.5, value: -30 }, { minute: 46, value: 5 }];
+    const replay = replayOf(report([], { momentum, injuryTime: 0, fullTime: [0, 0] }))!;
+    assert.equal(replay.half, 45);
+    assert.deepEqual(replay.momentum, [{ t: 44, value: 10 }, { t: 45, value: -30 }, { t: 46, value: 5 }]);
+  });
+
+  it('counts the minutes each side was on top, up to any point', () => {
+    const momentum = [
+      { minute: 0, value: 0 },
+      { minute: 10, value: 40 },
+      { minute: 20, value: -25 },
+      { minute: 30, value: 0 },
+      { minute: 40, value: 15 },
+    ];
+    const replay = replayOf(report(events, { momentum }))!;
+    assert.deepEqual(replay.timeOnTop(5), [5, 0]);
+    assert.deepEqual(replay.timeOnTop(15), [10, 5]);
+    assert.deepEqual(replay.timeOnTop(replay.end), [20, 10]);
+  });
+
+  it('has no momentum when the report has none', () => {
+    const replay = replayOf(report(events))!;
+    assert.equal(replay.momentum, null);
+    assert.deepEqual(replay.timeOnTop(replay.end), [0, 0]);
+  });
+
   it('shortens names to the surname', () => {
     assert.equal(shortName('Virgil van Dijk'), 'van Dijk');
     assert.equal(shortName('Mata'), 'Mata');

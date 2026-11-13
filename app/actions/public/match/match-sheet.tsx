@@ -6,13 +6,14 @@ import type { PlayedMatch } from '../../../lib/club-matches.ts';
 import { getCompetitionMetadata } from '../../../lib/competition-metadata.ts';
 import { day, shortDate, time } from '../../../lib/match-format.ts';
 import type { MatchReport, Pair, ReportClub, Side, StatKey } from '../../../lib/match-report.ts';
-import { momentLabel, replayOf, shortName, type Moment, type Replay } from '../../../lib/match-replay.ts';
+import { momentLabel, replayOf, shortName, type Moment, type Replay, type Swing } from '../../../lib/match-replay.ts';
 import { space, v } from '../../../ui/theme.ts';
 import { Value } from '../motion.ts';
 import { countRender } from '../perf/renders.ts';
 import { sheetGrab, sheetScroll } from '../sheet.tsx';
 import { ClubCrest } from '../clubs/club-crest.tsx';
 import { CompetitionMark } from '../clubs/club-card.tsx';
+import { areaPath } from './curve.ts';
 import type { MatchReportsModel } from './reports.ts';
 import { wireScrub } from './scrub.ts';
 
@@ -20,6 +21,9 @@ import { wireScrub } from './scrub.ts';
 // the masthead; stats and key moments are cards below it. Drag the strip (or tap a moment) and
 // the score, clock, time in front and moments rewind to that minute. Once the strip scrolls
 // under the top edge, a compact copy docks there so it can still be scrubbed.
+//
+// The strip draws FotMob's momentum when the report has it: who was on top, minute by minute,
+// home above the line and away below. Without it, it shades the stretches a side was ahead.
 //
 // Everything past the score depends on what the server could find: events and stats come from
 // FotMob, or from football-data's paid plans. Without events there's no strip and no moments;
@@ -40,6 +44,8 @@ type Props = {
 type Strip = { chart: HTMLElement; head: HTMLElement; clip: Element; width: number };
 
 const GRAB_ROWS = 11;
+/** The playhead counts as kick-off this close to 0. */
+const KICK_OFF = 0.01;
 
 export function MatchSheet(handle: Handle<Props>) {
   const { club, match, reports } = handle.props;
@@ -54,12 +60,19 @@ export function MatchSheet(handle: Handle<Props>) {
   let dock: HTMLElement | undefined;
   let mainStrip: HTMLElement | undefined;
 
-  // What the screen shows only changes at a new minute, score or moment; the playhead itself
-  // moves every frame without a render.
+  // What the screen shows only changes at a new minute, score, moment or whole minute of time in
+  // front or on top; the playhead itself moves every frame without a render. Kick-off is its own
+  // state, since the label already reads 1' just after it.
   const shownKey = (at: number | null) =>
     !replay || at === null
       ? 'FT'
-      : `${replay.label(at)}|${replay.scoreAt(at).join()}|${replay.moments.filter((m) => m.t <= at).length}`;
+      : [
+          at <= KICK_OFF ? 'KO' : replay.label(at),
+          replay.scoreAt(at).join(),
+          replay.moments.filter((m) => m.t <= at).length,
+          replay.timeInFront(at).map(Math.round).join(),
+          replay.timeOnTop(at).map(Math.round).join(),
+        ].join('|');
 
   function paint(position: number) {
     if (!replay) return;
@@ -240,7 +253,7 @@ export function MatchSheet(handle: Handle<Props>) {
                   <span key={`a${score[1]}`}>{score[1]}</span>
                 </p>
                 <p mix={clockStyles} data-live={t !== null ? '' : undefined}>
-                  {t === null || !replay ? 'Full time' : t <= 0 ? 'Kick-off' : replay.label(t)}
+                  {t === null || !replay ? 'Full time' : t <= KICK_OFF ? 'Kick-off' : replay.label(t)}
                 </p>
               </div>
               <Team club={away} us={usSide === 'away'} />
@@ -285,8 +298,11 @@ export function MatchSheet(handle: Handle<Props>) {
                       {replay.captionAt(t ?? replay.end)}
                     </p>
                     <p mix={legendStyles}>
-                      Shaded while a side was ahead, taller for a two-goal lead:{' '}
-                      <b data-tone={tone('home')}>{home.tla || home.name}</b> above the line,{' '}
+                      {replay.momentum
+                        ? 'Momentum, minute by minute: '
+                        : 'Shaded while a side was ahead, taller for a two-goal lead: '}
+                      <b data-tone={tone('home')}>{home.tla || home.name}</b>
+                      {replay.momentum ? ' on top above the line, ' : ' above the line, '}
                       <b data-tone={tone('away')}>{away.tla || away.name}</b> below.
                     </p>
                   </section>
@@ -310,9 +326,9 @@ export function MatchSheet(handle: Handle<Props>) {
   };
 
   function strip(current: Replay, id: string, compact: boolean) {
-    const { end, half, states, moments } = current;
+    const { end, half, states, moments, momentum } = current;
     const clipId = `${handle.id}-${id}`;
-    const bands = states
+    const bands = momentum ? momentumBands(momentum, clipId) : states
       .filter((state) => state.lead !== 0)
       .map((state) => {
         const height = 20 + Math.min(2, Math.abs(state.lead)) * 12;
@@ -347,6 +363,7 @@ export function MatchSheet(handle: Handle<Props>) {
         aria-valuenow={Math.round(t ?? end)}
         aria-valuetext={t === null ? 'Full time' : current.label(t)}
         data-full={t === null ? '' : undefined}
+        data-momentum={momentum ? '' : undefined}
         style={{ '--home': usSide === 'home' ? 'var(--us)' : 'var(--them)', '--away': usSide === 'away' ? 'var(--us)' : 'var(--them)' }}
       >
         <svg viewBox={`0 0 ${end} 100`} preserveAspectRatio='none' aria-hidden='true'>
@@ -354,6 +371,16 @@ export function MatchSheet(handle: Handle<Props>) {
             <clipPath id={clipId} clipPathUnits='userSpaceOnUse'>
               <rect data-clip x={0} y={-10} height={120} />
             </clipPath>
+            {momentum && (
+              <>
+                <clipPath id={`${clipId}-home`} clipPathUnits='userSpaceOnUse'>
+                  <rect x={-1} y={-10} width={end + 2} height={60} />
+                </clipPath>
+                <clipPath id={`${clipId}-away`} clipPathUnits='userSpaceOnUse'>
+                  <rect x={-1} y={50} width={end + 2} height={60} />
+                </clipPath>
+              </>
+            )}
           </defs>
           <line x1={0} x2={end} y1={50} y2={50} data-line='mid' />
           <line x1={half} x2={half} y1={2} y2={98} data-line='half' />
@@ -374,11 +401,28 @@ export function MatchSheet(handle: Handle<Props>) {
             ))}
         </div>
         <div data-head mix={headStyles} aria-hidden='true'>
-          <span>{t === null ? 'FT' : t <= 0.01 ? 'KO' : current.label(t)}</span>
+          <span>{t === null ? 'FT' : t <= KICK_OFF ? 'KO' : current.label(t)}</span>
         </div>
       </div>
     );
   }
+}
+
+// Momentum as one smooth area around the midline, split by clipping: the part above is the home
+// side's colour, the part below the away side's. ±100 reaches most of the way to the edge,
+// leaving the outer rim for goal and card marks.
+const MOMENTUM_REACH = 40;
+
+function momentumBands(momentum: Swing[], clipId: string) {
+  const d = areaPath(momentum.map((s) => ({ x: s.t, y: 50 - (s.value / 100) * MOMENTUM_REACH })), 50);
+  return [
+    <g key='home' clip-path={`url(#${clipId}-home)`}>
+      <path d={d} data-side='home' />
+    </g>,
+    <g key='away' clip-path={`url(#${clipId}-away)`}>
+      <path d={d} data-side='away' />
+    </g>,
+  ];
 }
 
 function Team(handle: Handle<{ club: ReportClub; us: boolean }>) {
@@ -464,6 +508,16 @@ function Stats(handle: Handle<StatsProps>) {
         total: false,
         scale: replay.end,
       });
+      if (replay.momentum) {
+        rows.push({
+          key: 'top',
+          label: 'Time on top',
+          pair: replay.timeOnTop(t ?? replay.end),
+          format: (n) => `${Math.round(n)}′`,
+          total: false,
+          scale: replay.end,
+        });
+      }
     }
     if (!rows.length && !report.odds) return null;
     const tone = (side: Side) => (side === usSide ? 'us' : 'them');
@@ -931,9 +985,12 @@ const chartStyles = css({
     boxShadow: `0 0 0 2px ${v('--color-accent')}`,
   },
   '& svg': { display: 'block', width: '100%', height: '100%', overflow: 'visible' },
-  '& rect[data-side="home"]': { fill: 'var(--home)', opacity: 0.55 },
-  '& rect[data-side="away"]': { fill: 'var(--away)', opacity: 0.55 },
-  '& g[data-dim] rect': { opacity: 0.12 },
+  '& [data-side="home"]': { fill: 'var(--home)', opacity: 0.55 },
+  '& [data-side="away"]': { fill: 'var(--away)', opacity: 0.55 },
+  '& g[data-dim] [data-side]': { opacity: 0.12 },
+  // Momentum is the strip's main shape, so the played part reads stronger than lead bands.
+  '&[data-momentum] [data-side]': { opacity: 0.7 },
+  '&[data-momentum] g[data-dim] [data-side]': { opacity: 0.16 },
   '& line': { strokeWidth: 1, vectorEffect: 'non-scaling-stroke' },
   '& line[data-line="mid"]': { stroke: v('--color-separator') },
   '& line[data-line="half"]': { stroke: v('--color-text-tertiary'), strokeDasharray: '2 3' },
