@@ -12,6 +12,7 @@ import { createMemoryCache } from '../lib/api-cache.ts';
 import { createFootballData, type FootballDataFetcher } from '../lib/football-data.ts';
 import { scenarioFetcher } from '../fixtures/scenarios.ts';
 import { createAppRouter } from '../router.ts';
+import { APP_VERSION } from '../lib/app-version.ts';
 
 // Every tracked competition answers, so an unknown id is reliably 'not tracked'.
 const TRACKED_CODES: Record<string, string> = {
@@ -49,6 +50,29 @@ function setup(unavailable = false) {
 }
 
 describe('root controller', () => {
+  it('GET /api/version names the running deploy and is never cached', async () => {
+    const { router } = setup();
+    const response = await router.fetch('http://localhost/api/version');
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    assert.deepEqual(await response.json(), { version: APP_VERSION });
+  });
+
+  it('GET / names its deploy and revalidates on every load', async () => {
+    const { router } = setup();
+    const response = await router.fetch('http://localhost/');
+    assert.equal(response.headers.get('Cache-Control'), 'no-cache');
+    const html = await response.text();
+    assert.ok(html.includes(`<meta name="otp-version" content="${APP_VERSION}" />`));
+  });
+
+  it('static files revalidate on every load, so a deploy reaches installed apps', async () => {
+    const { router } = setup();
+    const response = await router.fetch('http://localhost/manifest.webmanifest');
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('Cache-Control'), 'no-cache');
+  });
+
   it('GET / fetches each tracked competition once on a cold cache', async () => {
     const { router, calls } = setup();
     const response = await router.fetch(

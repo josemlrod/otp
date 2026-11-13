@@ -18,7 +18,8 @@ declare module 'remix' {
 
 export function createAppRouter(dependencies: Parameters<typeof createAppController>[0]) {
   const router = createRouter<AppContext>({
-    middleware: [staticFiles('./public', { index: false }), renderMiddleware],
+    // Revalidate on every load, so a deploy's manifest and icons reach installed apps.
+    middleware: [staticFiles('./public', { index: false, cacheControl: 'no-cache' }), renderMiddleware],
   });
 
   router.map(routes, createAppController(dependencies));

@@ -3,6 +3,8 @@ import { css } from 'remix/component';
 import { ImportMap } from 'remix/component/server';
 
 import { scriptEntry } from '../assets.ts';
+import { APP_VERSION } from '../lib/app-version.ts';
+import { UpdatePrompt } from './public/update/update-prompt.tsx';
 import { tokens, v } from '../ui/theme.ts';
 
 export interface DocumentProps {
@@ -31,6 +33,7 @@ export function Document(handle: Handle<DocumentProps>) {
           <meta name='mobile-web-app-capable' content='yes' />
           <meta name='apple-mobile-web-app-capable' content='yes' />
           <meta name='apple-mobile-web-app-title' content='OTP' />
+          <meta name='otp-version' content={APP_VERSION} />
           <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
           <link rel='apple-touch-icon' href='/apple-touch-icon.png' />
           <link rel='manifest' href='/manifest.webmanifest' />
@@ -42,7 +45,10 @@ export function Document(handle: Handle<DocumentProps>) {
           ))}
           <script type='module' src={href}></script>
         </head>
-        <body>{children}</body>
+        <body>
+          {children}
+          <UpdatePrompt version={APP_VERSION} />
+        </body>
       </html>
     );
   };
