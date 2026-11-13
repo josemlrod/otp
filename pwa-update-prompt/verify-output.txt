@@ -1,0 +1,34 @@
+deployed v1
+/ cache-control: no-cache
+/api/version cache-control: no-store
+/manifest.webmanifest cache-control: no-cache
+/assets/app/actions/public/entry.ts cache-control: no-cache
+PASS page revalidates
+PASS version endpoint never cached
+PASS static files revalidate
+deployed v1
+PASS webkit: page renders deploy v1 — v1
+PASS webkit: checks the server on load
+PASS webkit: no prompt while the server runs the same deploy
+deployed v2
+PASS webkit: resume after a deploy shows the prompt — New version available Later Update
+PASS webkit: prompt sits inside the viewport, centred at the top — {"x":23.90625,"y":8,"width":345.171875,"height":42}
+PASS webkit: Later hides the prompt
+PASS webkit: prompt returns next time the app is opened
+PASS webkit: Update loads a fresh page from deploy v2 — v2
+PASS webkit: the page and its scripts came from the server again — [{"path":"/","status":200,"cacheControl":"no-cache"},{"path":"/assets/app/actions/public/entry.ts","status":200,"cacheControl":"no-cache"}]
+PASS webkit: no prompt once up to date
+PASS webkit: control — location.reload() keeps the old scripts running
+deployed v1
+PASS chromium: page renders deploy v1 — v1
+PASS chromium: checks the server on load
+PASS chromium: no prompt while the server runs the same deploy
+deployed v2
+PASS chromium: resume after a deploy shows the prompt — New version available Later Update
+PASS chromium: prompt sits inside the viewport, centred at the top — {"x":27.25,"y":8,"width":338.484375,"height":42}
+PASS chromium: Later hides the prompt
+PASS chromium: prompt returns next time the app is opened
+PASS chromium: Update loads a fresh page from deploy v2 — v2
+PASS chromium: the page and its scripts came from the server again — [{"path":"/","status":200,"cacheControl":"no-cache"},{"path":"/assets/app/actions/public/entry.ts","status":304}]
+PASS chromium: no prompt once up to date
+PASS chromium: control — location.reload() keeps the old scripts running

@@ -1,0 +1,74 @@
+{
+  "headers": {
+    "/": "no-cache",
+    "/api/version": "no-store",
+    "/manifest.webmanifest": "no-cache",
+    "/assets/app/actions/public/entry.ts": "no-cache"
+  },
+  "browsers": {
+    "webkit": {
+      "loadedVersion": "v1",
+      "pillOnSameDeploy": 0,
+      "pillText": "New version available Later Update",
+      "pillBox": {
+        "x": 23.90625,
+        "y": 8,
+        "width": 345.171875,
+        "height": 42
+      },
+      "pillAfterLater": 0,
+      "reloadedVersion": "v2",
+      "responsesOnUpdate": [
+        {
+          "path": "/",
+          "status": 200,
+          "cacheControl": "no-cache"
+        },
+        {
+          "path": "/assets/app/actions/public/entry.ts",
+          "status": 200,
+          "cacheControl": "no-cache"
+        },
+        {
+          "path": "/",
+          "status": 200,
+          "cacheControl": "no-cache"
+        }
+      ],
+      "pillAfterUpdate": 0,
+      "locationReloadKeptOldScripts": true
+    },
+    "chromium": {
+      "loadedVersion": "v1",
+      "pillOnSameDeploy": 0,
+      "pillText": "New version available Later Update",
+      "pillBox": {
+        "x": 27.25,
+        "y": 8,
+        "width": 338.484375,
+        "height": 42
+      },
+      "pillAfterLater": 0,
+      "reloadedVersion": "v2",
+      "responsesOnUpdate": [
+        {
+          "path": "/",
+          "status": 200,
+          "cacheControl": "no-cache"
+        },
+        {
+          "path": "/assets/app/actions/public/entry.ts",
+          "status": 304
+        },
+        {
+          "path": "/",
+          "status": 200,
+          "cacheControl": "no-cache"
+        }
+      ],
+      "pillAfterUpdate": 0,
+      "locationReloadKeptOldScripts": true,
+      "video": "/private/tmp/claude-501/-Users-joserodriguez--t3-worktrees-otp-t3-f00b34d4-5083935a5dfbe669/5e967670-e93a-4ae4-a5a7-a29529f91bee/scratchpad/proof/out/video/page@d3879809d6195bc2f9d0571ad7fcd170.webm"
+    }
+  }
+}
