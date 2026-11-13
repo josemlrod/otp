@@ -3,8 +3,8 @@ import type { MatchReport, Pair, ReportEvent, Side } from './match-report.ts';
 // The match as a timeline, built only from the minute-stamped events. `t` is a position on the
 // match clock in minutes, with added time laid out in place: the first half runs 0 → half,
 // the second half half → end. The API stamps second-half added time on the match; first-half
-// added time only shows on events, so a quiet first-half stoppage comes out a little short,
-// which is fine for drawing a strip.
+// added time comes from the announcement when the source has it (FotMob) and otherwise only
+// from events, so a quiet first-half stoppage can come out a little short.
 
 export type Moment = ReportEvent & { t: number };
 
@@ -46,7 +46,10 @@ export function replayOf(report: MatchReport): Replay | null {
   if (!events) return null;
   const regular = report.duration === 'REGULAR';
 
-  const firstAdded = max(events.filter((e) => e.minute <= 45).map((e) => e.injuryTime ?? 0));
+  const firstAdded = max([
+    report.firstHalfInjuryTime ?? 0,
+    ...events.filter((e) => e.minute <= 45).map((e) => e.injuryTime ?? 0),
+  ]);
   const secondAdded =
     report.injuryTime ??
     max([

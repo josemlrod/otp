@@ -21,8 +21,9 @@ import { wireScrub } from './scrub.ts';
 // the score, clock, time in front and moments rewind to that minute. Once the strip scrolls
 // under the top edge, a compact copy docks there so it can still be scrubbed.
 //
-// Everything past the score depends on the API plan: without Deep Data there are no events, so
-// no strip and no moments; without the statistics add-on there are no totals.
+// Everything past the score depends on what the server could find: events and stats come from
+// FotMob, or from football-data's paid plans. Without events there's no strip and no moments;
+// without stats there are no totals.
 
 /** Opens the match sheet for one of a club's results, from the button the user pressed. */
 export type OpenMatch = (club: Club, match: PlayedMatch, button: HTMLButtonElement) => void;
@@ -435,6 +436,7 @@ function Axis(handle: Handle<{ replay: Replay }>) {
 
 const STAT_ROWS: Array<[StatKey, string, (n: number) => string]> = [
   ['possession', 'Possession', (n) => `${n}%`],
+  ['xg', 'Expected goals', (n) => n.toFixed(2)],
   ['shots', 'Shots', String],
   ['onTarget', 'On target', String],
   ['corners', 'Corners', String],

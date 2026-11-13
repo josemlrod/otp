@@ -13,8 +13,8 @@ function report(events: ReportEvent[] | null, overrides: Partial<MatchReport> = 
     venue: null, attendance: null, referee: null,
     home: { id: 57, name: 'Arsenal', tla: 'ARS', crest: '' },
     away: { id: 64, name: 'Liverpool', tla: 'LIV', crest: '' },
-    duration: 'REGULAR', fullTime: [2, 1], halfTime: [1, 0], injuryTime: 5,
-    events, stats: null, odds: null,
+    duration: 'REGULAR', fullTime: [2, 1], halfTime: [1, 0], injuryTime: 5, firstHalfInjuryTime: null,
+    events, stats: null, odds: null, momentum: null, lineups: null, bestPlayer: null,
     ...overrides,
   };
 }

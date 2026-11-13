@@ -2,7 +2,7 @@ import * as assert from 'remix/assert';
 import { describe, it } from 'remix/test';
 import { buildMatchDetail, buildMatches, buildStandings, buildTeam, NOW } from '../fixtures/builders.ts';
 import { createMemoryCache } from './api-cache.ts';
-import { createFootballData, RETRY_AFTER_MS, type FootballDataFetcher } from './football-data.ts';
+import { createFootballData, RETRY_AFTER_MS, type FootballDataFetcher, type MatchDetails } from './football-data.ts';
 
 const ids = [2021, 2002, 2019, 2014, 2015, 2001];
 const clubs = [buildTeam({ id: 57 }), buildTeam({ id: 58 }), buildTeam({ id: 59 })];
@@ -165,6 +165,26 @@ describe('match report', () => {
     await data.matchReport(57, 2);
     await data.matchReport(57, 2);
     assert.equal(calls.filter((path) => path === '/v4/matches/2').length, 1);
+  });
+
+  it('hands the report to a second source to fill in, and keeps it if that fails', async () => {
+    const calls: string[] = [];
+    const make = (enrich: MatchDetails['enrich']) =>
+      createFootballData({
+        cache: createMemoryCache(),
+        now: () => NOW,
+        fetcher: async (path) => {
+          calls.push(path);
+          return respond(path);
+        },
+        details: { enrich },
+      });
+    const filled = await make(async (_, report) => ({ ...report, bestPlayer: 7 })).matchReport(57, 1);
+    assert.equal(filled.status === 'ok' && filled.report.bestPlayer, 7);
+    const failed = await make(async () => {
+      throw new Error('FotMob changed');
+    }).matchReport(57, 1);
+    assert.equal(failed.status === 'ok' && failed.report.id, 1);
   });
 
   it('reports unavailable when the match request fails without a copy', async () => {
