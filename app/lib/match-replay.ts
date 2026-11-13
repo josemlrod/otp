@@ -1,4 +1,4 @@
-import type { MatchReport, Pair, ReportEvent, Side } from './match-report.ts';
+import type { MatchReport, MomentumPoint, Pair, ReportEvent, Side } from './match-report.ts';
 
 // The match as a timeline, built only from the minute-stamped events. `t` is a position on the
 // match clock in minutes, with added time laid out in place: the first half runs 0 → half,
@@ -9,6 +9,9 @@ import type { MatchReport, Pair, ReportEvent, Side } from './match-report.ts';
 export type Moment = ReportEvent & { t: number };
 
 export type GameState = { from: number; to: number; score: Pair; lead: number };
+
+/** Momentum at a point on the match clock, -100 (away on top) to 100 (home on top). */
+export type Swing = { t: number; value: number };
 
 export type Replay = {
   half: number;
@@ -25,6 +28,10 @@ export type Replay = {
   captionAt: (t: number) => string;
   /** The goal or card closest to t within `within` minutes, for snapping a loose scrub. */
   snap: (t: number, within?: number) => number | null;
+  /** Who was on top minute by minute, on the match clock, or null when the source has none. */
+  momentum: Swing[] | null;
+  /** Minutes each side had the upper hand by t, from momentum (zeros without it). */
+  timeOnTop: (t: number) => Pair;
 };
 
 /** "Bukayo Saka" → "Saka", "Virgil van Dijk" → "van Dijk", "Mata" → "Mata". */
@@ -156,5 +163,69 @@ export function replayOf(report: MatchReport): Replay | null {
     return best;
   };
 
-  return { half, end, moments, label, scoreAt, states, timeInFront, captionAt, snap };
+  const momentum = report.momentum ? swingsOf(report.momentum, { half, fullTime, end, regular }) : null;
+
+  const timeOnTop = (t: number): Pair => {
+    const top: Pair = [0, 0];
+    if (!momentum) return top;
+    // Each point closes the minute before it, so a stretch belongs to the value at its end.
+    for (let i = 1; i < momentum.length; i++) {
+      const { t: to, value } = momentum[i]!;
+      const length = Math.max(0, Math.min(t, to) - momentum[i - 1]!.t);
+      if (value > 0) top[0] += length;
+      if (value < 0) top[1] += length;
+    }
+    return top;
+  };
+
+  return { half, end, moments, label, scoreAt, states, timeInFront, captionAt, snap, momentum, timeOnTop };
+}
+
+type Clock = { half: number; fullTime: number; end: number; regular: boolean };
+
+/**
+ * FotMob's momentum on the replay clock. Whole minutes map like events do. Added time comes as
+ * fractions after the minute it follows (45.5, or 90.5 and 90.75), so those points are spread
+ * evenly across the added time the clock lays out, the last one landing on the whistle.
+ * Extra-time stoppages aren't laid out on the clock, so their points fold onto the minute.
+ */
+export function swingsOf(points: MomentumPoint[], clock: Clock): Swing[] | null {
+  const { half, fullTime, end, regular } = clock;
+  const whole = (minute: number) => {
+    if (minute <= 45) return minute;
+    if (minute <= 90) return half + (minute - 45);
+    // Past 90 as a whole minute: added time in a regular match, extra time otherwise.
+    return regular ? half + 45 + (minute - 90) : fullTime + (minute - 90);
+  };
+  const spans: Record<number, [number, number]> = { 45: [45, half], 90: [half + 45, fullTime] };
+
+  const sorted = [...points].sort((a, b) => a.minute - b.minute);
+  const added = new Map<number, number[]>();
+  for (const p of sorted) {
+    if (Number.isInteger(p.minute)) continue;
+    const base = Math.floor(p.minute);
+    added.set(base, [...(added.get(base) ?? []), p.minute]);
+  }
+
+  const swings: Swing[] = [];
+  for (const p of sorted) {
+    let t: number;
+    if (Number.isInteger(p.minute)) {
+      t = whole(p.minute);
+    } else {
+      const base = Math.floor(p.minute);
+      const [from, to] = spans[base] ?? [whole(base), whole(base)];
+      const run = added.get(base)!;
+      t = from + ((to - from) * (run.indexOf(p.minute) + 1)) / run.length;
+    }
+    const value = Math.max(-100, Math.min(100, p.value));
+    // Points that land on the same instant (no added time to spread over) keep the latest.
+    if (swings.length && t <= swings.at(-1)!.t + 1e-9) {
+      swings[swings.length - 1] = { t: swings.at(-1)!.t, value };
+      continue;
+    }
+    if (t > end + 1e-9) break;
+    swings.push({ t, value });
+  }
+  return swings.length > 1 ? swings : null;
 }
