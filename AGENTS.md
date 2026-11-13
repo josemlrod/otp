@@ -16,6 +16,17 @@ bun run typecheck
 
 Use `bun run hmr` for live server and browser updates (`bun run hmr:lan` exposes it to devices on your Wi-Fi); `bun run dev` only watches and restarts the server. `bun run start` runs in production mode without a separate build step.
 
+## Architecture Map
+
+`ARCHITECTURE.md` is the map of the system: the components, one line on what each does, and Mermaid diagrams of how they connect. Read it first to find your way around. `CONTEXT.md` holds the vocabulary and `docs/adr/` holds the decisions.
+
+Keep the map current as you work. It is part of the change, not a follow-up:
+
+- **Update `ARCHITECTURE.md` in the same PR** whenever you add, remove, rename or rewire a component. That covers a new module in `app/lib/`, a new folder in `app/actions/public/`, a new route, a new external service or storage, or a change to how data flows between parts. Update both the table row and any diagram the change touches.
+- Keep each description to one line that says what the component does, not how. Link the ADR when there is one.
+- `app/architecture.test.ts` fails when a component on disk is missing from the map or the map names a path that no longer exists. It can't check the arrows, so check that the diagrams still match the code.
+- Start every PR description with an **Architecture** line: either `no change` or one sentence on what changed in the map.
+
 ## Building Features
 
 Refer to ./.agents/skills/remix/SKILL.md for the Remix mental model and how to find guides and API READMEs through `node_modules/remix/INDEX.md`.
