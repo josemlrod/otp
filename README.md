@@ -2,6 +2,12 @@
 
 A minimal Remix application starter with a home page.
 
+## Find Your Way Around
+
+- [ARCHITECTURE.md](ARCHITECTURE.md): the components and how they connect, with diagrams
+- [CONTEXT.md](CONTEXT.md): what things are called
+- [docs/adr/](docs/adr/): why things are the way they are
+
 ## Starter Shape
 
 - `app/actions/controller.tsx` owns the top-level route actions.
