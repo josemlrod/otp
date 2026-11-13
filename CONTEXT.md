@@ -73,8 +73,15 @@ A club's soonest fixture.
 Whether the club plays at home (H) or away (A) in a match.
 
 **Match report**:
-The server projection of one finished match from `/v4/matches/{id}`: the score, plus whatever the API plan adds (minute-stamped goals, cards and substitutions; full-time statistics; pre-match odds).
+The server projection of one finished match. The base is football-data's `/v4/matches/{id}` (the score, plus whatever the API plan adds). FotMob, when it has the match, fills in minute-stamped goals with assists, cards and substitutions, full-time statistics with xG, lineups, momentum and the player of the match (ADR-0005).
 _Avoid_: match details, match data
+
+**Momentum**:
+FotMob's minute-by-minute measure of which side was on top: above zero the home side, below zero the away side.
+_Avoid_: pressure, attack momentum
+
+**Lineup**:
+One side's formation, coach, starters and substitutes for a match, each player with a shirt number, rating and what they did (goals, assists, a card, coming on or going off).
 
 **Replay**:
 A match report's events laid out on the match clock, so the match sheet can show the score, time in front and moments at any minute.

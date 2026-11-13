@@ -4,6 +4,7 @@ import { parseInstant, validTimeZone, type ClockSource } from './clock.ts';
 import type { db as database } from '../db.ts';
 import { createFootballData } from './football-data.ts';
 import { createHttpFetcher } from './football-data-http.ts';
+import { createFotMob, createFotMobFetcher } from './fotmob.ts';
 
 type Environment = {
   OTP_SCENARIO?: string;
@@ -37,9 +38,14 @@ export function footballDataFromEnv(
       ? scenarioFetcher(scenario, readNow())
       : createHttpFetcher(env.FOOTBALL_DATA_API_KEY ?? '', 'https://api.football-data.org');
   const cache = scenario !== undefined ? createMemoryCache() : createSqliteCache(db);
+  // Scenarios answer from fixtures alone, so they never reach FotMob.
+  const details =
+    scenario !== undefined
+      ? undefined
+      : createFotMob({ fetcher: createFotMobFetcher(), cache, now: readNow });
   return {
     clock,
-    footballData: createFootballData({ fetcher, cache, now: readNow }),
+    footballData: createFootballData({ fetcher, cache, now: readNow, details }),
     scenario,
     shouldMigrate: scenario === undefined,
     fetcher,

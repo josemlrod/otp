@@ -1,13 +1,13 @@
 import { tryCatch } from './utils.ts';
 import type { FootballDataCache } from './api-cache.ts';
 import { clubSections, type ClubSection } from './clubs.ts';
-import { isFresh } from './freshness.ts';
 import { toClubMatches, type ClubMatches } from './club-matches.ts';
 import { toMatchReport, type MatchReport } from './match-report.ts';
+import { createReadThrough, type Fetcher } from './read-through.ts';
 
 import type { MatchDetailResponse, MatchesResponse, StandingsResponse } from './types/api.ts';
 
-export const RETRY_AFTER_MS = 60_000;
+export { RETRY_AFTER_MS } from './read-through.ts';
 
 const COMPETITION_IDS = {
   PL: 2021,
@@ -18,19 +18,15 @@ const COMPETITION_IDS = {
   CL: 2001,
 };
 
-function log(message: string) {
-  console.info(`[football-data] ${message}`);
-}
+export type FootballDataFetcher = Fetcher;
 
-function logError(message: string, err?: unknown) {
-  if (err === undefined) console.error(`[football-data] ${message}`);
-  else console.error(`[football-data] ${message}`, err);
-}
-
-type FetchResult<T> = { data: T; err: null } | { data: null; err: string };
-type CachedResult<T> = { data: T; err: null; fetchedAt: number } | { data: null; err: string };
-
-export type FootballDataFetcher = (path: string) => Promise<Response>;
+/**
+ * A second source that fills in what football-data's plan leaves out of a finished match
+ * (events, stats, lineups, momentum). It returns the report unchanged when it can't help.
+ */
+export type MatchDetails = {
+  enrich(match: MatchDetailResponse, report: MatchReport): Promise<MatchReport>;
+};
 export type ClubMatchesResult =
   { status: 'ok'; matches: ClubMatches } | { status: 'not-tracked' } | { status: 'unavailable' };
 export type MatchReportResult =
@@ -55,76 +51,14 @@ export function createFootballData({
   fetcher,
   cache,
   now,
+  details,
 }: {
   fetcher: FootballDataFetcher;
   cache: FootballDataCache;
   now: () => number;
+  details?: MatchDetails;
 }): FootballData {
-  const retryAt = new Map<string, number>();
-
-  async function fetchFootballData<T>(path: string, errorMessage: string): Promise<FetchResult<T>> {
-    const start = now();
-    const [response, err] = await tryCatch(fetcher(path));
-    const ms = Math.round(now() - start);
-
-    if (err) {
-      logError(`GET ${path} failed after ${ms}ms`, err);
-      return { data: null, err: errorMessage };
-    }
-
-    if (!response.ok) {
-      logError(`GET ${path} ${response.status} ${ms}ms`);
-      return { data: null, err: errorMessage };
-    }
-    log(`GET ${path} ${response.status} ${ms}ms`);
-
-    const [data, parseErr] = await tryCatch(response.json() as Promise<T>);
-    if (parseErr) {
-      logError(`GET ${path} returned invalid JSON`, parseErr);
-      return { data: null, err: errorMessage };
-    }
-
-    return { data, err: null };
-  }
-
-  async function readThrough<T>(
-    key: string,
-    path: string,
-    errorMessage: string,
-  ): Promise<CachedResult<T>> {
-    const [cached, readErr] = await tryCatch(cache.read<T>(key));
-    if (readErr) logError(`cache read failed ${key}`, readErr);
-
-    if (cached && isFresh(cached.fetchedAt, now())) {
-      log(`cache hit ${key}`);
-      return { data: cached.data, err: null, fetchedAt: cached.fetchedAt };
-    }
-    log(`${cached ? 'cache stale' : 'cache miss'} ${key}`);
-
-    const coolingDown = now() < (retryAt.get(key) ?? -Infinity);
-    if (coolingDown) log(`retry cooldown ${key}`);
-    const res: FetchResult<T> = coolingDown
-      ? { data: null, err: errorMessage }
-      : await fetchFootballData<T>(path, errorMessage);
-    if (res.data) {
-      retryAt.delete(key);
-      const fetchedAt = now();
-      const [, writeErr] = await tryCatch(cache.write(key, res.data, fetchedAt));
-      if (writeErr) logError(`cache write failed ${key}`, writeErr);
-      return { data: res.data, err: null, fetchedAt };
-    }
-
-    if (!retryAt.has(key) || now() >= retryAt.get(key)!) {
-      retryAt.set(key, now() + RETRY_AFTER_MS);
-    }
-
-    if (cached) {
-      log(`serving stale ${key}`);
-      return { data: cached.data, err: null, fetchedAt: cached.fetchedAt };
-    }
-
-    return { data: null, err: res.err ?? errorMessage };
-  }
+  const readThrough = createReadThrough({ name: 'football-data', fetcher, cache, now });
 
   async function standings(): Promise<StandingsResponse[]> {
     const results = await Promise.all(
@@ -195,7 +129,11 @@ export function createFootballData({
       );
       if (!result.data) return { status: 'unavailable' };
       const report = toMatchReport(result.data, result.fetchedAt);
-      return report ? { status: 'ok', report } : { status: 'not-found' };
+      if (!report) return { status: 'not-found' };
+      if (!details) return { status: 'ok', report };
+      const [enriched, err] = await tryCatch(details.enrich(result.data, report));
+      if (err) console.error(`[football-data] enriching match ${matchId} failed`, err);
+      return { status: 'ok', report: enriched ?? report };
     },
   };
 }
