@@ -2,6 +2,7 @@ import { Cookie } from 'remix/headers';
 import { createController } from 'remix/router';
 
 import { assets } from '../assets.ts';
+import { APP_VERSION } from '../lib/app-version.ts';
 import { routes } from '../routes.ts';
 import { HomePage } from './home-page.tsx';
 import type { FootballData } from '../lib/football-data.ts';
@@ -56,6 +57,13 @@ export function createAppController({
         return Response.json(result.report);
       },
 
+      version() {
+        return Response.json(
+          { version: APP_VERSION },
+          { headers: { 'Cache-Control': 'no-store' } },
+        );
+      },
+
       async home(context) {
         const cookie = Cookie.from(context.request.headers.get('Cookie'));
         const savedIds = parseYourClubsCookie(cookie.get(YOUR_CLUBS_COOKIE));
@@ -81,6 +89,8 @@ export function createAppController({
             yourClubs={yourClubs}
             initialMatches={initialMatches}
           />,
+          // Revalidate the page on every load, so it always names the latest deploy's assets.
+          { headers: { 'Cache-Control': 'no-cache' } },
         );
       },
     },

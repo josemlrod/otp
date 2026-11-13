@@ -28,5 +28,9 @@ FROM base
 
 COPY --from=build /app /app
 
+# Names this deploy, so installed apps can tell when a newer one is live.
+ARG APP_VERSION=""
+ENV APP_VERSION=${APP_VERSION}
+
 EXPOSE 3000
 CMD [ "bun", "run", "start" ]
