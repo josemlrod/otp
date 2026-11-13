@@ -1,0 +1,86 @@
+✓ [chromium] Man United 4–4 Aston Villa: the report carries FotMob momentum — 94 points
+✓ [chromium] Man United 4–4 Aston Villa: the report is served — GET /api/clubs/66/matches/560639 → 200
+✓ [chromium] Man United 4–4 Aston Villa: the sheet opens on the match
+✓ [chromium] Man United 4–4 Aston Villa: the strip is in momentum mode
+✓ [chromium] Man United 4–4 Aston Villa: momentum replaces the lead bands — {"bands":0,"home":2,"away":2}
+✓ [chromium] Man United 4–4 Aston Villa: the curve runs from kick-off to the whistle — x 0.00 → 100.00, full time at 100, slider max 101
+✓ [chromium] Man United 4–4 Aston Villa: home and away are drawn in different colours — oklch(0.911 0.197 124.6) / oklch(0.74 0.075 238)
+✓ [chromium] Man United 4–4 Aston Villa: the legend explains momentum — Momentum, minute by minute: MUN on top above the line, AVL below.
+✓ [chromium] Man United 4–4 Aston Villa: time on top at full time matches the raw momentum — 67 – 25 (expected 67 – 25)
+✓ [chromium] Man United 4–4 Aston Villa: the played part of the curve ends at the playhead — clip 57.00, playhead 57 (53')
+✓ [chromium] Man United 4–4 Aston Villa: time on top rewinds with the strip — 38 – 14 at 53'
+✓ [chromium] Man United 4–4 Aston Villa: time on top isn't dimmed like full-time totals — opacity 1
+✓ [chromium] Man United 4–4 Aston Villa: Home goes to kick-off: 0–0 and no time on top — 0–0, 0 – 0
+✓ [chromium] Man United 4–4 Aston Villa: End returns to full time
+✓ [chromium] Man United 4–4 Aston Villa: the docked strip draws momentum too — docked= paths=4
+✓ [chromium] Man United 4–4 Aston Villa: scrubbing the docked strip moves its played part — at 31', clip 30.30
+✓ [chromium] Man United 4–4 Aston Villa: no console errors
+✓ [chromium] Liverpool 4–3 Villarreal: the report carries FotMob momentum — 94 points
+✓ [chromium] Liverpool 4–3 Villarreal: the report is served — GET /api/clubs/64/matches/575363 → 200
+✓ [chromium] Liverpool 4–3 Villarreal: the sheet opens on the match
+✓ [chromium] Liverpool 4–3 Villarreal: the strip is in momentum mode
+✓ [chromium] Liverpool 4–3 Villarreal: momentum replaces the lead bands — {"bands":0,"home":2,"away":2}
+✓ [chromium] Liverpool 4–3 Villarreal: the curve runs from kick-off to the whistle — x 0.00 → 95.00, full time at 95, slider max 95
+✓ [chromium] Liverpool 4–3 Villarreal: home and away are drawn in different colours — oklch(0.911 0.197 124.6) / oklch(0.74 0.075 238)
+✓ [chromium] Liverpool 4–3 Villarreal: the legend explains momentum — Momentum, minute by minute: LIV on top above the line, VIL below.
+✓ [chromium] Liverpool 4–3 Villarreal: time on top at full time matches the raw momentum — 54 – 39 (expected 54 – 39)
+✓ [chromium] Liverpool 4–3 Villarreal: the played part of the curve ends at the playhead — clip 52.25, playhead 52 (51')
+✓ [chromium] Liverpool 4–3 Villarreal: time on top rewinds with the strip — 29 – 22 at 51'
+✓ [chromium] Liverpool 4–3 Villarreal: time on top isn't dimmed like full-time totals — opacity 1
+✓ [chromium] Liverpool 4–3 Villarreal: Home goes to kick-off: 0–0 and no time on top — 0–0, 0 – 0
+✓ [chromium] Liverpool 4–3 Villarreal: End returns to full time
+✓ [chromium] Liverpool 4–3 Villarreal: the docked strip draws momentum too — docked= paths=4
+✓ [chromium] Liverpool 4–3 Villarreal: scrubbing the docked strip moves its played part — at 29', clip 29.00
+✓ [chromium] Liverpool 4–3 Villarreal: no console errors
+✓ [chromium] main, same match: the strip only shades who was ahead — 12 lead bands
+✓ [chromium] main: no time on top row
+✓ [chromium] main: no console errors
+✓ [chromium] Duo landscape: the strip draws momentum
+✓ [chromium] Duo landscape: time on top rewinds — 28 – 10
+✓ [chromium] Duo landscape: no console errors
+✓ [chromium] scenario Deep Data match: sheet is pixel-identical to main — b07c3e63e0ffb066 vs b07c3e63e0ffb066
+✓ [chromium] scenario free-tier match: sheet is pixel-identical to main — 3a52e885c6939bec vs 3a52e885c6939bec
+✓ [webkit] Man United 4–4 Aston Villa: the report carries FotMob momentum — 94 points
+✓ [webkit] Man United 4–4 Aston Villa: the report is served — GET /api/clubs/66/matches/560639 → 200
+✓ [webkit] Man United 4–4 Aston Villa: the sheet opens on the match
+✓ [webkit] Man United 4–4 Aston Villa: the strip is in momentum mode
+✓ [webkit] Man United 4–4 Aston Villa: momentum replaces the lead bands — {"bands":0,"home":2,"away":2}
+✓ [webkit] Man United 4–4 Aston Villa: the curve runs from kick-off to the whistle — x 0.00 → 100.00, full time at 100, slider max 101
+✓ [webkit] Man United 4–4 Aston Villa: home and away are drawn in different colours — oklch(0.911 0.197 124.599998) / oklch(0.74 0.075 238)
+✓ [webkit] Man United 4–4 Aston Villa: the legend explains momentum — Momentum, minute by minute: MUN on top above the line, AVL below.
+✓ [webkit] Man United 4–4 Aston Villa: time on top at full time matches the raw momentum — 67 – 25 (expected 67 – 25)
+✓ [webkit] Man United 4–4 Aston Villa: the played part of the curve ends at the playhead — clip 57.00, playhead 57 (53')
+✓ [webkit] Man United 4–4 Aston Villa: time on top rewinds with the strip — 38 – 14 at 53'
+✓ [webkit] Man United 4–4 Aston Villa: time on top isn't dimmed like full-time totals — opacity 1
+✓ [webkit] Man United 4–4 Aston Villa: Home goes to kick-off: 0–0 and no time on top — 0–0, 0 – 0
+✓ [webkit] Man United 4–4 Aston Villa: End returns to full time
+✓ [webkit] Man United 4–4 Aston Villa: the docked strip draws momentum too — docked= paths=4
+✓ [webkit] Man United 4–4 Aston Villa: scrubbing the docked strip moves its played part — at 31', clip 30.24
+✓ [webkit] Man United 4–4 Aston Villa: no console errors
+✓ [webkit] Liverpool 4–3 Villarreal: the report carries FotMob momentum — 94 points
+✓ [webkit] Liverpool 4–3 Villarreal: the report is served — GET /api/clubs/64/matches/575363 → 200
+✓ [webkit] Liverpool 4–3 Villarreal: the sheet opens on the match
+✓ [webkit] Liverpool 4–3 Villarreal: the strip is in momentum mode
+✓ [webkit] Liverpool 4–3 Villarreal: momentum replaces the lead bands — {"bands":0,"home":2,"away":2}
+✓ [webkit] Liverpool 4–3 Villarreal: the curve runs from kick-off to the whistle — x 0.00 → 95.00, full time at 95, slider max 95
+✓ [webkit] Liverpool 4–3 Villarreal: home and away are drawn in different colours — oklch(0.911 0.197 124.599998) / oklch(0.74 0.075 238)
+✓ [webkit] Liverpool 4–3 Villarreal: the legend explains momentum — Momentum, minute by minute: LIV on top above the line, VIL below.
+✓ [webkit] Liverpool 4–3 Villarreal: time on top at full time matches the raw momentum — 54 – 39 (expected 54 – 39)
+✓ [webkit] Liverpool 4–3 Villarreal: the played part of the curve ends at the playhead — clip 52.22, playhead 52 (51')
+✓ [webkit] Liverpool 4–3 Villarreal: time on top rewinds with the strip — 29 – 22 at 51'
+✓ [webkit] Liverpool 4–3 Villarreal: time on top isn't dimmed like full-time totals — opacity 1
+✓ [webkit] Liverpool 4–3 Villarreal: Home goes to kick-off: 0–0 and no time on top — 0–0, 0 – 0
+✓ [webkit] Liverpool 4–3 Villarreal: End returns to full time
+✓ [webkit] Liverpool 4–3 Villarreal: the docked strip draws momentum too — docked= paths=4
+✓ [webkit] Liverpool 4–3 Villarreal: scrubbing the docked strip moves its played part — at 29', clip 29.00
+✓ [webkit] Liverpool 4–3 Villarreal: no console errors
+✓ [webkit] main, same match: the strip only shades who was ahead — 12 lead bands
+✓ [webkit] main: no time on top row
+✓ [webkit] main: no console errors
+✓ [webkit] Duo landscape: the strip draws momentum
+✓ [webkit] Duo landscape: time on top rewinds — 28 – 10
+✓ [webkit] Duo landscape: no console errors
+✓ [webkit] scenario Deep Data match: sheet is pixel-identical to main — 0a10ab76e364aa3b vs 0a10ab76e364aa3b
+✓ [webkit] scenario free-tier match: sheet is pixel-identical to main — 7355bfdf07f0ef26 vs 7355bfdf07f0ef26
+
+84/84 pass

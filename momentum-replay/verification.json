@@ -1,0 +1,506 @@
+[
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: the report carries FotMob momentum",
+    "ok": true,
+    "detail": "94 points"
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: the report is served",
+    "ok": true,
+    "detail": "GET /api/clubs/66/matches/560639 → 200"
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: the sheet opens on the match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: the strip is in momentum mode",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: momentum replaces the lead bands",
+    "ok": true,
+    "detail": "{\"bands\":0,\"home\":2,\"away\":2}"
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: the curve runs from kick-off to the whistle",
+    "ok": true,
+    "detail": "x 0.00 → 100.00, full time at 100, slider max 101"
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: home and away are drawn in different colours",
+    "ok": true,
+    "detail": "oklch(0.911 0.197 124.6) / oklch(0.74 0.075 238)"
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: the legend explains momentum",
+    "ok": true,
+    "detail": "Momentum, minute by minute: MUN on top above the line, AVL below."
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: time on top at full time matches the raw momentum",
+    "ok": true,
+    "detail": "67 – 25 (expected 67 – 25)"
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: the played part of the curve ends at the playhead",
+    "ok": true,
+    "detail": "clip 57.00, playhead 57 (53')"
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: time on top rewinds with the strip",
+    "ok": true,
+    "detail": "38 – 14 at 53'"
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: time on top isn't dimmed like full-time totals",
+    "ok": true,
+    "detail": "opacity 1"
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: Home goes to kick-off: 0–0 and no time on top",
+    "ok": true,
+    "detail": "0–0, 0 – 0"
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: End returns to full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: the docked strip draws momentum too",
+    "ok": true,
+    "detail": "docked= paths=4"
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: scrubbing the docked strip moves its played part",
+    "ok": true,
+    "detail": "at 31', clip 30.30"
+  },
+  {
+    "engine": "chromium",
+    "name": "Man United 4–4 Aston Villa: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: the report carries FotMob momentum",
+    "ok": true,
+    "detail": "94 points"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: the report is served",
+    "ok": true,
+    "detail": "GET /api/clubs/64/matches/575363 → 200"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: the sheet opens on the match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: the strip is in momentum mode",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: momentum replaces the lead bands",
+    "ok": true,
+    "detail": "{\"bands\":0,\"home\":2,\"away\":2}"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: the curve runs from kick-off to the whistle",
+    "ok": true,
+    "detail": "x 0.00 → 95.00, full time at 95, slider max 95"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: home and away are drawn in different colours",
+    "ok": true,
+    "detail": "oklch(0.911 0.197 124.6) / oklch(0.74 0.075 238)"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: the legend explains momentum",
+    "ok": true,
+    "detail": "Momentum, minute by minute: LIV on top above the line, VIL below."
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: time on top at full time matches the raw momentum",
+    "ok": true,
+    "detail": "54 – 39 (expected 54 – 39)"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: the played part of the curve ends at the playhead",
+    "ok": true,
+    "detail": "clip 52.25, playhead 52 (51')"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: time on top rewinds with the strip",
+    "ok": true,
+    "detail": "29 – 22 at 51'"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: time on top isn't dimmed like full-time totals",
+    "ok": true,
+    "detail": "opacity 1"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: Home goes to kick-off: 0–0 and no time on top",
+    "ok": true,
+    "detail": "0–0, 0 – 0"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: End returns to full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: the docked strip draws momentum too",
+    "ok": true,
+    "detail": "docked= paths=4"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: scrubbing the docked strip moves its played part",
+    "ok": true,
+    "detail": "at 29', clip 29.00"
+  },
+  {
+    "engine": "chromium",
+    "name": "Liverpool 4–3 Villarreal: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "main, same match: the strip only shades who was ahead",
+    "ok": true,
+    "detail": "12 lead bands"
+  },
+  {
+    "engine": "chromium",
+    "name": "main: no time on top row",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "main: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Duo landscape: the strip draws momentum",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Duo landscape: time on top rewinds",
+    "ok": true,
+    "detail": "28 – 10"
+  },
+  {
+    "engine": "chromium",
+    "name": "Duo landscape: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "scenario Deep Data match: sheet is pixel-identical to main",
+    "ok": true,
+    "detail": "b07c3e63e0ffb066 vs b07c3e63e0ffb066"
+  },
+  {
+    "engine": "chromium",
+    "name": "scenario free-tier match: sheet is pixel-identical to main",
+    "ok": true,
+    "detail": "3a52e885c6939bec vs 3a52e885c6939bec"
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: the report carries FotMob momentum",
+    "ok": true,
+    "detail": "94 points"
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: the report is served",
+    "ok": true,
+    "detail": "GET /api/clubs/66/matches/560639 → 200"
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: the sheet opens on the match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: the strip is in momentum mode",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: momentum replaces the lead bands",
+    "ok": true,
+    "detail": "{\"bands\":0,\"home\":2,\"away\":2}"
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: the curve runs from kick-off to the whistle",
+    "ok": true,
+    "detail": "x 0.00 → 100.00, full time at 100, slider max 101"
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: home and away are drawn in different colours",
+    "ok": true,
+    "detail": "oklch(0.911 0.197 124.599998) / oklch(0.74 0.075 238)"
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: the legend explains momentum",
+    "ok": true,
+    "detail": "Momentum, minute by minute: MUN on top above the line, AVL below."
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: time on top at full time matches the raw momentum",
+    "ok": true,
+    "detail": "67 – 25 (expected 67 – 25)"
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: the played part of the curve ends at the playhead",
+    "ok": true,
+    "detail": "clip 57.00, playhead 57 (53')"
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: time on top rewinds with the strip",
+    "ok": true,
+    "detail": "38 – 14 at 53'"
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: time on top isn't dimmed like full-time totals",
+    "ok": true,
+    "detail": "opacity 1"
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: Home goes to kick-off: 0–0 and no time on top",
+    "ok": true,
+    "detail": "0–0, 0 – 0"
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: End returns to full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: the docked strip draws momentum too",
+    "ok": true,
+    "detail": "docked= paths=4"
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: scrubbing the docked strip moves its played part",
+    "ok": true,
+    "detail": "at 31', clip 30.24"
+  },
+  {
+    "engine": "webkit",
+    "name": "Man United 4–4 Aston Villa: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: the report carries FotMob momentum",
+    "ok": true,
+    "detail": "94 points"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: the report is served",
+    "ok": true,
+    "detail": "GET /api/clubs/64/matches/575363 → 200"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: the sheet opens on the match",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: the strip is in momentum mode",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: momentum replaces the lead bands",
+    "ok": true,
+    "detail": "{\"bands\":0,\"home\":2,\"away\":2}"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: the curve runs from kick-off to the whistle",
+    "ok": true,
+    "detail": "x 0.00 → 95.00, full time at 95, slider max 95"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: home and away are drawn in different colours",
+    "ok": true,
+    "detail": "oklch(0.911 0.197 124.599998) / oklch(0.74 0.075 238)"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: the legend explains momentum",
+    "ok": true,
+    "detail": "Momentum, minute by minute: LIV on top above the line, VIL below."
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: time on top at full time matches the raw momentum",
+    "ok": true,
+    "detail": "54 – 39 (expected 54 – 39)"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: the played part of the curve ends at the playhead",
+    "ok": true,
+    "detail": "clip 52.22, playhead 52 (51')"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: time on top rewinds with the strip",
+    "ok": true,
+    "detail": "29 – 22 at 51'"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: time on top isn't dimmed like full-time totals",
+    "ok": true,
+    "detail": "opacity 1"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: Home goes to kick-off: 0–0 and no time on top",
+    "ok": true,
+    "detail": "0–0, 0 – 0"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: End returns to full time",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: the docked strip draws momentum too",
+    "ok": true,
+    "detail": "docked= paths=4"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: scrubbing the docked strip moves its played part",
+    "ok": true,
+    "detail": "at 29', clip 29.00"
+  },
+  {
+    "engine": "webkit",
+    "name": "Liverpool 4–3 Villarreal: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "main, same match: the strip only shades who was ahead",
+    "ok": true,
+    "detail": "12 lead bands"
+  },
+  {
+    "engine": "webkit",
+    "name": "main: no time on top row",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "main: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Duo landscape: the strip draws momentum",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Duo landscape: time on top rewinds",
+    "ok": true,
+    "detail": "28 – 10"
+  },
+  {
+    "engine": "webkit",
+    "name": "Duo landscape: no console errors",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "scenario Deep Data match: sheet is pixel-identical to main",
+    "ok": true,
+    "detail": "0a10ab76e364aa3b vs 0a10ab76e364aa3b"
+  },
+  {
+    "engine": "webkit",
+    "name": "scenario free-tier match: sheet is pixel-identical to main",
+    "ok": true,
+    "detail": "7355bfdf07f0ef26 vs 7355bfdf07f0ef26"
+  }
+]
