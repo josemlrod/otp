@@ -1,0 +1,1010 @@
+[
+  {
+    "engine": "chromium",
+    "name": "the sheet opens on Barcelona 1–2 Real Madrid",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "Barcelona (the followed club) shows first",
+    "ok": true,
+    "detail": "FCB\n4-2-3-1"
+  },
+  {
+    "engine": "chromium",
+    "name": "eleven players on the pitch",
+    "ok": true,
+    "detail": "11"
+  },
+  {
+    "engine": "chromium",
+    "name": "player photos load",
+    "ok": true,
+    "detail": "11/11"
+  },
+  {
+    "engine": "chromium",
+    "name": "formation and Starting XI",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "a vertical drag on the pitch scrolls the sheet",
+    "ok": true,
+    "detail": "390 → 560"
+  },
+  {
+    "engine": "chromium",
+    "name": "and does not switch teams",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "a swipe moves to Real Madrid",
+    "ok": true,
+    "detail": "RMA\n4-2-3-1"
+  },
+  {
+    "engine": "chromium",
+    "name": "the swipe opened no player card",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "the track lands exactly one page over",
+    "ok": true,
+    "detail": "-402 vs -402"
+  },
+  {
+    "engine": "chromium",
+    "name": "the switch highlight followed",
+    "ok": true,
+    "detail": "178 vs 178"
+  },
+  {
+    "engine": "chromium",
+    "name": "pulling past the last team springs back",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "pressing a player opens their card",
+    "ok": true,
+    "detail": "Kylian Mbappé, rated 9.0"
+  },
+  {
+    "engine": "chromium",
+    "name": "the card has rating, minutes and a goal",
+    "ok": true,
+    "detail": "10 | Kylian Mbappé | #10 · Forward | Real Madrid | 9.0 | ★ Player of the match | 90' played | 41' | Goal | 87' | Goal | 90+4' | Yellow card"
+  },
+  {
+    "engine": "chromium",
+    "name": "the card sits fully on screen",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "the goal jumps the replay there",
+    "ok": true,
+    "detail": "41' → clock 41', score 0–1"
+  },
+  {
+    "engine": "chromium",
+    "name": "pressing elsewhere closes the card",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "a bench row opens the substitute",
+    "ok": true,
+    "detail": "24 | Denzel Dumfries | #24 · Substitute | Real Madrid | 6.3 | On 62' · 28' played | 62' | On for Valverde"
+  },
+  {
+    "engine": "chromium",
+    "name": "Escape closes the card, not the sheet",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "tapping the switch goes back",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "no console errors (phone)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "cover PSG 4–2 Barça: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "cover PSG 4–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "cover PSG 4–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "cover Barça 1–2 Real Madrid: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "cover Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "cover Barça 1–2 Real Madrid: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "cover Barça 6–1 Alavés: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "cover Barça 6–1 Alavés: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "cover Barça 6–1 Alavés: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "cover Barça 3–0 Aston Villa: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "cover Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[\"Nilsson Lindelöf\"]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "cover Barça 3–0 Aston Villa: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "cover Atleti 1–2 Barça: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "cover Atleti 1–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "cover Atleti 1–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "no console errors (cover)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "phone PSG 4–2 Barça: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "phone PSG 4–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "phone PSG 4–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "phone Barça 1–2 Real Madrid: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "phone Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "phone Barça 1–2 Real Madrid: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "phone Barça 6–1 Alavés: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "phone Barça 6–1 Alavés: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "phone Barça 6–1 Alavés: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "phone Barça 3–0 Aston Villa: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "phone Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[\"Nilsson Lindelöf\"]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "phone Barça 3–0 Aston Villa: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "phone Atleti 1–2 Barça: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "phone Atleti 1–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "phone Atleti 1–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "no console errors (phone)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "inner PSG 4–2 Barça: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "inner PSG 4–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[\"CMarquinhos\",\"Kvaratskhelia\"]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "inner PSG 4–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "inner Barça 1–2 Real Madrid: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "inner Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "inner Barça 1–2 Real Madrid: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "inner Barça 6–1 Alavés: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "inner Barça 6–1 Alavés: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[\"CProtesoni\"]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "inner Barça 6–1 Alavés: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "inner Barça 3–0 Aston Villa: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "inner Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[\"C★ Raphinha\"]},{\"hits\":[],\"outside\":0,\"truncated\":[\"Nilsson Lindelöf\"]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "inner Barça 3–0 Aston Villa: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "inner Atleti 1–2 Barça: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "inner Atleti 1–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "inner Atleti 1–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "no console errors (inner)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape PSG 4–2 Barça: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape PSG 4–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape PSG 4–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape Barça 1–2 Real Madrid: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape Barça 1–2 Real Madrid: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape Barça 6–1 Alavés: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape Barça 6–1 Alavés: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape Barça 6–1 Alavés: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape Barça 3–0 Aston Villa: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[\"Nilsson Lindelöf\"]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape Barça 3–0 Aston Villa: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape Atleti 1–2 Barça: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape Atleti 1–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "chromium",
+    "name": "landscape Atleti 1–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "chromium",
+    "name": "no console errors (landscape)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "the sheet opens on Barcelona 1–2 Real Madrid",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "Barcelona (the followed club) shows first",
+    "ok": true,
+    "detail": "FCB\n4-2-3-1"
+  },
+  {
+    "engine": "webkit",
+    "name": "eleven players on the pitch",
+    "ok": true,
+    "detail": "11"
+  },
+  {
+    "engine": "webkit",
+    "name": "player photos load",
+    "ok": true,
+    "detail": "11/11"
+  },
+  {
+    "engine": "webkit",
+    "name": "formation and Starting XI",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "a swipe moves to Real Madrid",
+    "ok": true,
+    "detail": "RMA\n4-2-3-1"
+  },
+  {
+    "engine": "webkit",
+    "name": "the swipe opened no player card",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "the track lands exactly one page over",
+    "ok": true,
+    "detail": "-402 vs -402"
+  },
+  {
+    "engine": "webkit",
+    "name": "the switch highlight followed",
+    "ok": true,
+    "detail": "178 vs 178"
+  },
+  {
+    "engine": "webkit",
+    "name": "pulling past the last team springs back",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "pressing a player opens their card",
+    "ok": true,
+    "detail": "Kylian Mbappé, rated 9.0"
+  },
+  {
+    "engine": "webkit",
+    "name": "the card has rating, minutes and a goal",
+    "ok": true,
+    "detail": "10 | Kylian Mbappé | #10 · Forward | Real Madrid | 9.0 | ★ Player of the match | 90' played | 41' | Goal | 87' | Goal | 90+4' | Yellow card"
+  },
+  {
+    "engine": "webkit",
+    "name": "the card sits fully on screen",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "the goal jumps the replay there",
+    "ok": true,
+    "detail": "41' → clock 41', score 0–1"
+  },
+  {
+    "engine": "webkit",
+    "name": "pressing elsewhere closes the card",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "a bench row opens the substitute",
+    "ok": true,
+    "detail": "24 | Denzel Dumfries | #24 · Substitute | Real Madrid | 6.3 | On 62' · 28' played | 62' | On for Valverde"
+  },
+  {
+    "engine": "webkit",
+    "name": "Escape closes the card, not the sheet",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "tapping the switch goes back",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "no console errors (phone)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "cover PSG 4–2 Barça: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "cover PSG 4–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[\"Kvaratskhelia\"]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "cover PSG 4–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "cover Barça 1–2 Real Madrid: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "cover Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "cover Barça 1–2 Real Madrid: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "cover Barça 6–1 Alavés: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "cover Barça 6–1 Alavés: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "cover Barça 6–1 Alavés: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "cover Barça 3–0 Aston Villa: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "cover Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[\"Nilsson Lindelöf\"]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "cover Barça 3–0 Aston Villa: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "cover Atleti 1–2 Barça: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "cover Atleti 1–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "cover Atleti 1–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "no console errors (cover)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "phone PSG 4–2 Barça: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "phone PSG 4–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[\"Kvaratskhelia\"]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "phone PSG 4–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "phone Barça 1–2 Real Madrid: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "phone Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "phone Barça 1–2 Real Madrid: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "phone Barça 6–1 Alavés: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "phone Barça 6–1 Alavés: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "phone Barça 6–1 Alavés: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "phone Barça 3–0 Aston Villa: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "phone Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[\"Nilsson Lindelöf\"]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "phone Barça 3–0 Aston Villa: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "phone Atleti 1–2 Barça: one half at a time",
+    "ok": true,
+    "detail": "{\"both\":false,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "phone Atleti 1–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "phone Atleti 1–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "no console errors (phone)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "inner PSG 4–2 Barça: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "inner PSG 4–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[\"CMarquinhos\",\"Kvaratskhelia\"]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "inner PSG 4–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "inner Barça 1–2 Real Madrid: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "inner Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "inner Barça 1–2 Real Madrid: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "inner Barça 6–1 Alavés: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "inner Barça 6–1 Alavés: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[\"CProtesoni\"]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "inner Barça 6–1 Alavés: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "inner Barça 3–0 Aston Villa: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "inner Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[\"C★ Raphinha\"]},{\"hits\":[],\"outside\":0,\"truncated\":[\"Nilsson Lindelöf\"]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "inner Barça 3–0 Aston Villa: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "inner Atleti 1–2 Barça: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "inner Atleti 1–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "inner Atleti 1–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "no console errors (inner)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape PSG 4–2 Barça: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape PSG 4–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[\"Kvaratskhelia\"]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape PSG 4–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape Barça 1–2 Real Madrid: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape Barça 1–2 Real Madrid: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape Barça 6–1 Alavés: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape Barça 6–1 Alavés: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape Barça 6–1 Alavés: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape Barça 3–0 Aston Villa: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[\"Nilsson Lindelöf\"]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape Barça 3–0 Aston Villa: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape Atleti 1–2 Barça: halves side by side",
+    "ok": true,
+    "detail": "{\"both\":true,\"beside\":true}"
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape Atleti 1–2 Barça: no name tags collide, nobody off the pitch",
+    "ok": true,
+    "detail": "[{\"hits\":[],\"outside\":0,\"truncated\":[]},{\"hits\":[],\"outside\":0,\"truncated\":[]}]"
+  },
+  {
+    "engine": "webkit",
+    "name": "landscape Atleti 1–2 Barça: nothing spills past its half",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "engine": "webkit",
+    "name": "no console errors (landscape)",
+    "ok": true,
+    "detail": ""
+  }
+]

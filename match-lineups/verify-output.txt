@@ -1,0 +1,174 @@
+✓ [chromium] the sheet opens on Barcelona 1–2 Real Madrid
+✓ [chromium] Barcelona (the followed club) shows first — FCB
+4-2-3-1
+✓ [chromium] eleven players on the pitch — 11
+✓ [chromium] player photos load — 11/11
+✓ [chromium] formation and Starting XI
+✓ [chromium] a vertical drag on the pitch scrolls the sheet — 390 → 560
+✓ [chromium] and does not switch teams
+✓ [chromium] a swipe moves to Real Madrid — RMA
+4-2-3-1
+✓ [chromium] the swipe opened no player card
+✓ [chromium] the track lands exactly one page over — -402 vs -402
+✓ [chromium] the switch highlight followed — 178 vs 178
+✓ [chromium] pulling past the last team springs back
+✓ [chromium] pressing a player opens their card — Kylian Mbappé, rated 9.0
+✓ [chromium] the card has rating, minutes and a goal — 10 | Kylian Mbappé | #10 · Forward | Real Madrid | 9.0 | ★ Player of the match | 90' played | 41' | Goal | 87' | Goal | 90+4' | Yellow card
+✓ [chromium] the card sits fully on screen
+✓ [chromium] the goal jumps the replay there — 41' → clock 41', score 0–1
+✓ [chromium] pressing elsewhere closes the card
+✓ [chromium] a bench row opens the substitute — 24 | Denzel Dumfries | #24 · Substitute | Real Madrid | 6.3 | On 62' · 28' played | 62' | On for Valverde
+✓ [chromium] Escape closes the card, not the sheet
+✓ [chromium] tapping the switch goes back
+✓ [chromium] no console errors (phone)
+✓ [chromium] cover PSG 4–2 Barça: one half at a time — {"both":false,"beside":true}
+✓ [chromium] cover PSG 4–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] cover PSG 4–2 Barça: nothing spills past its half
+✓ [chromium] cover Barça 1–2 Real Madrid: one half at a time — {"both":false,"beside":true}
+✓ [chromium] cover Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] cover Barça 1–2 Real Madrid: nothing spills past its half
+✓ [chromium] cover Barça 6–1 Alavés: one half at a time — {"both":false,"beside":true}
+✓ [chromium] cover Barça 6–1 Alavés: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] cover Barça 6–1 Alavés: nothing spills past its half
+✓ [chromium] cover Barça 3–0 Aston Villa: one half at a time — {"both":false,"beside":true}
+✓ [chromium] cover Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":["Nilsson Lindelöf"]}]
+✓ [chromium] cover Barça 3–0 Aston Villa: nothing spills past its half
+✓ [chromium] cover Atleti 1–2 Barça: one half at a time — {"both":false,"beside":true}
+✓ [chromium] cover Atleti 1–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] cover Atleti 1–2 Barça: nothing spills past its half
+✓ [chromium] no console errors (cover)
+✓ [chromium] phone PSG 4–2 Barça: one half at a time — {"both":false,"beside":true}
+✓ [chromium] phone PSG 4–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] phone PSG 4–2 Barça: nothing spills past its half
+✓ [chromium] phone Barça 1–2 Real Madrid: one half at a time — {"both":false,"beside":true}
+✓ [chromium] phone Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] phone Barça 1–2 Real Madrid: nothing spills past its half
+✓ [chromium] phone Barça 6–1 Alavés: one half at a time — {"both":false,"beside":true}
+✓ [chromium] phone Barça 6–1 Alavés: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] phone Barça 6–1 Alavés: nothing spills past its half
+✓ [chromium] phone Barça 3–0 Aston Villa: one half at a time — {"both":false,"beside":true}
+✓ [chromium] phone Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":["Nilsson Lindelöf"]}]
+✓ [chromium] phone Barça 3–0 Aston Villa: nothing spills past its half
+✓ [chromium] phone Atleti 1–2 Barça: one half at a time — {"both":false,"beside":true}
+✓ [chromium] phone Atleti 1–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] phone Atleti 1–2 Barça: nothing spills past its half
+✓ [chromium] no console errors (phone)
+✓ [chromium] inner PSG 4–2 Barça: halves side by side — {"both":true,"beside":true}
+✓ [chromium] inner PSG 4–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":["CMarquinhos","Kvaratskhelia"]}]
+✓ [chromium] inner PSG 4–2 Barça: nothing spills past its half
+✓ [chromium] inner Barça 1–2 Real Madrid: halves side by side — {"both":true,"beside":true}
+✓ [chromium] inner Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] inner Barça 1–2 Real Madrid: nothing spills past its half
+✓ [chromium] inner Barça 6–1 Alavés: halves side by side — {"both":true,"beside":true}
+✓ [chromium] inner Barça 6–1 Alavés: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":["CProtesoni"]}]
+✓ [chromium] inner Barça 6–1 Alavés: nothing spills past its half
+✓ [chromium] inner Barça 3–0 Aston Villa: halves side by side — {"both":true,"beside":true}
+✓ [chromium] inner Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":["C★ Raphinha"]},{"hits":[],"outside":0,"truncated":["Nilsson Lindelöf"]}]
+✓ [chromium] inner Barça 3–0 Aston Villa: nothing spills past its half
+✓ [chromium] inner Atleti 1–2 Barça: halves side by side — {"both":true,"beside":true}
+✓ [chromium] inner Atleti 1–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] inner Atleti 1–2 Barça: nothing spills past its half
+✓ [chromium] no console errors (inner)
+✓ [chromium] landscape PSG 4–2 Barça: halves side by side — {"both":true,"beside":true}
+✓ [chromium] landscape PSG 4–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] landscape PSG 4–2 Barça: nothing spills past its half
+✓ [chromium] landscape Barça 1–2 Real Madrid: halves side by side — {"both":true,"beside":true}
+✓ [chromium] landscape Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] landscape Barça 1–2 Real Madrid: nothing spills past its half
+✓ [chromium] landscape Barça 6–1 Alavés: halves side by side — {"both":true,"beside":true}
+✓ [chromium] landscape Barça 6–1 Alavés: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] landscape Barça 6–1 Alavés: nothing spills past its half
+✓ [chromium] landscape Barça 3–0 Aston Villa: halves side by side — {"both":true,"beside":true}
+✓ [chromium] landscape Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":["Nilsson Lindelöf"]}]
+✓ [chromium] landscape Barça 3–0 Aston Villa: nothing spills past its half
+✓ [chromium] landscape Atleti 1–2 Barça: halves side by side — {"both":true,"beside":true}
+✓ [chromium] landscape Atleti 1–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [chromium] landscape Atleti 1–2 Barça: nothing spills past its half
+✓ [chromium] no console errors (landscape)
+✓ [webkit] the sheet opens on Barcelona 1–2 Real Madrid
+✓ [webkit] Barcelona (the followed club) shows first — FCB
+4-2-3-1
+✓ [webkit] eleven players on the pitch — 11
+✓ [webkit] player photos load — 11/11
+✓ [webkit] formation and Starting XI
+✓ [webkit] a swipe moves to Real Madrid — RMA
+4-2-3-1
+✓ [webkit] the swipe opened no player card
+✓ [webkit] the track lands exactly one page over — -402 vs -402
+✓ [webkit] the switch highlight followed — 178 vs 178
+✓ [webkit] pulling past the last team springs back
+✓ [webkit] pressing a player opens their card — Kylian Mbappé, rated 9.0
+✓ [webkit] the card has rating, minutes and a goal — 10 | Kylian Mbappé | #10 · Forward | Real Madrid | 9.0 | ★ Player of the match | 90' played | 41' | Goal | 87' | Goal | 90+4' | Yellow card
+✓ [webkit] the card sits fully on screen
+✓ [webkit] the goal jumps the replay there — 41' → clock 41', score 0–1
+✓ [webkit] pressing elsewhere closes the card
+✓ [webkit] a bench row opens the substitute — 24 | Denzel Dumfries | #24 · Substitute | Real Madrid | 6.3 | On 62' · 28' played | 62' | On for Valverde
+✓ [webkit] Escape closes the card, not the sheet
+✓ [webkit] tapping the switch goes back
+✓ [webkit] no console errors (phone)
+✓ [webkit] cover PSG 4–2 Barça: one half at a time — {"both":false,"beside":true}
+✓ [webkit] cover PSG 4–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":["Kvaratskhelia"]}]
+✓ [webkit] cover PSG 4–2 Barça: nothing spills past its half
+✓ [webkit] cover Barça 1–2 Real Madrid: one half at a time — {"both":false,"beside":true}
+✓ [webkit] cover Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [webkit] cover Barça 1–2 Real Madrid: nothing spills past its half
+✓ [webkit] cover Barça 6–1 Alavés: one half at a time — {"both":false,"beside":true}
+✓ [webkit] cover Barça 6–1 Alavés: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [webkit] cover Barça 6–1 Alavés: nothing spills past its half
+✓ [webkit] cover Barça 3–0 Aston Villa: one half at a time — {"both":false,"beside":true}
+✓ [webkit] cover Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":["Nilsson Lindelöf"]}]
+✓ [webkit] cover Barça 3–0 Aston Villa: nothing spills past its half
+✓ [webkit] cover Atleti 1–2 Barça: one half at a time — {"both":false,"beside":true}
+✓ [webkit] cover Atleti 1–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [webkit] cover Atleti 1–2 Barça: nothing spills past its half
+✓ [webkit] no console errors (cover)
+✓ [webkit] phone PSG 4–2 Barça: one half at a time — {"both":false,"beside":true}
+✓ [webkit] phone PSG 4–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":["Kvaratskhelia"]}]
+✓ [webkit] phone PSG 4–2 Barça: nothing spills past its half
+✓ [webkit] phone Barça 1–2 Real Madrid: one half at a time — {"both":false,"beside":true}
+✓ [webkit] phone Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [webkit] phone Barça 1–2 Real Madrid: nothing spills past its half
+✓ [webkit] phone Barça 6–1 Alavés: one half at a time — {"both":false,"beside":true}
+✓ [webkit] phone Barça 6–1 Alavés: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [webkit] phone Barça 6–1 Alavés: nothing spills past its half
+✓ [webkit] phone Barça 3–0 Aston Villa: one half at a time — {"both":false,"beside":true}
+✓ [webkit] phone Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":["Nilsson Lindelöf"]}]
+✓ [webkit] phone Barça 3–0 Aston Villa: nothing spills past its half
+✓ [webkit] phone Atleti 1–2 Barça: one half at a time — {"both":false,"beside":true}
+✓ [webkit] phone Atleti 1–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [webkit] phone Atleti 1–2 Barça: nothing spills past its half
+✓ [webkit] no console errors (phone)
+✓ [webkit] inner PSG 4–2 Barça: halves side by side — {"both":true,"beside":true}
+✓ [webkit] inner PSG 4–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":["CMarquinhos","Kvaratskhelia"]}]
+✓ [webkit] inner PSG 4–2 Barça: nothing spills past its half
+✓ [webkit] inner Barça 1–2 Real Madrid: halves side by side — {"both":true,"beside":true}
+✓ [webkit] inner Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [webkit] inner Barça 1–2 Real Madrid: nothing spills past its half
+✓ [webkit] inner Barça 6–1 Alavés: halves side by side — {"both":true,"beside":true}
+✓ [webkit] inner Barça 6–1 Alavés: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":["CProtesoni"]}]
+✓ [webkit] inner Barça 6–1 Alavés: nothing spills past its half
+✓ [webkit] inner Barça 3–0 Aston Villa: halves side by side — {"both":true,"beside":true}
+✓ [webkit] inner Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":["C★ Raphinha"]},{"hits":[],"outside":0,"truncated":["Nilsson Lindelöf"]}]
+✓ [webkit] inner Barça 3–0 Aston Villa: nothing spills past its half
+✓ [webkit] inner Atleti 1–2 Barça: halves side by side — {"both":true,"beside":true}
+✓ [webkit] inner Atleti 1–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [webkit] inner Atleti 1–2 Barça: nothing spills past its half
+✓ [webkit] no console errors (inner)
+✓ [webkit] landscape PSG 4–2 Barça: halves side by side — {"both":true,"beside":true}
+✓ [webkit] landscape PSG 4–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":["Kvaratskhelia"]}]
+✓ [webkit] landscape PSG 4–2 Barça: nothing spills past its half
+✓ [webkit] landscape Barça 1–2 Real Madrid: halves side by side — {"both":true,"beside":true}
+✓ [webkit] landscape Barça 1–2 Real Madrid: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [webkit] landscape Barça 1–2 Real Madrid: nothing spills past its half
+✓ [webkit] landscape Barça 6–1 Alavés: halves side by side — {"both":true,"beside":true}
+✓ [webkit] landscape Barça 6–1 Alavés: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [webkit] landscape Barça 6–1 Alavés: nothing spills past its half
+✓ [webkit] landscape Barça 3–0 Aston Villa: halves side by side — {"both":true,"beside":true}
+✓ [webkit] landscape Barça 3–0 Aston Villa: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":["Nilsson Lindelöf"]}]
+✓ [webkit] landscape Barça 3–0 Aston Villa: nothing spills past its half
+✓ [webkit] landscape Atleti 1–2 Barça: halves side by side — {"both":true,"beside":true}
+✓ [webkit] landscape Atleti 1–2 Barça: no name tags collide, nobody off the pitch — [{"hits":[],"outside":0,"truncated":[]},{"hits":[],"outside":0,"truncated":[]}]
+✓ [webkit] landscape Atleti 1–2 Barça: nothing spills past its half
+✓ [webkit] no console errors (landscape)
+
+168/168 pass
