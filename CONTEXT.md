@@ -110,7 +110,11 @@ The sheet where the user edits Your clubs.
 The sheet that shows one competition's standings.
 
 **Match sheet**:
-The sheet that shows one result in full, opened from a picked result on the club card or a Last 5 row on the club page. Its strip scrubs the replay and docks under the top edge once scrolled past.
+The sheet that shows one result in full, opened from a picked result on the club card or a Last 5 row on the club page. Its strip scrubs the replay and docks under the top edge once scrolled past. Below it, the lineups put each side's starting XI on their own half of the pitch with the bench underneath: one side at a time on a phone (swipe or the switch), side by side on a wide sheet.
+
+**Player card**:
+The small card that opens from a player in the lineups: rating, minutes and what they did, each event a jump in the replay. Where a player page will hang from.
+_Avoid_: popover, tooltip, peek (in UI copy)
 
 **Sheet**:
 A panel that rises over the home screen while the screen behind it recedes.

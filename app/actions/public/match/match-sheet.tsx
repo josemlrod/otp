@@ -14,6 +14,7 @@ import { sheetGrab, sheetScroll } from '../sheet.tsx';
 import { ClubCrest } from '../clubs/club-crest.tsx';
 import { CompetitionMark } from '../clubs/club-card.tsx';
 import { areaPath } from './curve.ts';
+import { Lineups } from './lineups.tsx';
 import type { MatchReportsModel } from './reports.ts';
 import { wireScrub } from './scrub.ts';
 
@@ -25,9 +26,12 @@ import { wireScrub } from './scrub.ts';
 // The strip draws FotMob's momentum when the report has it: who was on top, minute by minute,
 // home above the line and away below. Without it, it shades the stretches a side was ahead.
 //
-// Everything past the score depends on what the server could find: events and stats come from
-// FotMob, or from football-data's paid plans. Without events there's no strip and no moments;
-// without stats there are no totals.
+// Lineups come next: one side's starting XI on their half of the pitch, then the other's (see
+// lineups.tsx).
+//
+// Everything past the score depends on what the server could find: events, stats and lineups
+// come from FotMob, or from football-data's paid plans. Without events there's no strip and no
+// moments; without stats there are no totals; without lineups there's no pitch.
 
 /** Opens the match sheet for one of a club's results, from the button the user pressed. */
 export type OpenMatch = (club: Club, match: PlayedMatch, button: HTMLButtonElement) => void;
@@ -306,6 +310,9 @@ export function MatchSheet(handle: Handle<Props>) {
                       <b data-tone={tone('away')}>{away.tla || away.name}</b> below.
                     </p>
                   </section>
+                )}
+                {report.lineups && (
+                  <Lineups report={report} replay={replay} usSide={usSide} onSeek={goTo} />
                 )}
                 <div mix={columnsStyles}>
                   <Stats report={report} replay={replay} t={t} usSide={usSide} />

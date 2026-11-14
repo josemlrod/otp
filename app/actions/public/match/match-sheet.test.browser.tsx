@@ -2,7 +2,7 @@ import * as assert from 'remix/assert';
 import { render } from 'remix/component/test';
 import { describe, it } from 'remix/test';
 
-import { NOW, buildClub, buildClubMatches, buildMatchDetail, buildMatches, buildTeam } from '../../../fixtures/builders.ts';
+import { NOW, buildClub, buildClubMatches, buildLineups, buildMatchDetail, buildMatches, buildTeam } from '../../../fixtures/builders.ts';
 import { toMatchReport } from '../../../lib/match-report.ts';
 import { tokens } from '../../../ui/theme.ts';
 import { MatchSheet } from './match-sheet.tsx';
@@ -22,17 +22,22 @@ const momentum = Array.from({ length: 91 }, (_, minute) => ({
   value: minute === 0 ? 0 : minute <= 45 ? 50 : minute <= 70 ? -40 : 20,
 }));
 
-function mount({ events = true, withMomentum = false } = {}) {
+function mount({ events = true, withMomentum = false, withLineups = false, width = 390 } = {}) {
   const container = document.createElement('div');
   Object.assign(container.style, {
-    position: 'relative', display: 'flex', flexDirection: 'column', width: '390px', height: '640px',
+    position: 'relative', display: 'flex', flexDirection: 'column', width: `${width}px`, height: '640px',
   });
   for (const [token, value] of Object.entries(tokens)) container.style.setProperty(token, value);
   document.body.append(container);
 
   const requests: string[] = [];
-  const base = toMatchReport(buildMatchDetail(recent.matches[0]!, { events, stats: events, odds: events }), NOW)!;
-  const report = withMomentum ? { ...base, momentum } : base;
+  const detail = buildMatchDetail(recent.matches[0]!, { events, stats: events, odds: events });
+  const base = toMatchReport(detail, NOW)!;
+  const report = {
+    ...base,
+    ...(withMomentum ? { momentum } : {}),
+    ...(withLineups ? { lineups: buildLineups(detail), bestPlayer: 5709 } : {}),
+  };
   const reports = new MatchReportsModel({
     now: () => NOW,
     fetch: async (url) => {
@@ -168,5 +173,75 @@ describe('match sheet', () => {
     await until(() => text('[data-match-sheet]').includes("aren't available"), 'the note appears');
     assert.equal(container.querySelector('[role="slider"]'), null);
     assert.equal(score(container), '2–1');
+  });
+
+  it('has no lineups section when the report has no lineups', async () => {
+    const { container } = mount();
+    await until(() => !!container.querySelector('[role="slider"]'), 'the replay strip appears');
+    assert.equal(container.querySelector('[data-lineups]'), null);
+  });
+});
+
+describe('match sheet lineups', () => {
+  const lineups = (container: HTMLElement) => container.querySelector<HTMLElement>('[data-lineups]');
+  const tabs = (container: HTMLElement) => [...container.querySelectorAll<HTMLButtonElement>('[data-lineups] [role="tab"]')];
+  const pages = (container: HTMLElement) => [...container.querySelectorAll<HTMLElement>('[data-lineups] [role="tabpanel"]')];
+
+  it("opens on the club's own XI, then switches to the other side", async () => {
+    const { container } = mount({ withLineups: true });
+    await until(() => !!lineups(container), 'the lineups appear');
+    assert.deepEqual(tabs(container).map((t) => t.getAttribute('aria-selected')), ['true', 'false']);
+    const [ours, theirs] = pages(container);
+    assert.equal(ours!.querySelectorAll('[data-player][style*="left"]').length, 11, 'eleven on the pitch');
+    assert.match(ours!.textContent!, /4-3-3 · Starting XI/);
+    assert.equal(ours!.inert, false);
+    assert.equal(theirs!.inert, true);
+
+    tabs(container)[1]!.click();
+    await until(() => tabs(container)[1]!.getAttribute('aria-selected') === 'true', 'the second tab is selected');
+    assert.equal(pages(container)[0]!.inert, true);
+    assert.equal(pages(container)[1]!.inert, false);
+    // The track slides one page over.
+    const track = lineups(container)!.querySelector<HTMLElement>('[data-track]')!;
+    const view = lineups(container)!.querySelector<HTMLElement>('[data-view]')!;
+    await until(() => Math.abs(new DOMMatrix(getComputedStyle(track).transform).m41 + view.clientWidth) < 1, 'the track lands on the second page');
+  });
+
+  it('lists the bench with who each substitute replaced', async () => {
+    const { container } = mount({ withLineups: true });
+    await until(() => !!lineups(container), 'the lineups appear');
+    const bench = [...pages(container)[0]!.querySelectorAll('ol button')].map((b) => b.textContent!.replace(/\s+/g, ' '));
+    assert.equal(bench.length, 2);
+    assert.match(bench[0]!, /62'.*for Fischer/);
+    assert.equal(pages(container)[0]!.querySelectorAll('[data-chips] button').length, 5, 'unused substitutes');
+  });
+
+  it('opens a player card from the pitch, and its events jump the replay', async () => {
+    const { container } = mount({ withLineups: true });
+    await until(() => !!lineups(container), 'the lineups appear');
+    const scorer = pages(container)[0]!.querySelector<HTMLButtonElement>('[data-player="5709"]')!;
+    scorer.click();
+    const peek = () => container.querySelector<HTMLElement>('[data-peek]');
+    await until(() => !!peek(), 'the player card opens');
+    assert.match(peek()!.textContent!, /Player of the match/);
+    assert.ok(scorer.hasAttribute('data-selected'));
+
+    const goal = peek()!.querySelector<HTMLButtonElement>('button[data-kind="goal"]')!;
+    assert.match(goal.textContent!, /25'/);
+    goal.click();
+    await until(() => score(container) === '1–0', 'the replay rewinds to the goal');
+
+    scorer.click();
+    await until(() => !peek(), 'pressing the player again closes the card');
+  });
+
+  it('stands the two halves side by side on a wide sheet', async () => {
+    const { container } = mount({ withLineups: true, width: 760 });
+    await until(() => !!lineups(container), 'the lineups appear');
+    await until(() => pages(container).every((p) => !p.inert), 'both halves are live');
+    assert.equal(getComputedStyle(container.querySelector('[data-lineups] [role="tablist"]')!).display, 'none');
+    const [a, b] = pages(container).map((p) => p.getBoundingClientRect());
+    assert.ok(b!.left >= a!.right, 'the second half sits beside the first');
+    assert.equal(Math.round(a!.top), Math.round(b!.top));
   });
 });
