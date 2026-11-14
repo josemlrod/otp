@@ -25,6 +25,12 @@ export const tokens = {
   '--color-outline': 'oklch(100% 0 0 / 0.16)',
   '--color-ring-rest': 'oklch(100% 0 0 / 0.22)',
   '--color-float': 'oklch(28% 0.008 248 / 0.92)',
+  // The lineup pitch: dark grass in two stripes, faint chalk.
+  '--color-pitch': 'oklch(22.5% 0.022 158)',
+  '--color-pitch-stripe': 'oklch(24% 0.024 158)',
+  '--color-pitch-line': 'oklch(100% 0 0 / 0.13)',
+  // Match ratings of 8 and above, beside win green (7+), warning (6+) and loss (below 6).
+  '--color-rating-top': 'oklch(72% 0.13 250)',
   '--card-fill':
     'linear-gradient(170deg, var(--color-surface-raised) 0rem, var(--color-surface) 8.5rem)',
 

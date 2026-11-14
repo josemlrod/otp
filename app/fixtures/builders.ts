@@ -4,6 +4,7 @@
 // const club = buildTeam({ id: 57, shortName: 'Arsenal' });
 // const card = buildClubMatches({ club, form: 'LL', fixtures: [2] });
 import type { Club } from '../lib/clubs.ts';
+import type { MatchReport, ReportLineup, ReportPlayer } from '../lib/match-report.ts';
 import { toClubMatches } from '../lib/club-matches.ts';
 import type { Outcome, ClubMatches, Venue } from '../lib/club-matches.ts';
 import type {
@@ -335,4 +336,45 @@ export function buildMatchDetail(match: Match, options: MatchDetailOptions = {})
     odds: odds ? { homeWin: 2.1, draw: 3.6, awayWin: 3.3 } : { msg: 'Activate Odds-Package in User-Panel to retrieve odds.' },
     referees: [{ id: 11605, name: 'Anthony Taylor', type: 'REFEREE', nationality: 'England' }],
   };
+}
+
+// A 4-3-3 in FotMob's spots: x from the team's right flank (0) to its left (1), y from their goal.
+const SPOTS: Array<[number, number]> = [
+  [0.5, 0.1],
+  [0.125, 0.3], [0.375, 0.3], [0.625, 0.3], [0.875, 0.3],
+  [0.2, 0.55], [0.5, 0.55], [0.8, 0.55],
+  [0.5, 0.87], [0.15, 0.85], [0.85, 0.85],
+];
+
+/**
+ * Lineups that agree with buildMatchDetail's events: players 1–11 start, 12–18 sit on the bench,
+ * and the substitutions, goals and cards land on the same players. Player 4 captains.
+ */
+export function buildLineups(detail: MatchDetailResponse): NonNullable<MatchReport['lineups']> {
+  const side = (team: ApiTeam): ReportLineup => {
+    const mine = <T extends { team: { id: number } }>(list: T[] | undefined) => (list ?? []).filter((e) => e.team.id === team.id);
+    const goals = mine(detail.goals);
+    const bookings = mine(detail.bookings);
+    const subs = mine(detail.substitutions);
+    const build = (n: number): ReportPlayer => {
+      const { id, name } = player(team, n);
+      const card = bookings.find((b) => b.player.id === id)?.card;
+      return {
+        id,
+        name,
+        shirt: String(n),
+        rating: Math.round((5.8 + ((id * 7) % 31) / 10) * 10) / 10,
+        captain: n === 4,
+        spot: n <= 11 ? { x: SPOTS[n - 1]![0], y: SPOTS[n - 1]![1] } : null,
+        on: subs.find((s) => s.playerIn.id === id)?.minute ?? null,
+        off: subs.find((s) => s.playerOut.id === id)?.minute ?? null,
+        goals: goals.filter((g) => g.scorer.id === id && g.type !== 'OWN').length,
+        assists: goals.filter((g) => g.assist?.id === id).length,
+        card: card === 'YELLOW' ? 'yellow' : card === 'YELLOW_RED' ? 'second-yellow' : card === 'RED' ? 'red' : null,
+      };
+    };
+    const range = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, i) => build(from + i));
+    return { formation: '4-3-3', coach: `${team.shortName} Coach`, starters: range(1, 11), subs: range(12, 18) };
+  };
+  return { home: side(detail.homeTeam), away: side(detail.awayTeam) };
 }

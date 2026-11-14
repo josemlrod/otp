@@ -6,7 +6,7 @@ A map of what On the Pitch is made of and how the parts connect, as of the last 
 
 ## The system
 
-One Node server on Fly.io renders the page and answers three small JSON routes. Everything upstream goes through a SQLite read-through cache, so while upstream is healthy each response is fetched at most once an hour.
+One Node server on Fly.io renders the page and answers three small JSON routes. Everything upstream goes through a SQLite read-through cache, so while upstream is healthy each response is fetched at most once an hour. The one exception is images: crests and player photos load in the browser straight from their hosts.
 
 ```mermaid
 flowchart LR
@@ -20,7 +20,7 @@ flowchart LR
     Cache[("SQLite<br/>api_cache")]
   end
   FDAPI["football-data.org<br/>standings · matches · scores"]
-  FM["FotMob<br/>events · stats · lineups · momentum"]
+  FM["FotMob<br/>events · stats · lineups · momentum<br/>player photos"]
 
   UI -- "GET / (server-rendered)" --> Ctl
   UI -- "fetch /api/*" --> Ctl
@@ -29,6 +29,7 @@ flowchart LR
   FD <--> Cache
   FD -- "on a miss or after 1 h" --> FDAPI
   FD -- "finished matches only" --> FM
+  UI -. "player photos" .-> FM
   FDAPI ~~~ FM
 ```
 
@@ -113,7 +114,7 @@ flowchart TB
   clubs["clubs/<br/>list · card · picker"]
   wide["wide/<br/>sidebar · club page · competition page"]
   standings["standings/<br/>tiles · sheet · table"]
-  match["match/<br/>match sheet · replay"]
+  match["match/<br/>match sheet · replay · lineups"]
   update["update/<br/>update prompt"]
   api[["/api routes"]]
 
@@ -141,7 +142,7 @@ flowchart TB
 | Browser entry | [`app/actions/public/entry.ts`](app/actions/public/entry.ts) | Hydrates the page and installs the perf and motion-lab toggles. |
 | Home screen | [`app/actions/public/home-screen.tsx`](app/actions/public/home-screen.tsx) | The top client component. Holds Your clubs and their matches, picks the layout, writes the `otp_tz` cookie. |
 | Clubs (phone) | [`app/actions/public/clubs/`](app/actions/public/clubs/) | The club list (one open card, the rest as rows), the club card's timeline (form strip and next-match pager), the club picker, and the browser side of Your clubs. Fetches and caches club matches. |
-| Match sheet | [`app/actions/public/match/`](app/actions/public/match/) | A finished match: header, a replay strip you can scrub, a momentum curve, stats and key moments. Fetches and caches reports. |
+| Match sheet | [`app/actions/public/match/`](app/actions/public/match/) | A finished match: header, a replay strip you can scrub, a momentum curve, both lineups with a card per player, stats and key moments. Fetches and caches reports. |
 | Standings | [`app/actions/public/standings/`](app/actions/public/standings/) | Competition tiles, plus the standings sheet and its table. |
 | Wide layout | [`app/actions/public/wide/`](app/actions/public/wide/) | iPad and unfolded iPhone Duo: a slide-over sidebar plus club and competition pages laid out from column plans. |
 | Update prompt | [`app/actions/public/update/`](app/actions/public/update/) | Watches `/api/version` and offers a reload when a newer deploy is live. |
@@ -162,7 +163,6 @@ flowchart TB
 
 ## Not built yet
 
-- Lineup UI on the match sheet. FotMob data already arrives in the report.
 - A club screen. Prototypes exist outside `main`, awaiting a pick.
 - Animation plans 002–005 in [`plans/`](plans/README.md).
 

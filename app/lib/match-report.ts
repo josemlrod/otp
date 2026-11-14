@@ -42,7 +42,10 @@ export type ReportPlayer = {
   /** The match rating out of 10, when one was given. */
   rating: number | null;
   captain: boolean;
-  /** A starter's spot on a vertical pitch, 0–1: x across from the left, y up from their own goal. */
+  /**
+   * A starter's formation slot on a vertical pitch, 0–1: x across from the team's right flank,
+   * y up from their own goal. Substitutes have none.
+   */
   spot: { x: number; y: number } | null;
   /** Minutes they came on or went off, or null. */
   on: number | null;
